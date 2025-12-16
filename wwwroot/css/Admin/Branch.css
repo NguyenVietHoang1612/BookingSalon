@@ -1,0 +1,88 @@
+﻿body {
+    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+.admin-content {
+    padding: 30px;
+    max-width: 100%; 
+}
+
+.main-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    background: #fff;
+    padding: 40px !important; 
+}
+
+.title-main {
+    color: #6236FF;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+
+.btn-purple {
+    background-color: #7E3AF2;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: none;
+}
+
+.search-group .form-control {
+    height: 50px;
+    font-size: 1.1rem;
+    border-radius: 10px 0 0 10px;
+}
+
+.search-group .btn {
+    border-radius: 0 10px 10px 0;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-left: none;
+}
+
+
+.table {
+    margin-top: 20px;
+}
+
+.table thead th {
+    background-color: #f9f7ff;
+    color: #a084f4;
+    padding: 20px 15px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    border-bottom: none;
+}
+
+.table tbody td {
+    padding: 22px 15px;
+    font-size: 1.1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+    }
+
+
+.action-btn {
+    font-size: 1.4rem;
+    margin: 0 8px;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+    .action-btn:hover {
+        transform: scale(1.2);
+    }
+
+.edit-icon {
+    color: #3B82F6;
+}
+
+.delete-icon {
+    color: #EF4444;
+}

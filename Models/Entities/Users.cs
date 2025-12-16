@@ -5,7 +5,7 @@ namespace BookingSalon.Models.Entities
     public class Users : IdentityUser
     {
         public string FullName { get; set; }
-        public string Avatar_Url { get; set; }
+        public string? Avatar_Url { get; set; }
         public bool Status { get; set; }
         public DateTime Create_At { get; set; }
         public DateTime Update_At { get; set; }

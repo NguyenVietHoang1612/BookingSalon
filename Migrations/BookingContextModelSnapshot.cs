@@ -447,7 +447,6 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar_Url")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 

@@ -10,27 +10,36 @@
     <link rel="stylesheet" href="~/BookingSalon.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BookingSalon</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <header class="navbar">
+        <div class="logo">
+            <img src="~/Images/icons8-hair-96.png" alt="Travela Logo" class="logo-icon">
+            <span>Travela</span>
+        </div>
+
+        <nav class="main-menu-container">
+            <ul class="main-menu" id="mainMenu">
+                <li class="menu-item"><a href="#" data-page="home">Trang Chủ</a></li>
+                <li class="menu-item"><a href="#" data-page="about">Giới Thiệu</a></li>
+
+                <li class="menu-item tours-dropdown">
+                    <a href="#" data-page="tours">Tours <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content tours-sub-dropdown">
+                        <a href="#" class="dropdown-item" data-page="tour-type">Dịch vụ</a>
+                        <a href="#" class="dropdown-item" data-page="tour-category">Stylist</a>
+                    </div>
+                </li>
+                <li class="menu-item"><a href="#" data-page="destination">Tạo kiểu</a></li>
+                <li class="menu-item"><a href="#" data-page="contact">Liên Hệ</a></li>
+            </ul>
         </nav>
+
+        <div class="actions">
+            <button class="book-now-btn">Book Now ✈️</button>
+            <partial name="_LoginPartial" />
+        </div>
+
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -42,6 +51,7 @@
             &copy; 2025 - BookingSalon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    <script src="~/js/NavbarMainCustormer.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

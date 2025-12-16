@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BookingSalon</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BookingSalon.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Admin/Sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <partial name="_SidebarPartial"></partial>
+
+    <div id="main-content" class="main-content">
+
+        <header class="topbar">
+            <button id="toggle-sidebar" class="menu-icon">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="topbar-logo">
+                <i class="fas fa-paw"></i>
+                <span>Admin</span>
+            </div>
+
+            <div class="topbar-right">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-cog"></i>
+                <div class="user-dropdown">
+                    <img src="https://via.placeholder.com/30" alt="Avatar" class="avatar-small">
+                    <span>admin</span>
+                    <i class="fas fa-caret-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <main class="dashboard-area">
+                @RenderBody()
+            </main>
+        </div>
+
+    </div>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - BookingSalon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

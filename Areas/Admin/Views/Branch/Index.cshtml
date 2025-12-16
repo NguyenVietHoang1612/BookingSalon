@@ -1,0 +1,72 @@
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<Branch>
+
+@{
+    ViewData["title"] = "Danh dách chi nhánh";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Admin/Branch.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container-fluid admin-content">
+        <div class="card main-card">
+            <div class="row align-items-center mb-5">
+                <div class="col-xl-6 col-lg-5">
+                    <h2 class="title-main mb-lg-0 mb-3">Quản lý chi nhánh</h2>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <div class="row g-3 justify-content-lg-end">
+                        <div class="col-sm-7 col-12">
+                            <div class="input-group search-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm theo tên chi nhánh">
+                                <button class="btn border"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 col-12 d-grid">
+                            <button class="btn btn-purple shadow-sm" asp-controller="Branch" asp-action="Create">
+                                <i class="bi bi-plus-lg me-2"></i> Thêm chi nhánh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px">#</th>
+                            <th>Tên chi nhánh</th>
+                            <th>Địa chỉ</th>
+                            <th>Số điện thoại</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Hành động</th>
+                            @* <th class="text-center"></th>
+                            <th class="text-end pe-4"></th>
+                            <th class="text-end pe-4"></th> *@
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach(var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@item.BranchId</td>
+                                <td class="text-muted">@item.Branch_Name</td>
+                                <td class="text-muted">@item.Address</td>
+                                <td class="text-muted">@item.Phone</td>
+                                <td class="text-muted">@item.Status</td>
+                                <td class="text-center pe-4">
+                                    <a asp-controller="Branch" asp-action="Edit" asp-route-id="@item.BranchId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
+                                    <a asp-controller="Branch" asp-action="Delete" asp-route-id="@item.BranchId"><i class="bi bi-trash-fill action-btn delete-icon"></i></a>
+                                </td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
