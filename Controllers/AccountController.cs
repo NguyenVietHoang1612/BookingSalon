@@ -1,19 +1,24 @@
 ﻿using BookingSalon.Models.Entities;
 using BookingSalon.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace BookingSalon.Controllers
 {
+
     public class AccountController : Controller
     {
         private readonly SignInManager<Users> signInManager;
-        private readonly UserManager<Users> userManager;
+        private readonly UserManager<Users> _userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public AccountController(SignInManager<Users> signInManager, UserManager<Users> userManager)
+        public AccountController(SignInManager<Users> signInManager, UserManager<Users> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.signInManager = signInManager;
-            this.userManager = userManager;
+            this._userManager = userManager;
+            this.roleManager = roleManager;
         }
 
         public IActionResult Login()
@@ -30,11 +35,22 @@ namespace BookingSalon.Controllers
 
                 if (result.Succeeded)
                 {
+                    var userLogin = await _userManager.FindByEmailAsync(model.Email);
+
+                    if (await _userManager.IsInRoleAsync(userLogin, "Customer"))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (await _userManager.IsInRoleAsync(userLogin, "Admin"))
+                    {
+                        return RedirectToAction("Index", "Users", new { area = "Admin" });
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Email or password is incorrect.");
+                    ModelState.AddModelError("", "Email hoặc mật khẩu không đúng.");
                     return View(model);
                 }
             }
@@ -51,21 +67,32 @@ namespace BookingSalon.Controllers
         {
             if (ModelState.IsValid)
             {
+                var role = await roleManager.FindByNameAsync("Customer");
+
+                if (role == null)
+                {
+                    ModelState.AddModelError("", " Không tìm thấy vai trò.");
+                    return View(model);
+                }
+
                 Users users = new Users
                 {
                     FullName = model.FullName,
                     Email = model.Email,
                     UserName = model.Email,
                     PhoneNumber = model.PhoneNumber,
+                    RoleId = role.Id,
                     Status = true,
                     Create_At = DateTime.Now,
                     Update_At = DateTime.Now
                 };
 
-                var result = await userManager.CreateAsync(users, model.Password);
+                var result = await _userManager.CreateAsync(users, model.Password);
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(users, "Customer");
+
                     return RedirectToAction("Login", "Account");
                 }
                 else
@@ -91,10 +118,10 @@ namespace BookingSalon.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByNameAsync(model.Email);
+                var user = await _userManager.FindByNameAsync(model.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError("", "Something is wrong!");
+                    ModelState.AddModelError("", "Email chưa được đăng ký!");
                     return View(model);
                 }
                 else
@@ -120,17 +147,17 @@ namespace BookingSalon.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Something went wrong. try again.");
+                ModelState.AddModelError("", "Lỗi có trường không chưa được thêm.");
                 return View(model);
             }
 
-            var user = await userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(model.Email);
             if (user != null)
             {
-                var result = await userManager.RemovePasswordAsync(user);
+                var result = await _userManager.RemovePasswordAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await userManager.AddPasswordAsync(user, model.NewPassword);
+                    result = await _userManager.AddPasswordAsync(user, model.NewPassword);
                     return RedirectToAction("Login", "Account");
                 }
                 else
@@ -146,16 +173,22 @@ namespace BookingSalon.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "Email not found!");
+                ModelState.AddModelError("", "Không tìm thấy email!");
                 return View(model);
             }
-           
+
         }
 
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
         }
     }
 }

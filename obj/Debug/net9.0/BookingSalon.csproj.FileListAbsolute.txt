@@ -22,7 +22,6 @@ D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\scopedcss\Views\Shared
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\scopedcss\bundle\BookingSalon.styles.css
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\scopedcss\projectbundle\BookingSalon.bundle.scp.css
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\x3izvqykcm-61n19gt1b8.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\f0wgd6boj7-xtxxf3hu2r.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\59c59z9bjy-bqjiyaj88i.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qiqsvrpjg1-c2jlpeoesf.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\2zn3u58q5k-erw9l3u2r3.gz
@@ -234,10 +233,11 @@ D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\BookingSalon.csproj.As
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\BookingSalon.sourcelink.json
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\BookingS.28114EBA.Up2Date
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\jlwbgbk1iv-kaek25f9w7.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\g2oo51nuw2-vbj08lsmjz.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\scopedcss\Areas\Admin\Views\Shared\_AdminLayout.cshtml.rz.scp.css
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\hmj65m0h0s-sl3tbcpk1q.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qu5rr020pm-sl3tbcpk1q.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\uleopvlpcp-jf27matagb.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\6g8h6y8kts-93kcep58mq.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\la24yb5xm0-0u4pws4ht3.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\g2oo51nuw2-5pskj25g0u.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\hmj65m0h0s-mz9x1wv6sz.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qu5rr020pm-mz9x1wv6sz.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\xjw59qtcd8-yl9weduabb.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\f0wgd6boj7-egau9oxuez.gz

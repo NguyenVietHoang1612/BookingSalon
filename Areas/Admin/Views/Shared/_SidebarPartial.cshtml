@@ -26,11 +26,11 @@
             </li>
 
             <li class="menu-item">
-                <a href="#"><i class="fas fa-user-shield"></i> Quản lý Admin</a>
+                <a asp-area="Admin" asp-controller="AppRoles" asp-action="Index"><i class="fas fa-user-shield"></i> Quản lý Role</a>
             </li>
 
             <li class="menu-item">
-                <a asp-controller="Users" asp-action="Index"><i class="fas fa-users"></i> Quản lý người dùng</a>
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="fas fa-users"></i> Quản lý người dùng</a>
             </li>
 
             <li class="menu-item has-submenu">

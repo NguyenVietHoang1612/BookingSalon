@@ -1,14 +1,24 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using BookingSalon.Models.Entities;
 @inject SignInManager<Users> signInManager;
-
+@inject UserManager<Users> userManager;
 
 @if (signInManager.IsSignedIn(User)) 
 {
+    var currentUser = await userManager.GetUserAsync(User);
+
     <div class="user-dropdown nav-item">
         <div class="user-icon" id="userIcon">
-            <i class="fas fa-user"></i>
+            <div class="avatar-wrapper">
+                <img src="@(string.IsNullOrEmpty(currentUser?.Avatar_Name)
+                                                  ? "https://ui-avatars.com/api/?name=" + (currentUser?.FullName ?? "User")
+                                                  : Url.Content("~/media/users/" + currentUser.Avatar_Name))"
+                 class="rounded-circle border"
+                 style="width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;"
+                 alt="Avatar">
+            </div>
         </div>
+
         <div class="dropdown-content user-sub-dropdown" id="userDropdownContent">
             <a class="dropdown-item">Thông tin cá nhân</a>
             <a class="dropdown-item">Lịch đã đặt</a>

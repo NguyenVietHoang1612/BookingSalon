@@ -1,5 +1,8 @@
-using BookingSalon.Data;
+﻿using BookingSalon.Data;
+using BookingSalon.Data.Repository;
 using BookingSalon.Models.Entities;
+using BookingSalon.Services;
+using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +13,12 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<BookingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookingSalon") ?? throw new InvalidOperationException("Connection string 'BookingContext' not found.")));
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied"; 
+});
 
 builder.Services.AddIdentity<Users, IdentityRole>(options =>
 {
@@ -25,14 +34,33 @@ builder.Services.AddIdentity<Users, IdentityRole>(options =>
     .AddEntityFrameworkStores<BookingContext>()
     .AddDefaultTokenProviders();
 
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IAppRolesService, AppRolesService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await SeedData.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Một lỗi đã xảy ra khi Seed Roles.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -50,16 +78,14 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-app.MapControllerRoute(
      name: "areas",
      pattern: "{area:exists}/{controller=Branch}/{action=Index}/{id?}"
     );
-   
 
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 
 app.Run();

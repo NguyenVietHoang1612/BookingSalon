@@ -1,7 +1,115 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model IEnumerable<BookingSalon.Areas.Admin.Models.UserViewModel>
 
-<H1>Quản lý User</H1>
+<div class="container-fluid admin-content">
+    <div class="card main-card">
+        <div class="container-fluid my-4 px-4">
+            <div class="row align-items-center mb-5">
+                <div class="col-xl-6 col-lg-5">
+                    <h2 class="title-main mb-lg-0 mb-3">Quản lý người dùng</h2>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <div class="row g-3 justify-content-lg-end">
+                        <div class="col-sm-7 col-12">
+                            <div class="input-group search-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm theo email, tên người dùng">
+                                <button class="btn border"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 col-12 d-grid">
+                            <a class="btn btn-primary shadow-sm text-decoration-none text-white" asp-controller="Users" asp-action="Create">
+                                <i class="bi bi-plus-lg me-2"></i>
+                                Thêm người dùng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-header bg-light py-2 border-bottom-0 d-flex justify-content-between">
+                                <small class="text-muted fw-bold fst-italic">
+                                    @(item.User.EmailConfirmed ? "Đã kích hoạt" : "Chưa kích hoạt")
+                                </small>
+
+                                <small class="text-muted fw-bold fst-italic">
+                                    @(item.User.Status ? "" : "Đã chặn")
+                                </small>
+                            </div>
+
+                            <div class="card-body pt-1">
+                                <div class="row g-0">
+                                    @* Dùng row g-0 để chia không gian chính xác *@
+                                    <div class="col-8 pe-2">
+                                        <h5 class="fw-bold mb-1 text-truncate" title="@item.User.FullName">
+                                            @(item.User.FullName ?? "Unnamed")
+                                        </h5>
+                                        <p class="small text-muted mb-2 text-truncate">
+                                            <strong>About:</strong> @item.RoleName
+                                        </p>
+
+                                        <div class="d-flex align-items-start mb-1 overflow-hidden">
+                                            <i class="bi bi-geo-alt-fill text-muted me-1 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Email:</strong> @item.User.Email</p>
+                                        </div>
+
+                                        <div class="d-flex align-items-start overflow-hidden">
+                                            <i class="bi bi-telephone-fill text-muted me-1 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Phone:</strong> @item.User.PhoneNumber</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 d-flex justify-content-center align-items-start">
+                                        <div class="avatar-wrapper">
+                                            <img src="@(string.IsNullOrEmpty(item.User.Avatar_Name)
+                                                     ? "https://ui-avatars.com/api/?name=" + item.User.FullName
+                                                     : Url.Content("~/media/users/" + item.User.Avatar_Name))"
+                                             class="rounded-circle border"
+                                             alt="Avatar">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 pb-3">
+                                <a asp-action="Update" asp-route-Id="@item.User.Id" class="btn btn-warning btn-sm px-3 fw-bold text-dark shadow-sm text-decoration-none">
+                                    <i class="bi bi-slash-circle"></i> Cập nhật
+                                </a>
+
+                                <form id="delete-form-@item.User.Id" asp-action="SoftDelete" asp-route-id="@item.User.Id" method="post" class="m-0">
+                                    <button type="button" class="btn btn-danger btn-sm px-3 fw-bold shadow-sm" onclick="confirmDelete('@Url.Action("SoftDelete", "Users", new { id = item.User.Id })', '@item.User.Email')">
+                                        <i class="bi bi-x-lg"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-wrapper {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+    }
+
+    .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .text-truncate {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

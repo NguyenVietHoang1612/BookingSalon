@@ -56,7 +56,10 @@ namespace BookingSalon.Data
                 entity.Property(x => x.FullName)
                       .HasMaxLength(150);
 
-                entity.Property(x => x.Avatar_Url)
+                entity.Property(x => x.PasswordHash)
+                      .HasMaxLength(150);
+
+                entity.Property(x => x.Avatar_Name)
                       .HasMaxLength(255);
 
                 entity.Property(x => x.Create_At)

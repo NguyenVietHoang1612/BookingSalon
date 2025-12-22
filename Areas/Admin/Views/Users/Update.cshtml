@@ -1,0 +1,136 @@
+﻿@using BookingSalon.Areas.Admin.Models
+@model AccountUserViewModel
+
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    .main-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .form-section {
+        background-color: #f8faff;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .table thead th {
+        background-color: #eef2ff;
+        color: #4e73df;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        padding: 15px;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .btn-add {
+        background-color: #0d6efd;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+    }
+
+    .form-control {
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+
+    .action-icon {
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .action-icon:hover {
+            transform: scale(1.2);
+        }
+</style>
+
+
+<div class="container-fluid py-5 px-md-5">
+    <div class="card main-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">Quản lý Người dùng</h2>
+        </div>
+
+        <div class="form-section">
+            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-person-plus me-2"></i>Thêm người dùng mới</h5>
+
+            <form asp-action="Update" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Họ và tên</label>
+                        <input asp-for="User.FullName" class="form-control" placeholder="Nhập họ tên" />
+                        <span asp-validation-for="User.FullName" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input asp-for="User.Email" class="form-control" placeholder="Nhập email" />
+                        <span asp-validation-for="User.Email" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Số điện thoại </label>
+                        <input asp-for="User.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="User.PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Tên vai trò</label>
+                        <select asp-for="User.RoleId" asp-items="ViewBag.Roles" class="form-control">
+                        </select>
+                        <span asp-validation-for="User.RoleId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Mật khẩu</label>
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Xác minh tài khoản</label>
+                        <select class="form-control form-label fw-semibold" asp-for="User.EmailConfirmed">
+                            <option value="true">Chấp nhận tài khoản</option>
+                            <option value="false">Không xác minh tài khoản</option>
+                        </select>
+                        <span asp-validation-for="User.EmailConfirmed" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Thêm ảnh avatar</label>
+                        <input asp-for="User.Avatar_Image_Upload" class="form-control" placeholder="Chọn ảnh" />
+                        <span asp-validation-for="User.Avatar_Image_Upload" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-add fw-bold">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-danger fw-bold">
+                            <i class="bi bi-x-lg me-2">Hủy thêm mới</i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

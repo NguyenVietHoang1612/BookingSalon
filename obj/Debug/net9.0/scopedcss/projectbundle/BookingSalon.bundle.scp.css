@@ -243,12 +243,10 @@ body[b-yu4udpvbzz] {
     display: block;
 }
 /* _content/BookingSalon/Views/Shared/_Layout.cshtml.rz.scp.css */
-/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
 body[b-4unmw2jzng] {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4; /* Màu nền nhẹ để navbar nổi bật */
+    background-color: #f4f4f4; 
 }
 
 .footer[b-4unmw2jzng] {
@@ -259,7 +257,7 @@ body[b-4unmw2jzng] {
   line-height: 60px;
 }
 
-/*//////////////////////////////////////////////////////////////////////////////*/
+
 .navbar[b-4unmw2jzng] {
     display: flex;
     justify-content: space-between;
@@ -269,7 +267,6 @@ body[b-4unmw2jzng] {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Logo --- */
 .logo[b-4unmw2jzng] {
     display: flex;
     align-items: center;
@@ -279,26 +276,22 @@ body[b-4unmw2jzng] {
 }
 
 .logo-icon[b-4unmw2jzng] {
-    width: 30px; /* Kích thước icon logo */
+    width: 30px; 
     height: 30px;
     margin-right: 5px;
-    /* Dùng placeholder màu sắc cho dễ hình dung nếu không có ảnh logo thực */
     background-color: #f0f8ff;
     border-radius: 50%;
-    /* Ẩn placeholder text/img trong ví dụ này */
     display: none;
 }
 
 .logo span[b-4unmw2jzng] {
-    color: #4CAF50; /* Màu xanh lá cho chữ Travela (tùy chọn) */
+    color: #4CAF50; 
 }
 
-
-/* --- Menu chính --- */
 .main-menu-container[b-4unmw2jzng] {
     padding: 5px;
     border-radius: 50px;
-    background-color: #f8f8f8; /* Màu nền nhẹ cho khu vực menu */
+    background-color: #f8f8f8; 
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
@@ -307,7 +300,7 @@ body[b-4unmw2jzng] {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 0; /* Loại bỏ khoảng cách giữa các li để sát vào nhau */
+    gap: 0; 
 }
 
 .menu-item a[b-4unmw2jzng] {
@@ -320,21 +313,18 @@ body[b-4unmw2jzng] {
     font-weight: 500;
 }
 
-/* Kiểu cho nút đang được chọn (active) */
 .menu-item.active a[b-4unmw2jzng] {
-    background-color: #4CAF50; /* Màu nền xanh lá */
-    color: #fff; /* Chữ màu trắng */
+    background-color: #4CAF50; 
+    color: #fff; 
     font-weight: bold;
 }
 
-/* Icon dropdown */
 .tours-dropdown i[b-4unmw2jzng] {
     margin-left: 5px;
     font-size: 0.8em;
 }
 
-/* Di chuột (hover) */
-.menu-item a:not(.active):hover[b-4unmw2jzng] { /* Đảm bảo hover không áp dụng cho mục con dropdown */
+.menu-item a:not(.active):hover[b-4unmw2jzng] { 
     background-color: #e0e0e0;
 }
 
@@ -344,9 +334,8 @@ body[b-4unmw2jzng] {
     gap: 15px;
 }
 
-/* Nút Book Now */
 .book-now-btn[b-4unmw2jzng] {
-    background-color: #ff9800; /* Màu cam */
+    background-color: #ff9800; 
     color: white;
     border: none;
     padding: 10px 20px;
@@ -362,7 +351,6 @@ body[b-4unmw2jzng] {
         box-shadow: 0 6px 8px rgba(255, 152, 0, 0.4);
     }
 
-/* --- Dropdown Menu cho Tours --- */
 
 .tours-dropdown[b-4unmw2jzng] {
     position: relative;
@@ -373,52 +361,46 @@ body[b-4unmw2jzng] {
     position: absolute;
     top: 100%;
     left: 0;
-    /* THAY ĐỔI QUAN TRỌNG: Nền trắng cho khối dropdown */
-    background-color: #fff; /* Nền trắng */
+    background-color: #fff; 
     min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 10;
     border-radius: 4px;
     margin-top: 5px;
-    padding: 5px 0; /* Padding trở lại như cũ */
+    padding: 5px 0; 
 }
 
-    /* 3. Style cho các mục con trong Dropdown */
-    .tours-sub-dropdown .dropdown-item[b-4unmw2jzng] {
-        text-decoration: none;
-        color: #333; /* Chữ màu đen/xám */
-        padding: 10px 16px;
-        display: block;
-        text-align: left;
-        white-space: nowrap;
-        border-radius: 0;
-        transition: background-color 0.3s, color 0.3s;
-        font-weight: 500;
-        /* RẤT QUAN TRỌNG: Đảm bảo không có background màu xanh mặc định */
-        background-color: transparent;
-    }
+.tours-sub-dropdown .dropdown-item[b-4unmw2jzng] {
+    text-decoration: none;
+    color: #333; 
+    padding: 10px 16px;
+    display: block;
+    text-align: left;
+    white-space: nowrap;
+    border-radius: 0;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
+    background-color: transparent;
+}
 
-        /* Hover cho các mục con (chuyển sang màu xám nhạt và chữ xanh) */
-        .tours-sub-dropdown .dropdown-item:hover[b-4unmw2jzng] {
-            background-color: #f1f1f1; /* Nền xám nhạt khi hover */
-            color: #4CAF50; /* Chữ màu xanh lá khi hover */
-        }
+        
+.tours-sub-dropdown .dropdown-item:hover[b-4unmw2jzng] {
+    background-color: #f1f1f1; 
+    color: #4CAF50; 
+}
 
-/* Class để hiển thị dropdown của Tours bằng JS (click) */
 .tours-dropdown.show .tours-sub-dropdown[b-4unmw2jzng] {
     display: block;
 }
 
-/* Giữ lại style này để nút Tours chính chuyển màu khi active */
 .tours-dropdown.active a[b-4unmw2jzng] {
     background-color: #4CAF50;
     color: #fff;
     font-weight: bold;
 }
-/* --- Dropdown Menu cho User (Mới) --- */
 
 .user-dropdown[b-4unmw2jzng] {
-    position: relative; /* Quan trọng để dropdown-content position: absolute hoạt động */
+    position: relative;
 }
 
 .user-icon[b-4unmw2jzng] {
@@ -432,27 +414,27 @@ body[b-4unmw2jzng] {
     align-items: center;
     cursor: pointer;
     font-size: 1.2em;
-    position: relative; /* Cho phép z-index và làm nền cho dropdown */
-    z-index: 20; /* Đảm bảo icon user nằm trên dropdown nếu có overlap */
+    position: relative; 
+    z-index: 20; 
 }
 
-.user-sub-dropdown[b-4unmw2jzng] { /* Dùng class riêng cho dropdown của user */
-    display: none; /* Ẩn theo mặc định */
+.user-sub-dropdown[b-4unmw2jzng] {
+    display: none; 
     position: absolute;
-    top: 100%; /* Đặt ngay dưới icon user */
-    right: 0; /* Căn chỉnh sang phải */
+    top: 100%;
+    right: 0;
     background-color: #fff;
-    min-width: 180px; /* Chiều rộng tối thiểu cho các mục */
+    min-width: 180px; 
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 15; /* Đảm bảo nằm trên các phần tử khác nhưng dưới icon user nếu cần */
+    z-index: 15; 
     border-radius: 4px;
-    margin-top: 10px; /* Khoảng cách giữa icon và dropdown */
+    margin-top: 10px;
     padding: 5px 0;
-    transform-origin: top right; /* Điểm neo cho animation nếu có */
-    animation: fadeIn-b-4unmw2jzng 0.2s ease-out; /* Thêm hiệu ứng nhỏ */
+    transform-origin: top right;
+    animation: fadeIn-b-4unmw2jzng 0.2s ease-out; 
 }
 
-/* Animation fadeIn (tùy chọn) */
+
 @keyframes fadeIn-b-4unmw2jzng {
     from {
         opacity: 0;
@@ -465,7 +447,7 @@ body[b-4unmw2jzng] {
     }
 }
 
-/* Các mục con trong dropdown của user */
+
 .user-sub-dropdown .dropdown-item[b-4unmw2jzng] {
     color: #333;
     padding: 10px 16px;
@@ -482,7 +464,7 @@ body[b-4unmw2jzng] {
         color: #4CAF50;
     }
 
-/* Class để hiển thị dropdown của user bằng JS */
+
 .user-dropdown.show .user-sub-dropdown[b-4unmw2jzng] {
     display: block;
 }

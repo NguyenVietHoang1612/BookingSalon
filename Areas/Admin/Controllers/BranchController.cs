@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BookingSalon.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class BranchController : Controller
     {
         private readonly BookingContext bookingContext;
