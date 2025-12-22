@@ -17,6 +17,20 @@ namespace BookingSalon.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToAction("Index", "Users", new { area = "Admin" });
+                }
+
+
+                if (User.IsInRole("Stylist"))
+                {
+                    
+                }
+            }
             return View();
         }
 
