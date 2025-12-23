@@ -41,10 +41,12 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
 });
 
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAppRolesService, AppRolesService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
 
 var app = builder.Build();
 
