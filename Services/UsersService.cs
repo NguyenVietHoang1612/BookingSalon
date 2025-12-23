@@ -11,11 +11,11 @@ namespace BookingSalon.Services
     {
         private readonly UserManager<Users> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IGenericRepository<Users> _repository;
+        private readonly IRepository<Users> _repository;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IFileService _fileService;
 
-        public UsersService(UserManager<Users> userManager, RoleManager<IdentityRole> roleManager,IGenericRepository<Users> repository, IWebHostEnvironment webHostEnvironment, IFileService fileService)
+        public UsersService(UserManager<Users> userManager, RoleManager<IdentityRole> roleManager,IRepository<Users> repository, IWebHostEnvironment webHostEnvironment, IFileService fileService)
         {
             _userManager = userManager;
             _repository = repository;

@@ -24,9 +24,9 @@
                             </div>
                         </div>
                         <div class="col-sm-5 col-12 d-grid">
-                            <button class="btn btn-primary shadow-sm" asp-controller="Branch" asp-action="Create">
+                            <a class="btn btn-primary shadow-sm" asp-action="Create">
                                 <i class="bi bi-plus-lg me-2"></i> Thêm chi nhánh
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -56,10 +56,16 @@
                                 <td class="text-muted">@item.Branch_Name</td>
                                 <td class="text-muted">@item.Address</td>
                                 <td class="text-muted">@item.Phone</td>
-                                <td class="text-muted">@item.Status</td>
+
+                                <td class="text-muted"> @(item.Status ? "Đang hoạt động" : "Không hoạt động")</td>
                                 <td class="text-center pe-4">
-                                    <a asp-controller="Branch" asp-action="Edit" asp-route-id="@item.BranchId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
-                                    <a asp-controller="Branch" asp-action="Delete" asp-route-id="@item.BranchId"><i class="bi bi-trash-fill action-btn delete-icon"></i></a>
+                                    <a asp-controller="Branch" asp-action="Update" asp-route-id="@item.BranchId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
+
+                                    <form id="delete-form-@item.BranchId" asp-action="SoftDelete" asp-route-id="@item.BranchId" method="post" style="display:inline;">
+                                        <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("SoftDelete", "Branch", new { id = item.BranchId })', 'Chi nhánh @item.Branch_Name')">
+                                            <i class="bi bi-trash-fill text-danger action-btn"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         }

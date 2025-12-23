@@ -77,7 +77,12 @@ wwwroot\media\users\88fd734e-2437-44f8-9fba-cfe3bc675e6f_8ccaea27b5c56a9b33d4.jp
 wwwroot\media\users\a505b00d-fe9d-48e6-b4c8-9b7e41d4e3af.jpg
 wwwroot\media\users\b394ce49-e73b-4f97-90ad-bc05f610eb41_3b.jpg
 wwwroot\media\users\d65a22cc-e294-4153-86e8-98d187199dcf_3b.jpg
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Account.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\ListItem.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Sidebar.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\site.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\favicon.ico
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\NavbarMainCustormer.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\site.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -138,8 +143,3 @@ D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.min.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.min.map
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\LICENSE.txt
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Sidebar.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Account.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\ListItem.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\NavbarMainCustormer.js
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\site.css
