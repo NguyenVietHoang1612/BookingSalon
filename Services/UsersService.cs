@@ -91,22 +91,6 @@ namespace BookingSalon.Services
             existingUser.Update_At = DateTime.Now;
             if (userVM.User.Avatar_Image_Upload != null)
             {
-                var uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "media", "users");
-
-                if (!Directory.Exists(uploadDir))
-                {
-                    Directory.CreateDirectory(uploadDir);
-                }
-
-                if (!string.IsNullOrEmpty(existingUser.Avatar_Name))
-                {
-                    var oldPath = Path.Combine(uploadDir, existingUser.Avatar_Name);
-                    if (File.Exists(oldPath))
-                    {
-                        File.Delete(oldPath);
-                    }
-                }
-
                 existingUser.Avatar_Name = await _fileService.UploadFileAsync(userVM.User.Avatar_Image_Upload, "users");
             }
             return await _userManager.UpdateAsync(existingUser);

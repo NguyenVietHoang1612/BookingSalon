@@ -1,0 +1,105 @@
+﻿@using BookingSalon.Areas.Admin.Models
+@model IEnumerable<ServiceViewModel>
+
+@{
+    ViewData["title"] = "Danh dách dịch vụ";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Admin/ListItem.css" asp-append-version="true" />
+
+    <style>
+        .image-warp {
+            width: 164px;
+            height: 164px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .image-warp img {
+            object-fit: cover;
+            }
+    </style>
+</head>
+
+
+    <div class="container-fluid admin-content">
+        <div class="card main-card">
+            <div class="row align-items-center mb-5">
+                <div class="col-xl-6 col-lg-5">
+                    <h2 class="title-main mb-lg-0 mb-3">Quản lý dịch vụ</h2>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <div class="row g-3 justify-content-lg-end">
+                        <div class="col-sm-7 col-12">
+                            <form asp-action="Index" method="get">
+                                <div class="input-group search-group">
+                                    <input type="text" value="@ViewBag.SearchTerm" name="term" class="form-control" placeholder="Tìm kiếm theo tên dịch vụ">
+                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                           
+                        </div>
+                        <div class="col-sm-5 col-12 d-grid">
+                            <a class="btn btn-primary shadow-sm" asp-action="Create">
+                                <i class="bi bi-plus-lg me-2"></i> Thêm dịch vụ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px">#</th>
+                            <th>Tên dịch vụ</th>
+                            <th>Loại dịch vụ</th>
+                            <th>Giá dịch vụ</th>
+                            <th>Thời gian thực hiện</th>
+                            <th>Ảnh dịch vụ</th>
+                            <th>Miêu tả</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Hành động</th>
+                            @* <th class="text-center"></th>
+                            <th class="text-end pe-4"></th>
+                            <th class="text-end pe-4"></th> *@
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach(var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@item.ServiceSalon.ServiceId</td>
+                            <td class="fw-bold text-dark">@item.ServiceSalon.Service_Name</td>
+                            <td class="text-muted">@item.TypeServiceName</td>
+                            <td class="text-muted">@item.ServiceSalon.Price <trong > Vnd</trong></td>
+                            <td class="text-muted">@item.ServiceSalon.DurationInMinutes</td>
+                            <td class="text-muted"> @(item.ServiceSalon.Status ? "Đang hoạt động" : "Không hoạt động")</td>
+                                <td class ="text-muted">
+                                    <div class="d-flex align-content-center justify-content-center image-warp" >
+                                    <img src="@(string.IsNullOrEmpty(item.ServiceSalon.ImageName)
+                                                                                     ? "https://ui-avatars.com/api/?name=" + item.ServiceSalon.Service_Name
+                                                                                                                             : Url.Content("~/media/services/" + item.ServiceSalon.ImageName))" class="w-100 h-100" />
+                                    </div>
+                                     
+                                </td>
+                            <td class="text-muted">@item.ServiceSalon.description</td>
+                                <td class="text-center pe-4">
+                                <a asp-action="Update" asp-route-id="@item.ServiceSalon.ServiceId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
+
+                                <form id="delete-form-@item.ServiceSalon.ServiceId" asp-action="SoftDelete" asp-route-id="@item.ServiceSalon.ServiceId" method="post" style="display:inline;">
+                                    <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("SoftDelete", "ServiceSalon", new { id = item.ServiceSalon.ServiceId })', 'dịch vu @item.ServiceSalon.Service_Name')">
+                                            <i class="bi bi-trash-fill text-danger action-btn"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+

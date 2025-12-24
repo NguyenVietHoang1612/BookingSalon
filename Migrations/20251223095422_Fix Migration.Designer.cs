@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSalon.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    [Migration("20251219083616_FixDb")]
-    partial class FixDb
+    [Migration("20251223095422_Fix Migration")]
+    partial class FixMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,9 +46,6 @@ namespace BookingSalon.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("FixedTimeSlotSlotId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Slot_Id")
                         .HasColumnType("int");
 
@@ -72,8 +69,6 @@ namespace BookingSalon.Migrations
 
                     b.HasIndex("Customer_Id");
 
-                    b.HasIndex("FixedTimeSlotSlotId");
-
                     b.HasIndex("Slot_Id");
 
                     b.HasIndex("Stylist_Profile_Id");
@@ -96,7 +91,9 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -170,7 +167,9 @@ namespace BookingSalon.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("Created_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -178,6 +177,9 @@ namespace BookingSalon.Migrations
 
                     b.Property<int>("Duration_Minutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name_Combo")
                         .IsRequired()
@@ -204,7 +206,9 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -229,7 +233,9 @@ namespace BookingSalon.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SlotId"));
 
                     b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("Sort_Order")
                         .HasColumnType("int");
@@ -301,10 +307,15 @@ namespace BookingSalon.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
 
                     b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -323,6 +334,9 @@ namespace BookingSalon.Migrations
 
                     b.Property<DateTime>("Update_At")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ServiceId");
 
@@ -413,7 +427,9 @@ namespace BookingSalon.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Stylist_Time_Work_Id"));
 
                     b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<bool>("Is_Available")
                         .HasColumnType("bit");
@@ -669,20 +685,16 @@ namespace BookingSalon.Migrations
             modelBuilder.Entity("BookingSalon.Models.Entities.Booking", b =>
                 {
                     b.HasOne("BookingSalon.Models.Entities.Branch", "Branch")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("Branch_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookingSalon.Models.Entities.Users", "Customer")
-                        .WithMany("CustormerBookings")
+                        .WithMany()
                         .HasForeignKey("Customer_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlot", null)
-                        .WithMany("Bookings")
-                        .HasForeignKey("FixedTimeSlotSlotId");
 
                     b.HasOne("BookingSalon.Models.Entities.FixedTimeSlot", "StartSlot")
                         .WithMany()
@@ -708,18 +720,18 @@ namespace BookingSalon.Migrations
             modelBuilder.Entity("BookingSalon.Models.Entities.BookingDetail", b =>
                 {
                     b.HasOne("BookingSalon.Models.Entities.Booking", "Booking")
-                        .WithMany("BookingServices")
+                        .WithMany()
                         .HasForeignKey("Booking_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookingSalon.Models.Entities.Combo", "Combo")
-                        .WithMany("BookingDetails")
+                        .WithMany()
                         .HasForeignKey("ComboId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BookingSalon.Models.Entities.Service", "Service")
-                        .WithMany("BookingDetail")
+                        .WithMany()
                         .HasForeignKey("Service_Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -733,13 +745,13 @@ namespace BookingSalon.Migrations
             modelBuilder.Entity("BookingSalon.Models.Entities.ComboService", b =>
                 {
                     b.HasOne("BookingSalon.Models.Entities.Combo", "Combo")
-                        .WithMany("ComboServices")
+                        .WithMany()
                         .HasForeignKey("ComboId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookingSalon.Models.Entities.Service", "Service")
-                        .WithMany("ComboServices")
+                        .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -774,13 +786,13 @@ namespace BookingSalon.Migrations
             modelBuilder.Entity("BookingSalon.Models.Entities.StylistProfile", b =>
                 {
                     b.HasOne("BookingSalon.Models.Entities.Branch", "Branch")
-                        .WithMany("StylistProfiles")
+                        .WithMany()
                         .HasForeignKey("Branch_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookingSalon.Models.Entities.Users", "Stylist")
-                        .WithOne("StylistProfile")
+                        .WithOne()
                         .HasForeignKey("BookingSalon.Models.Entities.StylistProfile", "StylistId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -793,13 +805,13 @@ namespace BookingSalon.Migrations
             modelBuilder.Entity("BookingSalon.Models.Entities.StylistTimeWork", b =>
                 {
                     b.HasOne("BookingSalon.Models.Entities.FixedTimeSlot", "TimeSlot")
-                        .WithMany("StylistTimeWorks")
+                        .WithMany()
                         .HasForeignKey("Slot_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookingSalon.Models.Entities.Users", "Stylist")
-                        .WithMany("StylistTimeWorks")
+                        .WithMany()
                         .HasForeignKey("Stylist_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -862,52 +874,13 @@ namespace BookingSalon.Migrations
 
             modelBuilder.Entity("BookingSalon.Models.Entities.Booking", b =>
                 {
-                    b.Navigation("BookingServices");
-
                     b.Navigation("Payment")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.Branch", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("StylistProfiles");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.Combo", b =>
-                {
-                    b.Navigation("BookingDetails");
-
-                    b.Navigation("ComboServices");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.FixedTimeSlot", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("StylistTimeWorks");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.Service", b =>
-                {
-                    b.Navigation("BookingDetail");
-
-                    b.Navigation("ComboServices");
                 });
 
             modelBuilder.Entity("BookingSalon.Models.Entities.StylistProfile", b =>
                 {
                     b.Navigation("StylistImages");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.Users", b =>
-                {
-                    b.Navigation("CustormerBookings");
-
-                    b.Navigation("StylistProfile");
-
-                    b.Navigation("StylistTimeWorks");
                 });
 #pragma warning restore 612, 618
         }

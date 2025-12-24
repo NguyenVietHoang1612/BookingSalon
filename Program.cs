@@ -47,6 +47,7 @@ builder.Services.AddScoped<IAppRolesService, AppRolesService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IServicesSalonService, ServicesSalonService>();
 
 var app = builder.Build();
 

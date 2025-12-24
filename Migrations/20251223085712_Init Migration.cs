@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookingSalon.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,7 +54,7 @@ namespace BookingSalon.Migrations
                     Duration_Minutes = table.Column<int>(type: "int", nullable: false),
                     ComboPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -70,7 +70,7 @@ namespace BookingSalon.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TimeLabel = table.Column<TimeSpan>(type: "time", maxLength: 5, nullable: false),
                     Sort_Order = table.Column<int>(type: "int", nullable: false),
-                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -87,9 +87,11 @@ namespace BookingSalon.Migrations
                     Service_Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Type_Service = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
                     DurationInMinutes = table.Column<int>(type: "int", nullable: false),
-                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -103,7 +105,8 @@ namespace BookingSalon.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Avatar_Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Avatar_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    RoleId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Create_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     Update_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -112,7 +115,7 @@ namespace BookingSalon.Migrations
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -155,8 +158,9 @@ namespace BookingSalon.Migrations
                     ComboId = table.Column<int>(type: "int", nullable: false),
                     ServiceId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Combo_Id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -167,6 +171,11 @@ namespace BookingSalon.Migrations
                         principalTable: "Combos",
                         principalColumn: "Combo_Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ComboServices_Combos_Combo_Id",
+                        column: x => x.Combo_Id,
+                        principalTable: "Combos",
+                        principalColumn: "Combo_Id");
                     table.ForeignKey(
                         name: "FK_ComboServices_Services_ServiceId",
                         column: x => x.ServiceId,
@@ -300,7 +309,7 @@ namespace BookingSalon.Migrations
                     Work_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Slot_Id = table.Column<int>(type: "int", nullable: false),
                     Is_Available = table.Column<bool>(type: "bit", nullable: false),
-                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Create_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -334,8 +343,7 @@ namespace BookingSalon.Migrations
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Create_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FixedTimeSlotSlotId = table.Column<int>(type: "int", nullable: true)
+                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -346,11 +354,6 @@ namespace BookingSalon.Migrations
                         principalTable: "Branches",
                         principalColumn: "BranchId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Bookings_FixedTimeSlots_FixedTimeSlotSlotId",
-                        column: x => x.FixedTimeSlotSlotId,
-                        principalTable: "FixedTimeSlots",
-                        principalColumn: "SlotId");
                     table.ForeignKey(
                         name: "FK_Bookings_FixedTimeSlots_Slot_Id",
                         column: x => x.Slot_Id,
@@ -404,8 +407,9 @@ namespace BookingSalon.Migrations
                     Service_Id = table.Column<int>(type: "int", nullable: true),
                     ComboId = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    Update_At = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Combo_Id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -415,13 +419,18 @@ namespace BookingSalon.Migrations
                         column: x => x.Booking_Id,
                         principalTable: "Bookings",
                         principalColumn: "Booking_Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BookingDetails_Combos_ComboId",
                         column: x => x.ComboId,
                         principalTable: "Combos",
                         principalColumn: "Combo_Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BookingDetails_Combos_Combo_Id",
+                        column: x => x.Combo_Id,
+                        principalTable: "Combos",
+                        principalColumn: "Combo_Id");
                     table.ForeignKey(
                         name: "FK_BookingDetails_Services_Service_Id",
                         column: x => x.Service_Id,
@@ -489,6 +498,11 @@ namespace BookingSalon.Migrations
                 column: "Booking_Id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BookingDetails_Combo_Id",
+                table: "BookingDetails",
+                column: "Combo_Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BookingDetails_ComboId",
                 table: "BookingDetails",
                 column: "ComboId");
@@ -509,11 +523,6 @@ namespace BookingSalon.Migrations
                 column: "Customer_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookings_FixedTimeSlotSlotId",
-                table: "Bookings",
-                column: "FixedTimeSlotSlotId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_Slot_Id",
                 table: "Bookings",
                 column: "Slot_Id");
@@ -522,6 +531,11 @@ namespace BookingSalon.Migrations
                 name: "IX_Bookings_Stylist_Profile_Id",
                 table: "Bookings",
                 column: "Stylist_Profile_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ComboServices_Combo_Id",
+                table: "ComboServices",
+                column: "Combo_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ComboServices_ServiceId",
