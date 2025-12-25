@@ -1,0 +1,77 @@
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<FixedTimeSlot>
+
+@{
+    ViewData["title"] = "Danh dách role";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Admin/ListItem.css" asp-append-version="true" />
+    <style>
+        
+    </style>
+</head>
+
+    <div class="container-fluid admin-content">
+        <div class="card main-card">
+            <div class="row align-items-center mb-5">
+                <div class="col-xl-6 col-lg-5">
+                    <h2 class="title-main mb-lg-0 mb-3">Quản lý khung giờ</h2>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <div class="row g-3 justify-content-lg-end">
+                        <div class="col-sm-7 col-12">
+                            <form asp-action="Index" method="get">
+                                <div class="input-group search-group">
+                                    <input type="text" name="term" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm theo tên...">
+                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="col-sm-5 col-12 d-grid">
+                            <a class="btn btn-primary shadow-sm text-decoration-none text-white" asp-action="Create">
+                                <i class="bi bi-plus-lg me-2"></i> 
+                                Thêm khung giờ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tên Role</th>
+                            <th>Normalized Name</th>
+                            <th class="text-center">Hành động</th>
+                            @* <th class="text-center"></th>
+                            <th class="text-end pe-4"></th>
+                            <th class="text-end pe-4"></th> *@
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-muted">@item.TimeLabel</td>
+                                <td class="text-muted">@item.Sort_Order</td>
+                                <td class="text-center pe-4">
+                                    <a asp-action="Update" asp-route-id="@item.SlotId"><i class="bi bi-pencil-square action-btn"></i></a>
+
+                                    <form id="delete-form-@item.SlotId" asp-action="Delete" asp-route-id="@item.SlotId" method="post" style="display:inline;">
+                                        <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("Delete", "FixedTimeSlot", new { id = item.SlotId })', '@item.TimeLabel')">
+                                            <i class="bi bi-trash-fill text-danger action-btn"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+

@@ -83,7 +83,8 @@
 
                         <div class="col-12 col-md-6 col-lg-3">
                             <label class="form-label fw-semibold">Loại dịch vụ</label>
-                            <input asp-for="Type_Service" class="form-control" placeholder="Nhập loại dịch vụ" />
+                            <select asp-for="Type_Service" asp-items="ViewBag.TypeOfServiceList" class="form-control">
+                            </select>
                             <span asp-validation-for="Type_Service" class="text-danger small mt-1 d-block"></span>
                         </div>
 

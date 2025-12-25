@@ -75,7 +75,6 @@
                             <td class="text-muted">@item.TypeServiceName</td>
                             <td class="text-muted">@item.ServiceSalon.Price <trong > Vnd</trong></td>
                             <td class="text-muted">@item.ServiceSalon.DurationInMinutes</td>
-                            <td class="text-muted"> @(item.ServiceSalon.Status ? "Đang hoạt động" : "Không hoạt động")</td>
                                 <td class ="text-muted">
                                     <div class="d-flex align-content-center justify-content-center image-warp" >
                                     <img src="@(string.IsNullOrEmpty(item.ServiceSalon.ImageName)
@@ -85,6 +84,7 @@
                                      
                                 </td>
                             <td class="text-muted">@item.ServiceSalon.description</td>
+                            <td class="text-muted"> @(item.ServiceSalon.Status ? "Đang hoạt động" : "Không hoạt động")</td>
                                 <td class="text-center pe-4">
                                 <a asp-action="Update" asp-route-id="@item.ServiceSalon.ServiceId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
 

@@ -14,6 +14,8 @@ namespace BookingSalon.Models.Entities
 
         [StringLength(300, ErrorMessage = "Mô tả không vượt quá 300 ký tự")]
         public string? Description { get; set; }
+        
+        public int TotalDuration { get; set; }
 
         public DateTime Created_At { get; set; }
         public DateTime Update_At { get; set; }

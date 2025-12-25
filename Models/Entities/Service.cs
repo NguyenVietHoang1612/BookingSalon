@@ -19,6 +19,7 @@ namespace BookingSalon.Models.Entities
         public int Type_Service { get; set; }
 
         [Range(1, 600, ErrorMessage = "Thời gian dịch vụ phải lớn hơn 0")]
+        [Required(ErrorMessage = "Thời gian không được để trống")]
         public int DurationInMinutes { get; set; }
 
         [StringLength(255)]
