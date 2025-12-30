@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\Styles\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\media\combos\" />
     <Folder Include="wwwroot\media\stylist\" />
