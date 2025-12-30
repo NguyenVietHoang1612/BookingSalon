@@ -22,27 +22,20 @@ namespace BookingSalon.Areas.Admin.Controllers
         public async Task<IActionResult> Index(string term)
         {
             var listService = await _serviceSalonService.GetAllServiceAsync();
-            var typeOfServiceList = await _serviceSalonService.GetAllTypeOfServiceAsync();
-
-            var model = listService.Select(s => new ServiceViewModel
-            {
-                ServiceSalon = s,
-                TypeServiceName = typeOfServiceList.FirstOrDefault(t => t.TypeOfServiceId == s.Type_Service)?.Type_Service_Name ?? "N/A"
-            });
 
             if(!string.IsNullOrEmpty(term))
             {
-                model = model.Where(m => m.ServiceSalon.Service_Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
+                listService = listService.Where(m => m.Service_Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
                 ViewBag.SearchTerm = term;
             }
 
-            return View(model);
+            return View(listService);
         }
 
         public async Task<IActionResult> Create()
         {
-            var typeOfService = await _serviceSalonService.GetAllTypeOfServiceAsync();
-            ViewBag.TypeOfServiceList = new SelectList(typeOfService, "TypeOfServiceId", "Type_Service_Name");
+            var listService = await _serviceSalonService.GetAllTypeOfServiceAsync();
+            ViewBag.TypeOfServiceList = new SelectList(listService, "TypeOfServiceId", "Type_Service_Name");
             return View();
         }
 
@@ -92,7 +85,7 @@ namespace BookingSalon.Areas.Admin.Controllers
             Service serviceDetail = new Service
             {
                 Service_Name = service.Data.Service_Name,
-                Type_Service = service.Data.Type_Service,
+                Type_Service_Id = service.Data.Type_Service_Id,
                 Price = service.Data.Price,
                 DurationInMinutes = service.Data.DurationInMinutes,
                 description = service.Data.description,

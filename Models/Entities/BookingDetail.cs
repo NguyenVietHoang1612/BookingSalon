@@ -10,9 +10,8 @@ namespace BookingSalon.Models.Entities
         public int Booking_Id { get; set; }
 
         public int? Service_Id { get; set; }
-        public int? ComboId { get; set; }
 
-        [StringLength(300, ErrorMessage = "Mô tả không vượt quá 300 ký tự")]
+        [StringLength(500, ErrorMessage = "Mô tả không vượt quá 500 ký tự")]
         public string? Description { get; set; }
         
         public int TotalDuration { get; set; }
@@ -22,6 +21,6 @@ namespace BookingSalon.Models.Entities
 
         // Navigation
         public Booking Booking { get; set; }
-        public Service? Service { get; set; }
+        public Service Service { get; set; }
     }
 }

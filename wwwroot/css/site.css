@@ -38,3 +38,16 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.main-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.form-section {
+    background-color: #f8faff;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+}

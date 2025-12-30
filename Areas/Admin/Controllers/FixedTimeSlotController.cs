@@ -20,7 +20,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(string term)
         {
-            var fixedTimeSlots = await _fixedTimeSlotService.GetAllServiceAsync();
+            var fixedTimeSlots = await _fixedTimeSlotService.GetAllListAsync();
 
             if (!string.IsNullOrEmpty(term))
             {

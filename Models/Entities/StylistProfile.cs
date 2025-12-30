@@ -27,8 +27,8 @@ namespace BookingSalon.Models.Entities
         public DateTime Update_At { get; set; }
 
         // Navigation
-        public Users Stylist { get; set; }
-        public Branch Branch { get; set; }
+        public Users? Stylist { get; set; }
+        public Branch? Branch { get; set; }
         public ICollection<StylistImage>? StylistImages { get; set; }
     }
 }

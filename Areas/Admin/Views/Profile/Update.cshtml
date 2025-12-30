@@ -1,0 +1,106 @@
+﻿@using BookingSalon.Models.Entities
+@model Users
+@{
+    ViewData["Title"] = "Thông tin admin";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary">Thông tin người dùng</h2>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Update" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <!-- AVATAR -->
+                        <div class="col-md-4 text-center border-end">
+                            <div class="avatar-wrapper mx-auto mb-3">
+                                <img src="@(string.IsNullOrEmpty(Model.Avatar_Name)
+                                                 ? "https://ui-avatars.com/api/?name=" + Model.FullName + "&size=300"
+                                                 : Url.Content("~/media/users/" + Model.Avatar_Name))"
+                                     class="avatar-img" />
+                            </div>
+
+
+                            <div class="d-grid gap-2">
+                                <input type="file" name="AvatarFile" class="form-control" />
+                                <small class="text-muted">JPG, PNG ≤ 5MB</small>
+                            </div>
+
+                            <hr />
+
+                            <h5 class="fw-bold">@Model.FullName</h5>
+                            <p class="text-muted mb-1">
+                                <i class="bi bi-geo-alt"></i> @Model.FullName
+                            </p>
+                            <p class="text-muted">
+                                <i class="bi bi-envelope"></i> @Model.Email
+                            </p>
+                        </div>
+
+                        <!-- INFO -->
+                        <div class="col-md-8 ps-md-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tên admin</label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Địa chỉ</label>
+                                <input asp-for="PhoneNumber" class="form-control"/>
+                            </div>
+
+                            <div class="col-md-12 hiding">
+                                <label class="form-label fw-semibold">Role</label>
+                                <input asp-for="RoleId"
+                                       class="form-control"
+                                       readonly />
+                            </div>
+
+                            <div class="col-md-12 hiding">
+                                <label class="form-label fw-semibold">Status</label>
+                                <input asp-for="Status"
+                                       class="form-control"
+                                       readonly />
+                            </div>
+
+                            <button type="submit" class="btn btn-success px-4">
+                                Cập nhật
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<style>
+    .avatar-wrapper {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>

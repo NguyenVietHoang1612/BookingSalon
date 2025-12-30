@@ -48,8 +48,19 @@ namespace BookingSalon.Data
                 entity.Property(x => x.FullName)
                       .HasMaxLength(150);
 
+                entity.Property(x => x.PhoneNumber)
+                     .HasMaxLength(15);
+
+                entity.Property(x => x.Address)
+                      .HasMaxLength(255);
+
                 entity.Property(x => x.PasswordHash)
                       .HasMaxLength(150);
+
+                entity.HasIndex(u => u.Email)
+                      .IsUnique();
+
+                entity.HasIndex(p => p.FullName);
 
                 entity.Property(x => x.Avatar_Name)
                       .HasMaxLength(255);
@@ -69,12 +80,11 @@ namespace BookingSalon.Data
                 entity.HasKey(x => x.ImageId);
 
                 entity.Property(x => x.ImageUrl)
-                      .HasMaxLength(255)
-                      .IsRequired();
+                      .HasMaxLength(255);
 
                 entity.HasOne(x => x.StylistProfile)
                       .WithMany(s => s.StylistImages)
-                      .HasForeignKey(x => x.StylistId)
+                      .HasForeignKey(x => x.StylistProfileId)
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(x => x.Create_At)
@@ -91,13 +101,16 @@ namespace BookingSalon.Data
                 entity.Property(x => x.StylistSkill)
                       .HasMaxLength(255);
 
+                entity.Property(x => x.StylistExperience)
+                      .HasMaxLength(50);
+
                 entity.Property(x => x.Create_At)
                       .HasDefaultValueSql("GETDATE()");
 
                 entity.HasOne(x => x.Stylist)
                       .WithOne()
                       .HasForeignKey<StylistProfile>(x => x.StylistId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(x => x.Branch)
                       .WithMany()
@@ -113,8 +126,15 @@ namespace BookingSalon.Data
                 entity.HasKey(x => x.BranchId);
 
                 entity.Property(x => x.Branch_Name)
-                      .HasMaxLength(150)
-                      .IsRequired();
+                      .HasMaxLength(150);
+
+                entity.Property(x => x.Address)
+                      .HasMaxLength(255);
+
+                entity.Property(x => x.Phone)
+                      .HasMaxLength(15);
+
+                entity.HasIndex(x => x.Branch_Name);
 
                 entity.Property(s => s.Created_At)
                     .HasDefaultValueSql("GETDATE()");
@@ -173,13 +193,23 @@ namespace BookingSalon.Data
                       .HasMaxLength(150)
                       .IsRequired();
 
+                entity.Property(s => s.DurationInMinutes)
+                     .HasMaxLength(10);
+
+                entity.Property(s => s.ImageName)
+                     .HasMaxLength(200);
+
+                entity.Property(s => s.description)
+                     .HasMaxLength(500);
+
                 entity.Property(s => s.Create_At)
                     .HasDefaultValueSql("GETDATE()");
 
                 entity.HasOne(s => s.TypeOfService)
-                      .WithMany()
-                      .HasForeignKey(s => s.Type_Service)
+                      .WithMany(t => t.Services)
+                      .HasForeignKey(s => s.Type_Service_Id)
                       .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             builder.Entity<TypeOfService>(entity =>
@@ -189,6 +219,9 @@ namespace BookingSalon.Data
                 entity.Property(ts => ts.Type_Service_Name)
                       .HasMaxLength(100)
                       .IsRequired();
+
+                entity.Property(s => s.Created_At)
+                      .HasDefaultValueSql("GETDATE()");
             });
         }
 
@@ -203,9 +236,9 @@ namespace BookingSalon.Data
                       .HasForeignKey(x => x.Customer_Id)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.StylistProfile)
+                entity.HasOne(x => x.Stylist)
                       .WithMany()
-                      .HasForeignKey(x => x.Stylist_Profile_Id)
+                      .HasForeignKey(x => x.Stylist_Id)
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Branch)
@@ -236,16 +269,19 @@ namespace BookingSalon.Data
             {
                 entity.HasKey(x => x.Booking_Detail_Id);
 
+                entity.Property(s => s.Description)
+                     .HasMaxLength(500);
+
                 entity.Property(x => x.Created_At)
                       .HasDefaultValueSql("GETDATE()");
 
                 entity.HasOne(bd => bd.Booking)
-                    .WithMany()
+                    .WithMany(b => b.BookingDetails)
                     .HasForeignKey(bd => bd.Booking_Id)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(bd => bd.Service)
-                    .WithMany()
+                    .WithMany(s => s.BookingDetails)
                     .HasForeignKey(bd => bd.Service_Id)
                     .OnDelete(DeleteBehavior.Restrict);
             });

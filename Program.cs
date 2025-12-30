@@ -49,6 +49,8 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IServicesSalonService, ServicesSalonService>();
 builder.Services.AddScoped<IFixedTimeSlotService, FixedTimeSlotService>();
+builder.Services.AddScoped<ITypeOfServiceService, TypeOfServiceService>();
+builder.Services.AddScoped<IStylistProfileService, StylistProfileService>();
 
 var app = builder.Build();
 

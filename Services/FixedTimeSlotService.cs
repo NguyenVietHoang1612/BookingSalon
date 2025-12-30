@@ -65,7 +65,7 @@ namespace BookingSalon.Services
             }
         }
 
-        public async Task<IEnumerable<FixedTimeSlot>> GetAllServiceAsync()
+        public async Task<IEnumerable<FixedTimeSlot>> GetAllListAsync()
         {
             var datas = await _unitOfWork.Repository<FixedTimeSlot>().GetAllAsync();
             return datas;

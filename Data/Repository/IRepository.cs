@@ -4,6 +4,8 @@ namespace BookingSalon.Data.Repository
 {
     public interface IRepository<TEntity>  where TEntity : class
     {
+        IQueryable<TEntity> Query();
+
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity?> GetByIdAsync<TKey>(TKey id);
         Task<TEntity?> FindOneAsync(Expression<Func<TEntity, bool>> predicate);

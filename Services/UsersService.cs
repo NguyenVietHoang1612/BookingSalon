@@ -36,7 +36,7 @@ namespace BookingSalon.Services
             return user;
         }
 
-        public async Task<IdentityResult> CreateUserAsync(AccountUserViewModel userVM)
+        public async Task<IdentityResult> CreateUserAsync(UserCreateViewModel userVM)
         {
             if (userVM == null || string.IsNullOrEmpty(userVM.User.Email))
             {
@@ -75,24 +75,45 @@ namespace BookingSalon.Services
             return result;
         }
 
-        public async Task<IdentityResult> UpdateUserAsync(AccountUserViewModel userVM)
+        public async Task<IdentityResult> UpdateUserAsync(UserUpdateViewModel userVM, string id)
         {
-            var existingUser = await _userManager.FindByIdAsync(userVM.User.Id);
+            var existingUser = await _userManager.FindByIdAsync(id);
 
             if (existingUser == null)
             {
-                return IdentityResult.Failed(
-                    new IdentityError { Description = "Không tìm thấy người dùng" }
-                );
+                return IdentityResult.Failed(new IdentityError { Description = "Không tìm thấy người dùng" });
             }
 
             existingUser.FullName = userVM.User.FullName;
+            existingUser.Email = userVM.User.Email;
+            existingUser.UserName = userVM.User.Email;
+            existingUser.Address = userVM.User.Address;
+            existingUser.RoleId = userVM.User.RoleId;
             existingUser.PhoneNumber = userVM.User.PhoneNumber;
+            existingUser.EmailConfirmed = userVM.User.EmailConfirmed;
+            existingUser.Status = userVM.User.Status; 
             existingUser.Update_At = DateTime.Now;
+
             if (userVM.User.Avatar_Image_Upload != null)
             {
-                existingUser.Avatar_Name = await _fileService.UploadFileAsync(userVM.User.Avatar_Image_Upload, "users");
+                if (!string.IsNullOrEmpty(existingUser.Avatar_Name))
+                {
+                    await _fileService.DeleteFileAsync(existingUser.Avatar_Name, "users");
+                }
+
+                existingUser.Avatar_Name =
+                    await _fileService.UploadFileAsync(userVM.User.Avatar_Image_Upload, "users");
             }
+
+            if (!string.IsNullOrWhiteSpace(userVM.Password))
+            {
+                await _userManager.RemovePasswordAsync(existingUser);
+                var passResult = await _userManager.AddPasswordAsync(existingUser, userVM.Password);
+
+                if (!passResult.Succeeded)
+                    return passResult;
+            }
+
             return await _userManager.UpdateAsync(existingUser);
         }
 

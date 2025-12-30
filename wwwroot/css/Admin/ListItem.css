@@ -1,10 +1,4 @@
-﻿body {
-    background-color: #f0f2f5;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-}
-
-.admin-content {
+﻿.admin-content {
     padding: 30px;
     max-width: 100%; 
 }

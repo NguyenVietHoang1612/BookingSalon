@@ -1,58 +1,78 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using BookingSalon.Models.Entities;
+@inject SignInManager<Users> signInManager;
+@inject UserManager<Users> userManager;
 
-
-<aside id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <i class="fas fa-paw"></i>
-        <span>Admin</span>
-    </div>
-
-    <div class="user-info">
-        <div class="user-icon" id="userIcon">
-            <i class="fas fa-user"></i>
+@if (signInManager.IsSignedIn(User))
+{
+    var currentUser = await userManager.GetUserAsync(User);
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-paw"></i>
+            <span>Admin</span>
         </div>
 
-        <div class="user-details">
-            <p>Xin chào, <strong>Admin</strong></p>
+        <div class="user-info">
+            <div class="user-icon" id="userIcon" class="">
+                <img src="@(string.IsNullOrEmpty(currentUser.FullName)
+                ? "https://ui-avatars.com/api/?name=" + User
+                : Url.Content("~/media/users/" + currentUser.Avatar_Name))"
+                class="rounded-circle border"
+                alt="Avatar">
+            </div>
+
+            <div class="user-details">
+                <p>Xin chào, <strong>Admin</strong></p>
+            </div>
         </div>
-    </div>
 
-    <nav class="sidebar-nav">
-        <p class="nav-heading">TỔNG QUAN</p>
-        <ul class="main-sidebar" id="mainSidebar">
-            <li class="menu-item">
-                <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            </li>
+        <nav class="sidebar-nav">
+            <p class="nav-heading">TỔNG QUAN</p>
+            <ul class="main-sidebar" id="mainSidebar">
+                <li class="menu-item">
+                    <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
 
-            <li class="menu-item">
-                <a asp-area="Admin" asp-controller="AppRoles" asp-action="Index"><i class="fas fa-user-shield"></i> Quản lý Role</a>
-            </li>
+                <li class="menu-item">
+                    <a asp-area="Admin" asp-controller="Profile" asp-action="Update"><i class="fas fa-user-shield"></i> Profile </a>
+                </li>
 
-            <li class="menu-item">
-                <a asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="fas fa-users"></i> Quản lý người dùng</a>
-            </li>
+                <li class="menu-item">
+                    <a asp-area="Admin" asp-controller="AppRoles" asp-action="Index"><i class="fas fa-user-shield"></i> Quản lý Role</a>
+                </li>
 
-            <li class="menu-item has-submenu">
-                <a asp-area="Admin" asp-controller="Branch" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý chi nhánh<i class="fas fa-caret-down"></i></a>
-            </li>
+                <li class="menu-item">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="fas fa-users"></i> Quản lý người dùng</a>
+                </li>
 
-            <li class="menu-item has-submenu">
-                <a asp-area="Admin" asp-controller="ServiceSalon" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý dịch vụ<i class="fas fa-caret-down"></i></a>
-            </li>
+                <li class="menu-item">
+                    <a asp-area="Admin" asp-controller="StylistProfile" asp-action="Index"><i class="fas fa-users"></i> Quản lý profile stylist</a>
+                </li>
 
-            <li class="menu-item has-submenu">
-                <a asp-area="Admin" asp-controller="FixedTimeSlot" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý khung giờ<i class="fas fa-caret-down"></i></a>
-            </li>
+                <li class="menu-item has-submenu">
+                    <a asp-area="Admin" asp-controller="Branch" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý chi nhánh<i class="fas fa-caret-down"></i></a>
+                </li>
 
-            <li class="menu-item">
-                <a href="#"><i class="fas fa-home"></i> Quản lý Booking</a>
-            </li>
+                <li class="menu-item has-submenu">
+                    <a asp-area="Admin" asp-controller="ServiceSalon" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý dịch vụ<i class="fas fa-caret-down"></i></a>
+                </li>
 
-            <li class="menu-item">
-                <a href="#"><i class="fas fa-envelope"></i> Liên hệ</a>
-            </li>
-        </ul>
-    </nav>
-</aside>
+                <li class="menu-item has-submenu">
+                    <a asp-area="Admin" asp-controller="TypeOfService" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý loại dịch vụ<i class="fas fa-caret-down"></i></a>
+                </li>
 
+                <li class="menu-item has-submenu">
+                    <a asp-area="Admin" asp-controller="FixedTimeSlot" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý khung giờ<i class="fas fa-caret-down"></i></a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#"><i class="fas fa-home"></i> Quản lý Booking</a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#"><i class="fas fa-envelope"></i> Liên hệ</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+}

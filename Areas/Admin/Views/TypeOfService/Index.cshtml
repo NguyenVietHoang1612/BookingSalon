@@ -1,0 +1,69 @@
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<TypeOfService>
+
+@{
+    ViewData["title"] = "Danh dách loại dịch vụ";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+                <div class="col-xl-6 col-lg-5">
+                    <h2 class="title-main mb-lg-0 mb-3">Quản lý loại dịch vụ</h2>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <div class="row g-3 justify-content-lg-end">
+                        <div class="col-sm-7 col-12">
+                            <form asp-action="Index" method="get">
+                                <div class="input-group search-group">
+                                    <input type="text" name="term" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm theo tên loại dịch vụ...">
+                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="col-sm-5 col-12 d-grid">
+                            <a class="btn btn-primary shadow-sm text-decoration-none text-white" asp-action="Create">
+                                <i class="bi bi-plus-lg me-2"></i> 
+                                Thêm loại dịch vụ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tên loại dịch vụ</th>
+                            <th class="text-center">Hành động</th>
+                            @* <th class="text-center"></th>
+                            <th class="text-end pe-4"></th>
+                            <th class="text-end pe-4"></th> *@
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-muted">@item.Type_Service_Name</td>
+                                <td class="text-center pe-4">
+                                    <a asp-action="Update" asp-route-id="@item.TypeOfServiceId"><i class="bi bi-pencil-square action-btn"></i></a>
+
+                                <form id="delete-form-@item.TypeOfServiceId" asp-action="Delete" asp-route-id="@item.TypeOfServiceId" method="post" style="display:inline;">
+                                    <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("Delete", "TypeOfService", new { id = item.TypeOfServiceId })', '@item.Type_Service_Name')">
+                                            <i class="bi bi-trash-fill text-danger action-btn"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+

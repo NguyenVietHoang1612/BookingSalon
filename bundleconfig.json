@@ -1,0 +1,15 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "Assets/Css/stylistprofile.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "Assets/Scripts/updatestylistprofile.js",
+    ],
+    "minify": { "enabled": true }
+  }
+]

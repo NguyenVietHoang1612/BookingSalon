@@ -1,7 +1,9 @@
-using System.Diagnostics;
 using BookingSalon.Models;
+using BookingSalon.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace BookingSalon.Controllers
 {
@@ -10,7 +12,8 @@ namespace BookingSalon.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, UserManager<Users> userManager)
         {
             _logger = logger;
         }

@@ -1,29 +1,26 @@
-﻿@using BookingSalon.Areas.Admin.Models
-@model IEnumerable<ServiceViewModel>
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<Service>
 
 @{
     ViewData["title"] = "Danh dách dịch vụ";
-}
-<head>
-    <link rel="stylesheet" href="~/css/Admin/ListItem.css" asp-append-version="true" />
+} 
 
-    <style>
-        .image-warp {
-            width: 164px;
-            height: 164px;
-            overflow: hidden;
-            border-radius: 8px;
+<style>
+    .image-warp {
+        width: 164px;
+        height: 164px;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    .image-warp img {
+        object-fit: cover;
         }
-        .image-warp img {
-            object-fit: cover;
-            }
-    </style>
-</head>
+</style>
 
 
-    <div class="container-fluid admin-content">
-        <div class="card main-card">
-            <div class="row align-items-center mb-5">
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
                 <div class="col-xl-6 col-lg-5">
                     <h2 class="title-main mb-lg-0 mb-3">Quản lý dịch vụ</h2>
                 </div>
@@ -70,26 +67,26 @@
                         @foreach(var item in Model)
                         {
                             <tr>
-                                <td class="fw-bold text-dark">@item.ServiceSalon.ServiceId</td>
-                            <td class="fw-bold text-dark">@item.ServiceSalon.Service_Name</td>
-                            <td class="text-muted">@item.TypeServiceName</td>
-                            <td class="text-muted">@item.ServiceSalon.Price <trong > Vnd</trong></td>
-                            <td class="text-muted">@item.ServiceSalon.DurationInMinutes</td>
+                                <td class="fw-bold text-dark">@item.ServiceId</td>
+                            <td class="fw-bold text-dark">@item.Service_Name</td>
+                            <td class="text-muted">@item.TypeOfService.Type_Service_Name</td>
+                            <td class="text-muted">@item.Price <trong > Vnd</trong></td>
+                            <td class="text-muted">@item.DurationInMinutes</td>
                                 <td class ="text-muted">
                                     <div class="d-flex align-content-center justify-content-center image-warp" >
-                                    <img src="@(string.IsNullOrEmpty(item.ServiceSalon.ImageName)
-                                                                                     ? "https://ui-avatars.com/api/?name=" + item.ServiceSalon.Service_Name
-                                                                                                                             : Url.Content("~/media/services/" + item.ServiceSalon.ImageName))" class="w-100 h-100" />
+                                    <img src="@(string.IsNullOrEmpty(item.ImageName)
+                                    ? "https://ui-avatars.com/api/?name=" + item.Service_Name
+                                    : Url.Content("~/media/services/" + item.ImageName))" class="w-100 h-100" />
                                     </div>
                                      
                                 </td>
-                            <td class="text-muted">@item.ServiceSalon.description</td>
-                            <td class="text-muted"> @(item.ServiceSalon.Status ? "Đang hoạt động" : "Không hoạt động")</td>
+                            <td class="text-muted">@item.description</td>
+                            <td class="text-muted"> @(item.Status ? "Đang hoạt động" : "Không hoạt động")</td>
                                 <td class="text-center pe-4">
-                                <a asp-action="Update" asp-route-id="@item.ServiceSalon.ServiceId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
+                                <a asp-action="Update" asp-route-id="@item.ServiceId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
 
-                                <form id="delete-form-@item.ServiceSalon.ServiceId" asp-action="SoftDelete" asp-route-id="@item.ServiceSalon.ServiceId" method="post" style="display:inline;">
-                                    <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("SoftDelete", "ServiceSalon", new { id = item.ServiceSalon.ServiceId })', 'dịch vu @item.ServiceSalon.Service_Name')">
+                                <form id="delete-form-@item.ServiceId" asp-action="SoftDelete" asp-route-id="@item.ServiceId" method="post" style="display:inline;">
+                                    <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("SoftDelete", "ServiceSalon", new { id = item.ServiceId })', 'dịch vu @item.Service_Name')">
                                             <i class="bi bi-trash-fill text-danger action-btn"></i>
                                         </button>
                                     </form>

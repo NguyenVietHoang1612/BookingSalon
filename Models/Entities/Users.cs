@@ -17,6 +17,9 @@ namespace BookingSalon.Models.Entities
         [Required(ErrorMessage = "Vai trò người dùng không được để trống")]
         public string RoleId { get; set; }
 
+        [StringLength(255, ErrorMessage = "Địa chỉ không vượt quá 255 ký tự")]
+        public string? Address { get; set; }
+
         public bool Status { get; set; }
 
         public DateTime Create_At { get; set; }

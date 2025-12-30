@@ -1,0 +1,126 @@
+﻿@using BookingSalon.Models.Entities
+@model Users
+
+@{
+    ViewData["Title"] = "Cập nhật hồ sơ cá nhân";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-0 py-4">
+                    <h4 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-person-circle me-2"></i>
+                        @ViewData["Title"]
+                    </h4>
+                </div>
+
+                <div class="card-body px-4 px-md-5">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <div class="row g-4">
+
+                            <!-- CỘT TRÁI: AVATAR -->
+                            <div class="col-md-4 text-center border-end">
+                                <div class="mb-3">
+                                    <img src="@(string.IsNullOrEmpty(Model.Avatar_Name)
+                                                                                     ? "/images/avatar-default.png"
+                                                                                     : $"/uploads/users/{Model.Avatar_Name}")"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 160px; height: 160px; object-fit: cover;"
+                                         alt="Avatar" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Ảnh đại diện</label>
+                                    <input asp-for="Avatar_Image_Upload"
+                                           type="file"
+                                           class="form-control form-control-sm" />
+                                    <span asp-validation-for="Avatar_Image_Upload"
+                                          class="text-danger small"></span>
+                                </div>
+
+                                <p class="text-muted small mb-3">
+                                    JPG / PNG • tối đa 5MB
+                                </p>
+
+                                <a asp-action="ChangePassword"
+                                   class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-shield-lock me-1"></i>
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+
+                            <!-- CỘT PHẢI: THÔNG TIN -->
+                            <div class="col-md-8">
+                                <div class="row g-3">
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Họ và tên</label>
+                                        <input asp-for="FullName"
+                                               class="form-control"
+                                               placeholder="Nhập họ tên" />
+                                        <span asp-validation-for="FullName"
+                                              class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Số điện thoại</label>
+                                        <input asp-for="PhoneNumber"
+                                               class="form-control"
+                                               placeholder="Nhập số điện thoại" />
+                                        <span asp-validation-for="PhoneNumber"
+                                              class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Email</label>
+                                        <input asp-for="Email"
+                                               class="form-control"
+                                               readonly />
+                                    </div>
+
+                                    <div class="col-md-12 hiding">
+                                        <label class="form-label fw-semibold">Role</label>
+                                        <input asp-for="RoleId"
+                                               class="form-control"
+                                               readonly />
+                                    </div>
+
+                                    <div class="col-md-12 hiding">
+                                        <label class="form-label fw-semibold">Email</label>
+                                        <input asp-for="Status"
+                                               class="form-control"
+                                               readonly />
+                                    </div>
+
+                                </div>
+
+                                <div class="d-flex gap-3 mt-4">
+                                    <button type="submit"
+                                            class="btn btn-primary px-4">
+                                        <i class="bi bi-save me-1"></i>
+                                        Lưu thay đổi
+                                    </button>
+
+                                    <a asp-controller="Home"
+                                       asp-action="Index"
+                                       class="btn btn-outline-secondary px-4">
+                                        Hủy
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

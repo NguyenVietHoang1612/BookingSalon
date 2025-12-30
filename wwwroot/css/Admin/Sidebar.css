@@ -50,6 +50,13 @@
     align-items: center;
     cursor: pointer;
     font-size: 1.2em;
+    flex-shrink: 0;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .user-info p {
@@ -178,4 +185,3 @@
 .main-container {
     margin: 24px 16px;
 }
-a

@@ -25,10 +25,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Assets\Styles\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\media\combos\" />
+    <Folder Include="wwwroot\media\stylist\" />
     <Folder Include="wwwroot\media\services\" />
     <Folder Include="wwwroot\media\users\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\Admin\stylistprofile.css" />
   </ItemGroup>
 
 </Project>

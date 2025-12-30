@@ -15,6 +15,11 @@ namespace BookingSalon.Data.Repository
             _dbSet = context.Set<TEntity>();
         }
 
+        public IQueryable<TEntity> Query()
+        {
+            return _dbSet.AsQueryable();
+        }
+
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();

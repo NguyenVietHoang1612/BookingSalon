@@ -14,7 +14,7 @@ namespace BookingSalon.Models.Entities
         public int Branch_Id { get; set; }
 
         [Required(ErrorMessage = "Nhân viên tạo lịch không được để trống")]
-        public string Stylist_Profile_Id { get; set; }
+        public string Stylist_Id { get; set; }
 
         [Required(ErrorMessage = "Khung giờ không được để trống")]
         public int Slot_Id { get; set; }
@@ -35,8 +35,10 @@ namespace BookingSalon.Models.Entities
 
         public Users Customer { get; set; }
         public Branch Branch { get; set; }
-        public StylistProfile StylistProfile { get; set; }
+        public Users Stylist { get; set; }
         public FixedTimeSlot StartSlot { get; set; }
         public Payment Payment { get; set; }
+
+        public ICollection<BookingDetail> BookingDetails { get; set; }
     }
 }

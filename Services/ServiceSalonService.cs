@@ -2,6 +2,7 @@
 using BookingSalon.Models.Entities;
 using BookingSalon.Areas.Admin.Models;
 using BookingSalon.Services.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingSalon.Services
 {
@@ -17,9 +18,11 @@ namespace BookingSalon.Services
         }
 
         public async Task<IEnumerable<Service>> GetAllServiceAsync()
-        {
-            var services = await _unitOfWork.Repository<Service>().GetAllAsync();
-            return services;
+        {       
+            return await _unitOfWork.Repository<Service>()
+                .Query()
+                .Include(s => s.TypeOfService)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<TypeOfService>> GetAllTypeOfServiceAsync()
@@ -61,7 +64,7 @@ namespace BookingSalon.Services
                 var newService = new Service
                 {
                     Service_Name = service.Service_Name,
-                    Type_Service = service.Type_Service,
+                    Type_Service_Id = service.Type_Service_Id,
                     Price = service.Price,
                     Status = service.Status,
                     DurationInMinutes = service.DurationInMinutes,
@@ -95,7 +98,7 @@ namespace BookingSalon.Services
                     return ServiceResult<Service>.Failed("Không tìm thấy dịch vụ");
 
                 existingService.Service_Name = service.Service_Name;
-                existingService.Type_Service = service.Type_Service;
+                existingService.Type_Service_Id = service.Type_Service_Id;
                 existingService.Price = service.Price;
                 existingService.DurationInMinutes = service.DurationInMinutes;
                 existingService.description = service.description;
@@ -104,6 +107,11 @@ namespace BookingSalon.Services
 
                 if (service.Service_Image_Upload != null)
                 {
+                    if (service.ImageName != null)
+                    {
+                        await _fileService.DeleteFileAsync(existingService.ImageName, "services");
+                    }
+
                     existingService.ImageName = await _fileService.UploadFileAsync(service.Service_Image_Upload, "services");
                 }
 
@@ -126,6 +134,11 @@ namespace BookingSalon.Services
 
                 if (service == null)
                     return ServiceResult<Service>.Failed("Không tìm thấy dịch vụ");
+
+                if (service.ImageName != null)
+                {
+                    await _fileService.DeleteFileAsync(service.ImageName, "services");
+                }
 
                 _unitOfWork.Repository<Service>().Delete(service);
                 await _unitOfWork.SaveChangesAsync();

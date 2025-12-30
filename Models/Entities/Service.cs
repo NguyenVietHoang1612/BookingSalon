@@ -16,7 +16,7 @@ namespace BookingSalon.Models.Entities
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
-        public int Type_Service { get; set; }
+        public int Type_Service_Id { get; set; }
 
         [Range(1, 600, ErrorMessage = "Thời gian dịch vụ phải lớn hơn 0")]
         [Required(ErrorMessage = "Thời gian không được để trống")]
@@ -39,5 +39,6 @@ namespace BookingSalon.Models.Entities
         public IFormFile? Service_Image_Upload { get; set; }
 
         public TypeOfService? TypeOfService { get; set; }
+        public ICollection<BookingDetail>? BookingDetails { get; set; }
     }
 }

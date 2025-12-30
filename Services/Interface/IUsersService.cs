@@ -8,8 +8,8 @@ namespace BookingSalon.Services.Interface
     {
         Task<IEnumerable<Users>> GetAllAsync();
         Task<Users?> GetByIdAsync(string id);
-        Task<IdentityResult> CreateUserAsync(AccountUserViewModel user);
-        Task<IdentityResult> UpdateUserAsync(AccountUserViewModel user);
+        Task<IdentityResult> CreateUserAsync(UserCreateViewModel user);
+        Task<IdentityResult> UpdateUserAsync(UserUpdateViewModel user, string id);
         Task SoftDeleteAsync(string id);
     }
 }

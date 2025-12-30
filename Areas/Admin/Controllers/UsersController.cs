@@ -40,11 +40,11 @@ namespace BookingSalon.Areas.Admin.Controllers
         {
             var roles = await _roleManager.Roles.ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
-            return View(new AccountUserViewModel());
+            return View(new UserCreateViewModel());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AccountUserViewModel userVM)
+        public async Task<IActionResult> Create(UserCreateViewModel userVM)
         {
             if (!ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace BookingSalon.Areas.Admin.Controllers
             var roles = await _roleManager.Roles.ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
 
-            AccountUserViewModel accountUserViewModel = new AccountUserViewModel
+            UserUpdateViewModel accountUserViewModel = new UserUpdateViewModel
             {
                 User = user,
             };
@@ -98,7 +98,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(AccountUserViewModel userVM)
+        public async Task<IActionResult> Update(UserUpdateViewModel userVM, string id)
         {
             if (!ModelState.IsValid)
             {
@@ -116,7 +116,7 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return BadRequest(errorMessage);
             }
 
-            var result = await _usersService.UpdateUserAsync(userVM);
+            var result = await _usersService.UpdateUserAsync(userVM, id);
 
             if (!result.Succeeded)
             {
