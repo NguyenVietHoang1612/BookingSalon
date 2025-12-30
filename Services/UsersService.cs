@@ -1,5 +1,4 @@
 ﻿using BookingSalon.Areas.Admin.Models;
-using BookingSalon.Data.Repository;
 using BookingSalon.Models.Entities;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Identity;
@@ -11,23 +10,23 @@ namespace BookingSalon.Services
     {
         private readonly UserManager<Users> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IRepository<Users> _repository;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IFileService _fileService;
 
-        public UsersService(UserManager<Users> userManager, RoleManager<IdentityRole> roleManager,IRepository<Users> repository, IWebHostEnvironment webHostEnvironment, IFileService fileService)
+        public UsersService(UserManager<Users> userManager, RoleManager<IdentityRole> roleManager, IFileService fileService)
         {
             _userManager = userManager;
-            _repository = repository;
-            _webHostEnvironment = webHostEnvironment;
             _fileService = fileService;
             _roleManager = roleManager;
         }
 
         public async Task<IEnumerable<Users>> GetAllAsync()
         {
-            var users = await _userManager.Users.ToListAsync();
-            return users;
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var adminRoleId = adminRole?.Id;
+
+            return await _userManager.Users
+                .Where(u => u.RoleId != adminRoleId)
+                .ToListAsync();
         }
 
         public Task<Users?> GetByIdAsync(string id)

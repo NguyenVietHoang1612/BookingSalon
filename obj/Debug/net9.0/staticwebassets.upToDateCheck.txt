@@ -104,6 +104,7 @@ wwwroot\media\users\1231a79b-7ce6-4cf5-8264-1c2185a62564_3b.jpg
 wwwroot\media\users\1adf6747-effa-43a1-b088-9e7819952b42_3b.jpg
 wwwroot\media\users\218161e4-4b79-45e2-9065-adfb825ffc07.jpg
 wwwroot\media\users\4795ced7-0ffd-4f48-9fc3-4e83fa239fdc.jpg
+wwwroot\media\users\48fd1e4c-f724-4742-959e-a2c32f077293.jpg
 wwwroot\media\users\578e6ebd-1da5-476d-84e9-c55f55324e46.jpg
 wwwroot\media\users\7867cebb-0bea-4de9-a357-28aeabc2d830.jpg
 wwwroot\media\users\79774f0a-eaf7-4829-81b0-2406f6bf2817.jpg
@@ -111,18 +112,13 @@ wwwroot\media\users\88fd734e-2437-44f8-9fba-cfe3bc675e6f_8ccaea27b5c56a9b33d4.jp
 wwwroot\media\users\8ca63a52-707e-4d38-993c-7bf7e5886f00.jpg
 wwwroot\media\users\a505b00d-fe9d-48e6-b4c8-9b7e41d4e3af.jpg
 wwwroot\media\users\b394ce49-e73b-4f97-90ad-bc05f610eb41_3b.jpg
-wwwroot\media\users\c4df2917-21b9-4905-80a7-c23261721bc8.jpg
 wwwroot\media\users\d65a22cc-e294-4153-86e8-98d187199dcf_3b.jpg
 wwwroot\media\users\d980f9d3-7789-454f-a238-b87ae55abf08.jpg
 wwwroot\media\users\fc5bc989-3f74-4617-9817-18f901000021.jpg
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Account.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Form.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\ListItem.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Sidebar.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\stylistprofile.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\site.css
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\dist\Scripts\updatestylistprofile.js
-D:\C#workspace\BookingSalon\BookingSalon\wwwroot\dist\Styles\stylistprofile.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\favicon.ico
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\NavbarMainCustormer.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\site.js
@@ -185,5 +181,9 @@ D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.min.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\dist\jquery.slim.min.map
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\lib\jquery\LICENSE.txt
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\dist\Scripts\updatestylistprofile.js
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\dist\Styles\stylistprofile.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\stylistprofile.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Form.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\stylist\StylistProfileCreate.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\stylist\StylistProfileUpdate.js

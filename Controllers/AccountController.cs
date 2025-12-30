@@ -37,6 +37,11 @@ namespace BookingSalon.Controllers
                 {
                     var userLogin = await _userManager.FindByEmailAsync(model.Email);
 
+                    if (!userLogin.Status)
+                    {
+                        ModelState.AddModelError("", "Vui lòng xác minh Email đã được gửi trong Email.");
+                    }
+
                     if (await _userManager.IsInRoleAsync(userLogin, "Customer"))
                     {
                         return RedirectToAction("Index", "Home");

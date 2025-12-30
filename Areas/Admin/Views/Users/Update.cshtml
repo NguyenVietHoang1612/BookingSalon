@@ -52,7 +52,7 @@
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Mật khẩu</label>
-                        <input type="password" asp-for="Password" class="form-control" placeholder="Để trống nếu không muốn đổi mật khẩu" />
+                        <input type="password" asp-for="Password" class="form-control" autocomplete="new-password" placeholder="Để trống nếu không muốn đổi mật khẩu" />
                         <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -63,6 +63,16 @@
                             <option value="false">Không xác minh tài khoản</option>
                         </select>
                         <span asp-validation-for="User.EmailConfirmed" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select asp-for="User.Status" class="form-control">
+                            <option value="true">Hủy chặn tài khoản</option>
+                            <option value="false">Chặn tài khoản</option>
+                        </select>
+
+                        <span asp-validation-for="User.Status" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">

@@ -64,8 +64,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcRml4ZWRUaW1lU2xvdFxVcGRhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/C\#workspace/BookingSalon/BookingSalon/Areas/Admin/Views/Profile/Update.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZmlsZVxVcGRhdGUuY3NodG1s
+[D:/C\#workspace/BookingSalon/BookingSalon/Areas/Admin/Views/ProfileAdmin/Update.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZmlsZUFkbWluXFVwZGF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/C\#workspace/BookingSalon/BookingSalon/Areas/Admin/Views/ServiceSalon/Create.cshtml]
