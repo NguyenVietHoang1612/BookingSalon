@@ -9,8 +9,6 @@ html {
 }
 
 
-
-
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -21,14 +19,17 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
+/*html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
-}
+    font-family: Arial, sans-serif;
+    background-color: #eef1f4;
+    margin-bottom: 60px;
+}*/
+
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);

@@ -23,7 +23,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddIdentity<Users, IdentityRole>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 8;
+    options.Password.RequiredLength = 4;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
     options.User.RequireUniqueEmail = true;
@@ -51,6 +51,8 @@ builder.Services.AddScoped<IServicesSalonService, ServicesSalonService>();
 builder.Services.AddScoped<IFixedTimeSlotService, FixedTimeSlotService>();
 builder.Services.AddScoped<ITypeOfServiceService, TypeOfServiceService>();
 builder.Services.AddScoped<IStylistProfileService, StylistProfileService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
 
 var app = builder.Build();
 

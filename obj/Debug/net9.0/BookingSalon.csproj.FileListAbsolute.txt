@@ -165,7 +165,6 @@ D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\scopedcss\projectbundl
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\jlwbgbk1iv-kaek25f9w7.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\x3izvqykcm-61n19gt1b8.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\g2oo51nuw2-5pskj25g0u.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\f0wgd6boj7-7260j92vc3.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\59c59z9bjy-bqjiyaj88i.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qiqsvrpjg1-c2jlpeoesf.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\2zn3u58q5k-erw9l3u2r3.gz
@@ -225,8 +224,6 @@ D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\797a928drp-
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\yuctzbya8d-muycvpuwrr.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\gwf7z07ubq-87fc7y1x7t.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\w4dwzwtip0-mlv21k5csn.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\hmj65m0h0s-mz9x1wv6sz.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qu5rr020pm-mz9x1wv6sz.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\staticwebassets.build.json
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\staticwebassets.development.json
@@ -238,13 +235,15 @@ D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\BookingSalon.pdb
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\BookingSalon.genruntimeconfig.cache
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\ref\BookingSalon.dll
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\6g8h6y8kts-pobrjfwkw7.gz
-D:\C#workspace\BookingSalon\BookingSalon\bin\Debug\net9.0\bundleconfig.json
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\8pf0wnufme-qe274rihb4.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\o4zb23ir8v-n8zj6mfq7m.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\a2o8nvqvg1-n8zj6mfq7m.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\xjw59qtcd8-5r0v6vehqq.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\uleopvlpcp-i23iyjy8ly.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\osuh6hufpy-55jz0zjqlm.gz
-D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\v3cfp9ammz-997i4jltjd.gz
 D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\ssbcodhbp6-bjabduhzqz.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\uleopvlpcp-8f090tjwcg.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\6g8h6y8kts-ccvzb0ggak.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\hmj65m0h0s-2u130v5yte.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\qu5rr020pm-2u130v5yte.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\v3cfp9ammz-1bc8d9el7v.gz
+D:\C#workspace\BookingSalon\BookingSalon\obj\Debug\net9.0\compressed\f0wgd6boj7-e8g4he3x0u.gz

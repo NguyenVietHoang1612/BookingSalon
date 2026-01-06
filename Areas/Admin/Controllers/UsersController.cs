@@ -38,7 +38,8 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var roles = await _roleManager.Roles.ToListAsync();
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var roles = await _roleManager.Roles.Where(r => r.Id != adminRole.Id).ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
             return View(new UserCreateViewModel());
         }
@@ -84,7 +85,8 @@ namespace BookingSalon.Areas.Admin.Controllers
             var user = await _usersService.GetByIdAsync(id);
             if (user == null) return NotFound();
 
-            var roles = await _roleManager.Roles.ToListAsync();
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var roles = await _roleManager.Roles.Where(r => r.Id != adminRole.Id).ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
 
             UserUpdateViewModel accountUserViewModel = new UserUpdateViewModel

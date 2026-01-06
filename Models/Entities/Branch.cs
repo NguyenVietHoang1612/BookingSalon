@@ -18,6 +18,7 @@ namespace BookingSalon.Models.Entities
         [RegularExpression(@"^(0|\+84)[0-9]{9}$",
             ErrorMessage = "Số điện thoại không hợp lệ")]
         public string Phone { get; set; }
+        public string? Branch_Image { get; set; }
 
         public bool Status { get; set; }
 

@@ -30,8 +30,8 @@ namespace BookingSalon.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Booking_Id"));
 
-                    b.Property<DateTime>("Booking_Date")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Booking_Date")
+                        .HasColumnType("date");
 
                     b.Property<int>("Branch_Id")
                         .HasColumnType("int");
@@ -54,6 +54,9 @@ namespace BookingSalon.Migrations
                     b.Property<string>("Stylist_Id")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("TotalDuration")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
@@ -90,14 +93,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int?>("Service_Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalDuration")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Update_At")
@@ -124,6 +120,9 @@ namespace BookingSalon.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Branch_Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Branch_Name")
                         .IsRequired()
@@ -376,8 +375,8 @@ namespace BookingSalon.Migrations
                     b.Property<DateTime>("Update_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Work_Date")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Work_Date")
+                        .HasColumnType("date");
 
                     b.HasKey("Stylist_Time_Work_Id");
 
@@ -830,8 +829,7 @@ namespace BookingSalon.Migrations
                 {
                     b.Navigation("BookingDetails");
 
-                    b.Navigation("Payment")
-                        .IsRequired();
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("BookingSalon.Models.Entities.Service", b =>

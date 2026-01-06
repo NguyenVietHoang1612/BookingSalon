@@ -1,225 +1,41 @@
-﻿body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4; 
+﻿
+html, body {
+    height: 100%;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
-}
-
-
-.navbar {
+body {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 50px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    min-height: 100vh;
+    background: url('/images/bg-customer.jpg') no-repeat center center fixed;
+    background-size: cover;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 1.5em;
-    font-weight: bold;
+
+.flex-grow-1 {
+    flex: 1;
+}
+
+.nav-pills .nav-link {
     color: #333;
-}
-
-.logo-icon {
-    width: 30px; 
-    height: 30px;
-    margin-right: 5px;
-    background-color: #f0f8ff;
-    border-radius: 50%;
-    display: none;
-}
-
-.logo span {
-    color: #4CAF50; 
-}
-
-.main-menu-container {
-    padding: 5px;
-    border-radius: 50px;
-    background-color: #f8f8f8; 
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-}
-
-.main-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 0; 
-}
-
-.menu-item a {
-    text-decoration: none;
-    color: #333;
-    padding: 10px 20px;
-    display: block;
-    border-radius: 50px;
-    transition: background-color 0.3s, color 0.3s;
     font-weight: 500;
+    transition: all 0.2s;
 }
 
-.menu-item.active a {
-    background-color: #4CAF50; 
-    color: #fff; 
-    font-weight: bold;
-}
-
-.tours-dropdown i {
-    margin-left: 5px;
-    font-size: 0.8em;
-}
-
-.menu-item a:not(.active):hover { 
-    background-color: #e0e0e0;
-}
-
-.actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.book-now-btn {
-    background-color: #ff9800; 
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(255, 152, 0, 0.3);
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-    .book-now-btn:hover {
-        background-color: #fb8c00;
-        box-shadow: 0 6px 8px rgba(255, 152, 0, 0.4);
+    .nav-pills .nav-link.active,
+    .nav-pills .show > .nav-link {
+        background-color: #4CAF50 !important;
+        color: white !important;
     }
 
-
-.tours-dropdown {
-    position: relative;
-}
-
-.tours-sub-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #fff; 
-    min-width: 150px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 10;
-    border-radius: 4px;
-    margin-top: 5px;
-    padding: 5px 0; 
-}
-
-.tours-sub-dropdown .dropdown-item {
-    text-decoration: none;
-    color: #333; 
-    padding: 10px 16px;
-    display: block;
-    text-align: left;
-    white-space: nowrap;
-    border-radius: 0;
-    transition: background-color 0.3s, color 0.3s;
-    font-weight: 500;
-    background-color: transparent;
-}
-
-        
-.tours-sub-dropdown .dropdown-item:hover {
-    background-color: #f1f1f1; 
-    color: #4CAF50; 
-}
-
-.tours-dropdown.show .tours-sub-dropdown {
-    display: block;
-}
-
-.tours-dropdown.active a {
-    background-color: #4CAF50;
-    color: #fff;
-    font-weight: bold;
-}
-
-.user-dropdown {
-    position: relative;
-}
-
-.user-icon {
-    width: 40px;
-    height: 40px;
-    background-color: #333;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1.2em;
-    position: relative; 
-    z-index: 20; 
-}
-
-.user-sub-dropdown {
-    display: none; 
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #fff;
-    min-width: 180px; 
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 15; 
-    border-radius: 4px;
-    margin-top: 10px;
-    padding: 5px 0;
-    transform-origin: top right;
-    animation: fadeIn 0.2s ease-out; 
-}
-
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: #e9ecef;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+h1, h2, h3, h4, h5, h6 {
+    color: #FFE2C0;
 }
 
-
-.user-sub-dropdown .dropdown-item {
-    color: #333;
-    padding: 10px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-    white-space: nowrap;
-    border-radius: 0;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-    .user-sub-dropdown .dropdown-item:hover {
-        background-color: #f1f1f1;
-        color: #4CAF50;
-    }
-
-
-.user-dropdown.show .user-sub-dropdown {
-    display: block;
+footer {
+    color: #e0e0e0;
 }

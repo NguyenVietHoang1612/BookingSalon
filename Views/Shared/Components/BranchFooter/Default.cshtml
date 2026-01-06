@@ -1,0 +1,50 @@
+﻿@model IEnumerable<BookingSalon.Models.Entities.Branch>
+
+<div class="container py-4">
+    <div class="row gy-4">
+        <div class="col-md-8">
+            <h2 class="fs-4 text-uppercase fw-bold mb-4" style="color: #ff9800; letter-spacing: 1px;">
+                Hệ thống chi nhánh
+            </h2>
+
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-sm-6 mb-4">
+                        <div class="branch-item p-3 border-start border-2 border-warning shadow-sm" style="background: rgba(255,255,255,0.05);">
+                            <h3 class="fs-5 fw-bold text-white mb-2">@item.Branch_Name</h3>
+
+                            <div class="d-flex align-items-start mb-1">
+                                <i class="bi bi-geo-alt-fill me-2 text-warning"></i>
+                                <span class="text-light opacity-75 fs-6">@item.Address</span>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-telephone-fill me-2 text-warning"></i>
+                                <span class="text-light opacity-75 fs-6">@item.Phone</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-4 d-flex flex-column justify-content-between text-md-end">
+            <div>
+                <h2 class="fs-4 text-uppercase fw-bold mb-4" style="color: #ff9800;">Kết nối</h2>
+                <div class="social-icons fs-3 text-white gap-3 d-flex justify-content-md-end">
+                    <a href="#" class="text-white opacity-50 hover-opacity-100"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white opacity-50 hover-opacity-100"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white opacity-50 hover-opacity-100"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-top border-secondary text-secondary">
+                <p class="mb-0 fs-6">
+                    &copy; 2025 - <strong>BookingSalon</strong>
+                </p>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-warning opacity-75 small">Chính sách bảo mật</a>
+            </div>
+        </div>
+    </div>
+</div>

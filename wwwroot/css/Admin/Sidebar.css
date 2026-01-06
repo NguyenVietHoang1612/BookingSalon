@@ -1,10 +1,4 @@
-﻿body {
-    font-family: Arial, sans-serif;
-    background-color: #eef1f4;
-    display: flex;
-}
-
-.sidebar {
+﻿.sidebar {
     width: 250px;
     background-color: #273444; 
     color: #fff;

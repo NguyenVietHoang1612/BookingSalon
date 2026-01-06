@@ -269,9 +269,6 @@ namespace BookingSalon.Data
             {
                 entity.HasKey(x => x.Booking_Detail_Id);
 
-                entity.Property(s => s.Description)
-                     .HasMaxLength(500);
-
                 entity.Property(x => x.Created_At)
                       .HasDefaultValueSql("GETDATE()");
 

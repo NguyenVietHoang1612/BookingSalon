@@ -46,6 +46,7 @@
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Tên vai trò</label>
                         <select asp-for="User.RoleId" asp-items="ViewBag.Roles" class="form-control">
+                            <option value="">Chọn vai trò</option>
                         </select>
                         <span asp-validation-for="User.RoleId" class="text-danger small mt-1 d-block"></span>
                     </div>

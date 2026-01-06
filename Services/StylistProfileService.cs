@@ -35,7 +35,6 @@ namespace BookingSalon.Services
 
                 var exists = await _unitOfWork.Repository<StylistProfile>().ExistsAsync(x => x.StylistId == stylistProfileVM.StylistProfile.StylistId);
 
-
                 if (exists)
                 {
                     return ServiceResult<CreateStylistProfileVM>.Failed("Stylist profile đã tồn tại");
