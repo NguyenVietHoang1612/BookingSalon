@@ -31,11 +31,10 @@
 
             <form id="stylistForm" asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="step-content" id="step1">
-                    <div class="mb-3 row overflow-hidden">
+                    <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Stylist ID *</label>
                         <div class="col-sm-9">
-                            <select class="form-select" asp-for="StylistProfile.StylistId" asp-items="Model.StylistUsersSelectList">
-                                <option value="">-- Chọn stylist --</option>
+                            <select class="form-select" asp-for="StylistProfile.StylistId" asp-items="Model.StylistUsersSelectList" id="select-stylists">
                             </select>
                         </div>
                         <span asp-validation-for="StylistProfile.StylistId" class="text-danger small mt-1 d-block"></span>
@@ -43,7 +42,8 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Chi nhánh *</label>
                         <div class="col-sm-9">
-                            <select class="form-select" asp-for="StylistProfile.Branch_Id" asp-items="Model.BranchSelectList"></select>
+                            <select class="form-select" asp-for="StylistProfile.Branch_Id" asp-items="Model.BranchSelectList" id="select-branches">
+                            </select>
                         </div>
                         <span asp-validation-for="StylistProfile.Branch_Id" class="text-danger small mt-1 d-block"></span>
                     </div>
@@ -77,7 +77,7 @@
                     <div class="mb-3">
                         <label class="form-label">Chọn hình ảnh sản phẩm (Có thể chọn nhiều)</label>
                         <input class="form-control" asp-for="ImageUploads" />    
-                        <span asp-validation-for="ImageUploads" class="text-danger small mt-1 d-block"></span>
+                        <span asp-validation-for="ImageUploads" class="text-danger small mt-1 d-block" multiple></span>
                     </div>
                     <div id="imagePreviewContainer" class="d-flex flex-wrap gap-3 mb-3">
                     </div>
@@ -99,8 +99,24 @@
     </div>
 </div>
 
+@section Styles {
+    <link href="~/css/Admin/stylistprofile.css" rel="stylesheet" />
+    <style>
+       
+    </style>
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/Stylist/stylistProfileCreate.js"></script>
-    <link href="~/css/Admin/stylistprofile.css" rel="stylesheet" />
+    <script src="/js//ChoicesSelectList.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            initSelectSearch('select-stylists', 'Chọn Stylist...');
+            initSelectSearch('select-branches', 'Chọn chi nhánh...')
+        });
+    </script>
 }
+
+

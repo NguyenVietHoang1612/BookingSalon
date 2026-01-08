@@ -1,4 +1,5 @@
-﻿using BookingSalon.Models.Entities;
+﻿using BookingSalon.Data.Repository;
+using BookingSalon.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookingSalon.Services.Interface
@@ -10,5 +11,6 @@ namespace BookingSalon.Services.Interface
         Task<IdentityResult> CreateUserAsync(IdentityRole role);
         Task<IdentityResult> UpdateUserAsync(IdentityRole role);
         Task<IdentityResult> DeleteAsync(IdentityRole role);
+        Task<PaginatedList<IdentityRole>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }

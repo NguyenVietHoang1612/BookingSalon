@@ -1,4 +1,5 @@
-﻿using BookingSalon.Models.Entities;
+﻿using BookingSalon.Data.Repository;
+using BookingSalon.Models.Entities;
 
 namespace BookingSalon.Services.Interface
 {
@@ -9,5 +10,6 @@ namespace BookingSalon.Services.Interface
         Task<ServiceResult<FixedTimeSlot>> CreateAsync(FixedTimeSlot fixedTime);
         Task<ServiceResult<FixedTimeSlot>> UpdateAsync(int id, FixedTimeSlot fixedTime);
         Task<ServiceResult<FixedTimeSlot>> DeleteAsync(int id);
+        Task<PaginatedList<FixedTimeSlot>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }

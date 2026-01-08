@@ -11,7 +11,7 @@ namespace BookingSalon.Models.Entities
 
         [Required(ErrorMessage = "Ngày làm việc không được để trống")]
         [DataType(DataType.Date)]
-        public DateTime Work_Date { get; set; }
+        public DateOnly Work_Date { get; set; }
 
         [Required(ErrorMessage = "Khung giờ không được để trống")]
         public int Slot_Id { get; set; }

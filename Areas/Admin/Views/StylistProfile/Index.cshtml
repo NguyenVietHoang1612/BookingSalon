@@ -1,8 +1,11 @@
 ﻿@using BookingSalon.Models.Entities
-@model IEnumerable<StylistProfile>
+@using BookingSalon.Data.Repository
+@model PaginatedList<StylistProfile>
 
 @{
     ViewData["title"] = "Danh dách stylist profile";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
 
@@ -37,6 +40,7 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
+                            <th class="text-start">Id</th>
                             <th class="text-start">Stylist</th>
                             <th class="text-start">Branch</th>
                             <th class="text-start">Bio</th>
@@ -52,6 +56,7 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                            <td class="text-muted">@item.StylistId</td>
                                 <td class="text-muted">@item.Stylist.FullName</td>
                                 <td class="text-muted">@item.Branch.Branch_Name</td>
                                 <td class="text-muted">@item.StylistSkill</td>
@@ -73,7 +78,54 @@
                     </tbody>
                 </table>
             </div>
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
+            </div>
+            <div class="col-sm-6">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end mb-0">
+
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            // Logic để chỉ hiển thị một vài số trang nếu tổng số quá lớn
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 
-
+@section Styles {
+        <link rel="stylesheet" href="~/css/Paginated.css" />
+}

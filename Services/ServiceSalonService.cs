@@ -151,5 +151,21 @@ namespace BookingSalon.Services
             }
         }
 
+        public async Task<PaginatedList<Service>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _unitOfWork.Repository<Service>()
+                .Query();
+                
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(s => s.Service_Name.ToLower().Contains(searchTerm));
+            }
+
+            query = query.Include(s => s.TypeOfService).OrderBy(s => s.ServiceId);
+
+            return await PaginatedList<Service>.CreateAsync(query, pageNumber, pageSize);
+        }
     }
 }

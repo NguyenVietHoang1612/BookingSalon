@@ -21,24 +21,26 @@ namespace BookingSalon.Models.Entities
 
         [Required(ErrorMessage = "Ngày đặt lịch không được để trống")]
         [DataType(DataType.Date)]
-        public DateTime Booking_Date { get; set; }
+        public DateOnly Booking_Date { get; set; }
 
-        [Required(ErrorMessage = "Trạng thái booking không được để trống")]
+        [Required(ErrorMessage = "Trạng thái không được để trống")]
         [StringLength(50, ErrorMessage = "Trạng thái không vượt quá 50 ký tự")]
         public string Status { get; set; }
 
+        public int TotalDuration { get; set; }
+        [Required(ErrorMessage = "Giá không được để trống")]
         [Range(0, double.MaxValue, ErrorMessage = "Tổng tiền không hợp lệ")]
         public decimal TotalPrice { get; set; }
 
         public DateTime Create_At { get; set; }
         public DateTime Update_At { get; set; }
 
-        public Users Customer { get; set; }
-        public Branch Branch { get; set; }
-        public Users Stylist { get; set; }
-        public FixedTimeSlot StartSlot { get; set; }
-        public Payment Payment { get; set; }
+        public Users? Customer { get; set; }
+        public Branch? Branch { get; set; }
+        public Users? Stylist { get; set; }
+        public FixedTimeSlot? StartSlot { get; set; }
+        public Payment? Payment { get; set; }
 
-        public ICollection<BookingDetail> BookingDetails { get; set; }
+        public ICollection<BookingDetail>? BookingDetails { get; set; }
     }
 }

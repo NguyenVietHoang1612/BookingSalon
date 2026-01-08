@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookingSalon.Areas.Admin.Controllers
 {
@@ -24,17 +25,18 @@ namespace BookingSalon.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string term)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var stylistProfiles = await _stylistProfileService.GetAllAsync();
+             int pageSize = 10;
+            var listService = await _stylistProfileService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
+
 
             if (!string.IsNullOrEmpty(term))
             {
-                stylistProfiles = stylistProfiles.Where(f => f.StylistSkill.ToString().Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
                 ViewBag.SearchTerm = term;
             }
 
-            return View(stylistProfiles);
+            return View(listService);
         }
 
         [HttpGet]

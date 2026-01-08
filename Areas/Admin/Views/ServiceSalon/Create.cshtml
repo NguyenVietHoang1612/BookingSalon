@@ -25,7 +25,7 @@
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Loại dịch vụ</label>
-                        <select asp-for="Type_Service_Id" asp-items="ViewBag.TypeOfServiceList" class="form-control">
+                        <select asp-for="Type_Service_Id" asp-items="ViewBag.TypeOfServiceList" class="form-control" id="select-typeofservice">
                         </select>
                         <span asp-validation-for="Type_Service_Id" class="text-danger small mt-1 d-block"></span>
                     </div>
@@ -81,4 +81,10 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="/js//ChoicesSelectList.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initSelectSearch('select-typeofservice', 'Chọn loại dịch vụ...')
+        });
+    </script>
 }

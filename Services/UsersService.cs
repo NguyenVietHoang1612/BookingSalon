@@ -1,4 +1,5 @@
 ﻿using BookingSalon.Areas.Admin.Models;
+using BookingSalon.Data.Repository;
 using BookingSalon.Models.Entities;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Identity;
@@ -125,6 +126,35 @@ namespace BookingSalon.Services
                 user.Update_At = DateTime.Now;
                 await _userManager.UpdateAsync(user);
             }
+        }
+
+        public async Task<PaginatedList<UserViewModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var adminRoleId = adminRole?.Id;
+
+            var query = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(u => u.FullName.ToLower().Contains(searchTerm) || u.Email.ToLower().Contains(searchTerm) || u.Id.ToLower().Contains(searchTerm));
+            }
+
+            query = query.Where(u => u.RoleId != adminRoleId);
+
+            query = query.OrderByDescending(u => u.Create_At);
+
+            var viewmodelQuery = query.Select(u => new UserViewModel
+            {
+                User = u,
+                RoleName = _roleManager.Roles
+                    .Where(r => r.Id == u.RoleId)
+                    .Select(r => r.Name)
+                    .FirstOrDefault() ?? "N/A"
+            });
+
+            return await PaginatedList<UserViewModel>.CreateAsync(viewmodelQuery, pageNumber, pageSize);
         }
     }
 }

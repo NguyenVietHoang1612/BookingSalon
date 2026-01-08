@@ -1,5 +1,6 @@
 ﻿using BookingSalon.Areas.Admin.Models;
 using BookingSalon.Models.Entities;
+using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,22 +24,25 @@ namespace BookingSalon.Areas.Admin.Controllers
             _roleManager = roleManager;
         }
 
-        public async Task<IActionResult> Index()
+        //Todo: Paging
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var users = await _usersService.GetAllAsync();
-            var roles = _roleManager.Roles.ToList();
+            int pageSize = 10;
+            var listService = await _usersService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            var model = users.Select(u => new UserViewModel
+
+            if (!string.IsNullOrEmpty(term))
             {
-                User = u,
-                RoleName = roles.FirstOrDefault(r => r.Id == u.RoleId)?.Name ?? "N/A"
-            });
-            return View(model);
+                ViewBag.SearchTerm = term;
+            }
+
+            return View(listService);
         }
 
         public async Task<IActionResult> Create()
         {
-            var roles = await _roleManager.Roles.ToListAsync();
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var roles = await _roleManager.Roles.Where(r => r.Id != adminRole.Id).ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
             return View(new UserCreateViewModel());
         }
@@ -84,7 +88,8 @@ namespace BookingSalon.Areas.Admin.Controllers
             var user = await _usersService.GetByIdAsync(id);
             if (user == null) return NotFound();
 
-            var roles = await _roleManager.Roles.ToListAsync();
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+            var roles = await _roleManager.Roles.Where(r => r.Id != adminRole.Id).ToListAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");
 
             UserUpdateViewModel accountUserViewModel = new UserUpdateViewModel

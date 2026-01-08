@@ -62,7 +62,7 @@
         $(this).parent().remove();
     });
 
-    $('#btnSubmitForm').on("Click", function (e) {
+    $('#btnSubmitForm').on("click", function (e) {
         let formData = new FormData();
         let otherData = $('#stylistForm').serializeArray();
 
@@ -81,7 +81,7 @@
             processData: false,
             contentType: false,
             success: function (res, status, xhr) {
-                window.location.href = '@Url.Action("Index", "StylistProfile")';
+                window.location.href = 'Index';
             },
             error: function (xhr) {
                 if (xhr.status === 400) {

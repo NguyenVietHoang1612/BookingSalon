@@ -8,37 +8,87 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingSalon.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        h1, h2, h3, h4, h5, h6 {
+            color: #FFE2C0;
+            font-family: 'Arial', sans-serif;
+            margin-bottom: 10px;
+        }  
+
+        body {
+            background: url('/images/bg-customer.jpg') no-repeat center center fixed;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        footer {
+            color: #e0e0e0;
+        }
+
+        .branch-item {
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .branch-item:hover {
+            background: rgba(255, 152, 0, 0.1) !important;
+            transform: translateY(-5px);
+        }
+
+        .social-icons a {
+            transition: opacity 0.3s ease;
+            text-decoration: none;
+        }
+
+        .hover-opacity-100:hover {
+            opacity: 1 !important;
+            color: #ff9800 !important;
+        }
+    </style>
 </head>
 <body>
-    <header class="navbar">
-        <div class="logo">
-            <img src="~/Images/icons8-hair-96.png" alt="Travela Logo" class="logo-icon">
-            <span>Travela</span>
+    <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 px-4">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center fw-bold fs-4" asp-area="" asp-controller="Home" asp-action="Index">
+            <img src="~/Images/icons8-hair-96.png" alt="Logo" width="35" height="35" class="me-2">
+            <span style="color: #4CAF50;">Travela</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-center" id="mainNav">
+            <ul class="navbar-nav nav-pills bg-light px-3 py-1 rounded-pill border shadow-sm">
+                <li class="nav-item">
+                    <a class="nav-link active rounded-pill px-3" href="#">Trang Chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="#">Giới Thiệu</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3" href="#" id="tourDrop" data-bs-toggle="dropdown">Tours</a>
+                    <ul class="dropdown-menu shadow border-0">
+                        <li><a class="dropdown-item" href="#">Dịch vụ</a></li>
+                        <li><a class="dropdown-item" href="#">Stylist</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link px-3" href="#">Tạo kiểu</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="#">Liên Hệ</a></li>
+            </ul>
         </div>
 
-        <nav class="main-menu-container">
-            <ul class="main-menu" id="mainMenu">
-                <li class="menu-item"><a href="#" data-page="home">Trang Chủ</a></li>
-                <li class="menu-item"><a href="#" data-page="about">Giới Thiệu</a></li>
-
-                <li class="menu-item tours-dropdown">
-                    <a href="#" data-page="tours">Tours <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content tours-sub-dropdown">
-                        <a href="#" class="dropdown-item" data-page="tour-type">Dịch vụ</a>
-                        <a href="#" class="dropdown-item" data-page="tour-category">Stylist</a>
-                    </div>
-                </li>
-                <li class="menu-item"><a href="#" data-page="destination">Tạo kiểu</a></li>
-                <li class="menu-item"><a href="#" data-page="contact">Liên Hệ</a></li>
-            </ul>
-        </nav>
-
-        <div class="actions">
-            <button class="book-now-btn">Book Now ✈️</button>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-area="" asp-controller="Booking" asp-action="Index" class="btn btn-warning rounded-pill fw-bold px-4 text-white shadow-sm">
+                Đặt lịch ngay
+            </a>
             <partial name="_LoginPartial" />
         </div>
-
-    </header>
+    </div>
+</header>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -46,10 +96,8 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - BookingSalon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <footer class="border-top footer text-muted bg-black">
+        @await Component.InvokeAsync("BranchFooter")
     </footer>
     <script src="~/js/NavbarMainCustormer.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

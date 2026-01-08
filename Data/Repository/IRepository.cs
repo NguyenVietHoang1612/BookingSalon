@@ -21,5 +21,12 @@ namespace BookingSalon.Data.Repository
 
         // Check
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
+
+        // Paginate
+        Task<PaginatedList<TEntity>> GetPagedAsync(
+        int pageIndex,
+        int pageSize,
+        Expression<Func<TEntity, bool>> filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null);
     }
 }

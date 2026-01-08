@@ -35,7 +35,6 @@ namespace BookingSalon.Services
 
                 var exists = await _unitOfWork.Repository<StylistProfile>().ExistsAsync(x => x.StylistId == stylistProfileVM.StylistProfile.StylistId);
 
-
                 if (exists)
                 {
                     return ServiceResult<CreateStylistProfileVM>.Failed("Stylist profile đã tồn tại");
@@ -204,6 +203,22 @@ namespace BookingSalon.Services
 
                 return ServiceResult<UpdateStylistProfileVM>.Failed($"Lỗi: {ex.Message}");
             }
+        }
+
+        public async Task<PaginatedList<StylistProfile>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _unitOfWork.Repository<StylistProfile>().Query();
+
+            query = query.Include(p => p.Stylist)
+                .Include(p => p.Branch);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(r => r.Stylist.FullName.ToLower().Contains(searchTerm) || r.StylistId.ToLower().Contains(searchTerm));
+            }
+
+            return await PaginatedList<StylistProfile>.CreateAsync(query, pageNumber, pageSize);
         }
     }
 }

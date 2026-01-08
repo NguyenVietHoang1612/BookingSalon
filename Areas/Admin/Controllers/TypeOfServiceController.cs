@@ -1,4 +1,5 @@
 ﻿using BookingSalon.Models.Entities;
+using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,18 @@ namespace BookingSalon.Areas.Admin.Controllers
             _typeOfServiceService = typeOfServiceService;
         }
 
-        public async Task<IActionResult> Index(string term)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var listTypeOfService = await _typeOfServiceService.GetAllServiceAsync();
+            int pageSize = 10;
+            var listService = await _typeOfServiceService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
+
 
             if (!string.IsNullOrEmpty(term))
             {
-                listTypeOfService = listTypeOfService.Where(f => f.Type_Service_Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
                 ViewBag.SearchTerm = term;
             }
 
-            return View(listTypeOfService);
+            return View(listService);
         }
 
         [HttpGet]

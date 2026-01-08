@@ -66,5 +66,18 @@ namespace BookingSalon.Services
 
             return await _roleManager.DeleteAsync(result);
         }
+
+        public async Task<PaginatedList<IdentityRole>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _roleManager.Roles;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(r => r.Name.ToLower().Contains(searchTerm));
+            }
+
+            return await PaginatedList<IdentityRole>.CreateAsync(query, pageNumber, pageSize);
+        }
     }
 }

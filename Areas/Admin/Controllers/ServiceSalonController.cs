@@ -19,13 +19,14 @@ namespace BookingSalon.Areas.Admin.Controllers
             _serviceSalonService = serviceSalonService;
         }
 
-        public async Task<IActionResult> Index(string term)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var listService = await _serviceSalonService.GetAllServiceAsync();
+            int pageSize = 10;
+            var listService = await _serviceSalonService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            if(!string.IsNullOrEmpty(term))
+
+            if (!string.IsNullOrEmpty(term))
             {
-                listService = listService.Where(m => m.Service_Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
                 ViewBag.SearchTerm = term;
             }
 

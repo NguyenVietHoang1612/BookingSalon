@@ -23,7 +23,7 @@ namespace BookingSalon.Data
             }
 
             string adminEmail = "AdminSalonToc@StayHere.com";
-            string password = "Admin@123";
+            string password = "Admin@12345";
             var roleAdmin = await roleManager.FindByNameAsync("Admin");
 
             var user = await userManager.FindByEmailAsync(adminEmail);
