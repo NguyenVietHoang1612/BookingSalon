@@ -34,7 +34,7 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Tên Stylist </label>
                         <div class="col-sm-9">
-                            <input class="form-control"value="@Model.StylistProfile.Stylist.FullName"readonly />
+                            <input class="form-control"value="@Model.StylistProfile.Stylist.FullName"readonly/>
                         </div>
 
                         <input type="hidden" asp-for="StylistProfile.StylistId" />
@@ -43,7 +43,7 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Chi nhánh *</label>
                         <div class="col-sm-9">
-                            <select class="form-select" asp-for="StylistProfile.Branch_Id" asp-items="Model.BranchSelectList"></select>
+                            <select class="form-select" asp-for="StylistProfile.Branch_Id" asp-items="Model.BranchSelectList" id="select-branches"></select>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -119,4 +119,10 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/stylist/StylistProfileUpdate.js"> </script>
     <link href="~/css/Admin/stylistprofile.css" rel="stylesheet" />
+    <script src="/js//ChoicesSelectList.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initSelectSearch('select-branches', 'Chọn chi nhánh...')
+        });
+    </script>
 }

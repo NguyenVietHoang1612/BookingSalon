@@ -1,6 +1,7 @@
 ﻿using BookingSalon.Data.Repository;
 using BookingSalon.Models.Entities;
 using BookingSalon.Services.Interface;
+using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 
 namespace BookingSalon.Services
@@ -123,6 +124,20 @@ namespace BookingSalon.Services
             {
                 return ServiceResult<Branch>.Failed($"Lỗi: {ex.Message}");
             }
+        }
+
+        public async Task<PaginatedList<Branch>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _unitOfWork.Repository<Branch>()
+                .Query();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(s => s.Branch_Name.ToLower().Contains(searchTerm));
+            }
+
+            return await PaginatedList<Branch>.CreateAsync(query, pageNumber, pageSize);
         }
 
     }

@@ -117,5 +117,19 @@ namespace BookingSalon.Services
                 return ServiceResult<FixedTimeSlot>.Failed($"Error: {ex.Message}");
             }
         }
+
+        public async Task<PaginatedList<FixedTimeSlot>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _unitOfWork.Repository<FixedTimeSlot>().Query();
+
+            if(!string.IsNullOrEmpty(searchTerm)) {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(r => r.TimeLabel.ToString().ToLower().Contains(searchTerm));
+            }
+
+            query = query.OrderBy(x => x.Sort_Order);
+
+            return await PaginatedList<FixedTimeSlot>.CreateAsync(query, pageNumber, pageSize);
+        }
     }
 }

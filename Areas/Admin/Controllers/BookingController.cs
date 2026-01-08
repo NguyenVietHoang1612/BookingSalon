@@ -17,11 +17,17 @@ namespace BookingSalon.Areas.Admin.Controllers
             _bookingService = bookingService;
         }
 
-        public async Task<IActionResult> Index(string term)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var listService = await _bookingService.GetAllAsync();
+            int pageSize = 10;
+            var pagedData = await _bookingService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            return View(listService);
+            if (!string.IsNullOrEmpty(term))
+            {
+                ViewBag.SearchTerm = term;
+            }
+
+            return View(pagedData);
         }
 
         public async Task<IActionResult> Delete(int id)

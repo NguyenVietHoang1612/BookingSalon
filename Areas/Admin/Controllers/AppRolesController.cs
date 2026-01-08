@@ -1,4 +1,5 @@
 ﻿using BookingSalon.Models.Entities;
+using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,17 +20,18 @@ namespace BookingSalon.Areas.Admin.Controllers
             _appRolesService = appRolesService;
         }
 
-        public async Task<IActionResult> Index(string searchTerm)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var roles = await _appRolesService.GetAllAsync();
+            int pageSize = 10;
+            var listService = await _appRolesService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            if (!string.IsNullOrEmpty(searchTerm))
+
+            if (!string.IsNullOrEmpty(term))
             {
-                roles = roles.Where(r => r.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-                ViewBag.SearchTerm = searchTerm; 
+                ViewBag.SearchTerm = term;
             }
 
-            return View(roles);
+            return View(listService);
         }
 
         public IActionResult Create()

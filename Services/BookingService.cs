@@ -335,5 +335,36 @@ namespace BookingSalon.Services
            
             
         }
+
+        public async Task<PaginatedList<BookingProfileDetailsViewModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        {
+            var query = _unitOfWork.Repository<Booking>().Query();
+
+            query = query.Include(b => b.Customer);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower().Trim();
+                query = query.Where(s => s.Customer.FullName.ToLower().Contains(searchTerm));
+            }
+
+            var projectedQuery = query.Select(b => new BookingProfileDetailsViewModel
+            {
+                BookingId = b.Booking_Id,
+                Customer_Name = b.Customer.FullName,
+                Customer_Phone = b.Customer.PhoneNumber,
+                Customer_Email = b.Customer.Email,
+                Customer_Address = b.Customer.Address,
+                Id_Stylist = b.Stylist_Id,
+                Stylist_Name = b.Stylist.FullName,
+                Branch_Name = b.Branch.Branch_Name,
+                Date_Booking = b.Booking_Date,
+                TimeSlot = b.StartSlot.TimeLabel,
+                Status = b.Status,
+                TotalPrice = b.TotalPrice
+            });
+
+            return await PaginatedList<BookingProfileDetailsViewModel>.CreateAsync(projectedQuery, pageNumber, pageSize);
+        }
     }
 }

@@ -3,6 +3,8 @@ wwwroot\css\Admin\Form.css
 wwwroot\css\Admin\ListItem.css
 wwwroot\css\Admin\Sidebar.css
 wwwroot\css\Admin\stylistprofile.css
+wwwroot\css\Customer\Booking.css
+wwwroot\css\Paginated.css
 wwwroot\css\site.css
 wwwroot\dist\Scripts\updatestylistprofile.js
 wwwroot\dist\Styles\stylistprofile.css
@@ -10,6 +12,8 @@ wwwroot\favicon.ico
 wwwroot\images\account-bg.jpg
 wwwroot\images\bg-customer.jpg
 wwwroot\images\icons8-hair-96.png
+wwwroot\js\ChoicesSelectList.js
+wwwroot\js\Customer\Booking.js
 wwwroot\js\NavbarMainCustormer.js
 wwwroot\js\site.js
 wwwroot\js\stylist\StylistProfileCreate.js
@@ -188,3 +192,7 @@ D:\C#workspace\BookingSalon\BookingSalon\wwwroot\dist\Scripts\updatestylistprofi
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\stylist\StylistProfileUpdate.js
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\ListItem.css
 D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Admin\Form.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Customer\Booking.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\Customer\Booking.js
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\css\Paginated.css
+D:\C#workspace\BookingSalon\BookingSalon\wwwroot\js\ChoicesSelectList.js

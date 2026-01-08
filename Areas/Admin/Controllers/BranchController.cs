@@ -24,20 +24,17 @@ namespace BookingSalon.Areas.Admin.Controllers
             _branchService = branchService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var listBranchesResult = await _branchService.GetAllAsync();
+            int pageSize = 10;
+            var pagedData = await _branchService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            if (!listBranchesResult.Succeeded)
+            if (!string.IsNullOrEmpty(term))
             {
-                TempData["ErrorMessage"] = listBranchesResult.Errors;
-                foreach(var error in listBranchesResult.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-                return View();
+                ViewBag.SearchTerm = term;
             }
-            return View(listBranchesResult.Data);
+
+            return View(pagedData);
         }
 
         public IActionResult Create()

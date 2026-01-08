@@ -16,11 +16,11 @@
     color: #4e73df;
     font-size: 0.85rem;
     text-transform: uppercase;
-    padding: 15px;
+    padding: 8px;
 }
 
 .table tbody td {
-    padding: 15px;
+    padding: 8px;
     vertical-align: middle;
     border-bottom: 1px solid #f0f0f0;
 }

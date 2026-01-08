@@ -1,4 +1,5 @@
-﻿using BookingSalon.Models.Entities;
+﻿using BookingSalon.Data.Repository;
+using BookingSalon.Models.Entities;
 using BookingSalon.Models.ViewModel.BookingSalonViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,5 +22,7 @@ namespace BookingSalon.Services.Interface
         Task<ServiceResult<BookingViewModel>> CreateAsync(BookingViewModel bookingVM);
         Task<ServiceResult<Booking>> UpdateAsync(int id, string status);
         Task<ServiceResult<Booking>> DeleteAsync(int id);
+
+        Task<PaginatedList<BookingProfileDetailsViewModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }

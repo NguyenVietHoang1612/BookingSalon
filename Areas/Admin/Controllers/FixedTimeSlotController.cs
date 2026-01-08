@@ -18,17 +18,12 @@ namespace BookingSalon.Areas.Admin.Controllers
             _fixedTimeSlotService = fixedTimeSlotService;
         }
 
-        public async Task<IActionResult> Index(string term)
+        public async Task<IActionResult> Index(int? pageNumber, string term)
         {
-            var fixedTimeSlots = await _fixedTimeSlotService.GetAllListAsync();
+            int pageSize = 10;
+            var pagedData = await _fixedTimeSlotService.GetPagedListAsync(pageNumber ?? 1, pageSize, term);
 
-            if (!string.IsNullOrEmpty(term))
-            {
-                fixedTimeSlots = fixedTimeSlots.Where(f => f.TimeLabel.ToString().Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
-                ViewBag.SearchTerm = term;
-            }
-
-            return View(fixedTimeSlots);
+            return View(pagedData);
         }
 
         public IActionResult Create()

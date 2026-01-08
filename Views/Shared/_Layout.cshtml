@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingSalon.styles.css" asp-append-version="true" />
-
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+    @await RenderSectionAsync("Styles", required: false)
     <style>
         h1, h2, h3, h4, h5, h6 {
             color: #FFE2C0;

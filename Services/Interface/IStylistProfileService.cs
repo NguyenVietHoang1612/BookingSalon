@@ -1,4 +1,5 @@
 ﻿using BookingSalon.Areas.Admin.Models;
+using BookingSalon.Data.Repository;
 using BookingSalon.Models.Entities;
 
 namespace BookingSalon.Services.Interface
@@ -11,5 +12,6 @@ namespace BookingSalon.Services.Interface
         Task<ServiceResult<CreateStylistProfileVM>> CreateAsync(CreateStylistProfileVM stylistProfile);
         Task<ServiceResult<UpdateStylistProfileVM>> UpdateAsync(string id, UpdateStylistProfileVM stylistProfile);
         Task<ServiceResult<StylistProfile>> DeleteAsync(string id);
+        Task<PaginatedList<StylistProfile>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }
