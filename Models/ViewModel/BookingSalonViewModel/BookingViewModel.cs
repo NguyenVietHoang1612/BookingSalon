@@ -5,17 +5,17 @@ namespace BookingSalon.Models.ViewModel.BookingSalonViewModel
 {
     public class BookingViewModel
     {
-        //Customer Booking Create
-        public Booking NewBooking { get; set; }
-        public IEnumerable<BookingDetail>? BookingDetails { get; set; }
+        public BookingModel NewBooking { get; set; }
+        public List<BookingDetailModel>? BookingDetails { get; set; }
 
-        public IEnumerable<Branch>? Branches { get; set; }
-        public IEnumerable<TypeOfService>? TypeOfServices { get; set; }
-        public IEnumerable<FixedTimeSlot>? TimeSlots { get; set; }
-        public IEnumerable<Service>? Services { get; set; }
-        public IEnumerable<Users>? Stylists { get; set; }
-
-        public decimal? TotalPrice { get; set; }
-
+        public IEnumerable<BranchModel>? Branches { get; set; }
+        public IEnumerable<TypeOfServiceModel>? TypeOfServices { get; set; }
+        public IEnumerable<FixedTimeSlotModel>? TimeSlots { get; set; }
+        public IEnumerable<ServiceModel>? Services { get; set; }
+        public IEnumerable<StaffProfileModel>? Stylists { get; set; }
+        public IEnumerable<StaffProfileModel>? Skinners { get; set; }
+        public IEnumerable<UsersModel>? Customers { get; set; }
+        public decimal RankPercent { get; set; }
+        public string? CouponCode { get; set; }
     }
 }

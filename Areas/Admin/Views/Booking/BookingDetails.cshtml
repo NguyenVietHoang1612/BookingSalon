@@ -1,90 +1,31 @@
 ﻿@using BookingSalon.Models.ViewModel.BookingSalonViewModel
 @model BookingDetailViewModel
 @using System.Globalization
+@using BookingSalon.Models.Entities
 
 @{
     ViewData["Title"] = "Hóa đơn dịch vụ";
 }
 
-<style>
-    .invoice-container {
-        background-color: #fff;
-        padding: 40px;
-        color: #333;
-    }
-
-    .invoice-header {
-        border-bottom: 2px solid #f8f9fa;
-        padding-bottom: 20px;
-        margin-bottom: 30px;
-    }
-
-    .invoice-title {
-        color: #556080;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .info-label {
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 2px;
-    }
-
-    .info-content {
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .table-invoice thead th {
-        background-color: #f8f9fa;
-        border-top: none;
-        color: #555;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        padding: 12px;
-    }
-
-    .table-invoice tbody td {
-        padding: 15px 12px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .total-section {
-        border-top: 2px solid #f8f9fa;
-        padding-top: 20px;
-    }
-
-    .grand-total {
-        color: #d9534f;
-        font-size: 1.25rem;
-    }
-
-    @@media print {
-        .no-print {
-            display: none;
-        }
-
-        .invoice-container {
-            padding: 0;
-        }
-
-        .card {
-            border: none !important;
-            box-shadow: none !important;
-        }
-    }
-</style>
-
 <div class="container py-4">
     <div class="d-flex justify-content-between mb-4 no-print">
-        <a asp-action="Index" class="btn btn-light border rounded-pill px-3">
-            <i class="bi bi-arrow-left"></i> Quay lại
-        </a>
+        @if(User.IsInRole("Admin"))
+        {
+            <a asp-action="Index" class="btn btn-light border rounded-pill px-3">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+        }
+        else
+        {
+            <a asp-action="ReceptionIndex" class="btn btn-light border rounded-pill px-3">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+        }
+
         <div>
-            <button onclick="window.print()" class="btn btn-dark rounded-pill px-4">
-                <i class="bi bi-printer me-2"></i> In hóa đơn
-            </button>
+            <a asp-action="ExportInvoicePdf" asp-route-id="@Model.BookingId" class="btn btn-danger rounded-pill px-4">
+                <i class="bi bi-file-pdf me-2"></i> Tải PDF
+            </a>
         </div>
     </div>
 
@@ -106,8 +47,9 @@
                     <div class="info-label text-uppercase">Từ (Salon)</div>
                     <div class="info-content">
                         @Model.Branch_Name<br />
-                        <span class="fw-normal text-muted">@Model.Branch_Address</span><br />
-                        <span class="fw-normal text-muted">Stylist: @Model.Stylist_Name</span>
+                        <span class="fw-normal text-muted">@Model.Branch_Address</span><br/>
+                        <span class="fw-normal text-muted">Stylist: @Model.Stylist_Name</span><br/>
+                        <span class="fw-normal text-muted">Skinner: @Model.Skinner_Name</span>
                     </div>
                 </div>
                 <div class="col-sm-4">
@@ -151,8 +93,8 @@
                                         <div class="small text-muted">@detail.Service?.TypeOfService?.Type_Service_Name</div>
                                     </td>
                                     <td class="text-center">@detail.Service?.DurationInMinutes phút</td>
-                                    <td class="text-end">@detail.Service?.Price.ToString("N0") đ</td>
-                                    <td class="text-end fw-bold">@detail.Service?.Price.ToString("N0") đ</td>
+                                    <td class="text-end">@detail.BasePriceSnapshot.ToString("#,##0") đ</td>
+                                    <td class="text-end fw-bold">@detail.BasePriceSnapshot.ToString("#,##0") đ</td>
                                 </tr>
                             }
                         }
@@ -160,24 +102,47 @@
                 </table>
             </div>
 
+            @if ((Model.Status == BookingStatus.Completed || Model.Status == BookingStatus.Paid) && Model.ResultImage != null && Model.ResultImage.Any())
+            {
+                <div class="result-images-section mb-4">
+                    <div class="info-label text-uppercase mb-3">Hình ảnh kết quả dịch vụ</div>
+                    <div class="d-flex flex-wrap gap-3">
+                        @foreach (var imgPath in Model.ResultImage)
+                        {
+                            <div class="result-image-item">
+                                <img src="~/media/bookingresult/@imgPath"
+                                     class="rounded shadow-sm border"
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     alt="Kết quả dịch vụ"
+                                     onerror="this.src='/media/no-image.png'" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
             <div class="row justify-content-end">
                 <div class="col-md-5">
                     <div class="total-section">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Tổng tiền dịch vụ:</span>
-                            <span>@(Model.TotalPrice?.ToString("N0")) đ</span>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Thời gian dự kiến:</span>
+                            <span>@(Model.TotalDuration.ToString("#,##0")) phút</span>
                         </div>
-                        @* <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Thuế (0%):</span>
-                            <span>0 đ</span>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span>@(Model.TotalPrice.ToString("#,##0") ?? "0") <strong>đ</strong></span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted">Giảm giá:</span>
-                            <span>0 đ</span>
-                        </div> *@
+                            <span class="text-muted">Giảm giá qua mã:</span>
+                            <span>@(Model.DiscoutValueSnapshot != null ? Model.DiscoutValueSnapshot?.ToString("#,##0") : 0) đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Tổng giảm giá:</span>
+                            <span>@(Model.DiscountAmount.ToString("#,##0")) đ</span>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center border-top pt-3">
                             <h5 class="fw-bold mb-0">TỔNG CỘNG:</h5>
-                            <h4 class="fw-bold grand-total mb-0">@(Model.TotalPrice?.ToString("N0")) VNĐ</h4>
+                            <h4 class="fw-bold grand-total mb-0">@(Model.FinalPrice.ToString("#,##0")) VNĐ</h4>
                         </div>
                     </div>
                 </div>
@@ -186,21 +151,128 @@
             <div class="mt-5 pt-5 border-top">
                 <div class="row">
                     <div class="col-sm-8">
-                        <p class="small text-muted italic">Vui lòng hoàn tất thanh toán tại quầy sau khi sử dụng dịch vụ. Cảm ơn quý khách đã tin tưởng BookingSalon!</p>
+                        @{
+                            string paymentType = Model.PaymentMethod ?? "Lịch đặt này chưa được thanh toán";
+                        }
+
+                        @if (paymentType == "VNPay")
+                        {
+                            <div class="d-flex align-items-center p-3 border rounded-3 bg-light">
+                                <img src="~/media/payments/vnpay_logo.jpg" alt="VNPay" style="height: 50px; margin-right: 15px;" />
+                                <div>
+                                    <p class="mb-0 fw-bold text-primary">Đã thanh toán qua VNPay</p>
+                                    <p class="small text-muted mb-0">Giao dịch an toàn và nhanh chóng. Cảm ơn quý khách!</p>
+                                </div>
+                            </div>
+                        }
+                        else if (paymentType == "Tiền mặt")
+                        {
+                            <div class="d-flex align-items-center p-3 border rounded-3 bg-light">
+                                <img src="~/media/payments/cash_icon.jpg" alt="Tiền mặt" style="height: 50px; margin-right: 15px;" />
+                                <div>
+                                    <p class="mb-0 fw-bold text-success">Đã thanh toán Tiền mặt</p>
+                                    <p class="small text-muted mb-0">Giao dịch an toàn và nhanh chóng. Cảm ơn quý khách!</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center p-3 border rounded-3 bg-light">
+                                <div>
+                                    <p class="mb-0 fw-bold text-success">Lịch đặt này chưa được thanh toán</p>
+                                </div>
+                            </div>
+                        }
                     </div>
+
                     <div class="col-sm-4 text-center d-flex flex-column justify-content-center align-content-center">
                         <div class="info-label text-uppercase mb-4">Trạng thái đơn đặt</div>
 
                         @{
-                            var statusClass = Model.Status == "pending" ? "bg-warning" : (Model.Status == "confirm" ? "bg-success" : "bg-primary");
-                            var statusText = Model.Status == "pending" ? "Chờ xác nhận" : (Model.Status == "confirm" ? "Đã xác nhận" : "Hoàn thành");
+                            var statusText = Model.Status == 0 ? "Chờ xác nhận" :
+                            (Model.Status == BookingStatus.Confirmed ? "Đã xác nhận" :
+                            (Model.Status == BookingStatus.InProgress ? "Đang thực hiện" :
+                            (Model.Status == BookingStatus.Completed ? "Đã hoàn thành" :
+                            (Model.Status == BookingStatus.Paid ? "Đã thanh toán" :
+                            (Model.Status == BookingStatus.Canceled ? "Đã hủy" : "Lỗi trạng thái")))));
                         }
 
-                  
-                        <h5 class="fw-bold text-uppercase bg-success rounded-2 text-white">@statusText</h5>
+                        <h5 class="fw-bold text-uppercase bg-success rounded-2 text-white py-2">@statusText</h5>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .invoice-container {
+            background-color: #fff;
+            padding: 40px;
+            color: #333;
+        }
+
+        .invoice-header {
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .invoice-title {
+            color: #556080;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .info-content {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .table-invoice thead th {
+            background-color: #f8f9fa;
+            border-top: none;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 12px;
+        }
+
+        .table-invoice tbody td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-section {
+            border-top: 2px solid #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .grand-total {
+            color: #d9534f;
+            font-size: 1.25rem;
+        }
+
+        @@media print {
+            .no-print {
+                display: none;
+            }
+
+            .invoice-container {
+                padding: 0;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+}

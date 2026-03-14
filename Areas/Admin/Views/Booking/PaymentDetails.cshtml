@@ -1,0 +1,287 @@
+﻿@using BookingSalon.Models.ViewModel.BookingSalonViewModel
+@model BookingDetailViewModel
+@using System.Globalization
+@using BookingSalon.Models.Entities
+
+@{
+    ViewData["Title"] = "Thanh toán hóa đơn";
+}
+
+<div class="container py-5">
+    @if(User.IsInRole("Admin"))
+    {
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm bg-white">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <a asp-action="ReceptionIndex" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm bg-white">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    }
+
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="invoice-body p-4 p-md-5 bg-white">
+                    <div class="d-flex justify-content-between mb-5">
+                        <div>
+                            <h2 class="fw-bold text-uppercase mb-1" style="letter-spacing: 2px; color: #1a1a1a;">Hóa đơn dịch vụ</h2>
+                            <span class="badge bg-light text-dark border">Mã đơn: #@Model.BookingId</span>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="fw-bold text-primary mb-0">LUXURY SALON</h4>
+                            <p class="text-muted small mb-0">Premium Hair Styling</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5 gy-3">
+                        <div class="col-6 col-md-4">
+                            <p class="text-label">CHI NHÁNH</p>
+                            <p class="info-text">@Model.Branch_Name</p>
+                            <p class="text-muted small">@Model.Branch_Address</p>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <p class="text-label">KHÁCH HÀNG</p>
+                            <p class="info-text text-primary">@Model.Customer_Name</p>
+                            <p class="text-muted small">@Model.Customer_Phone</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <p class="text-label">THỜI GIAN ĐẶT</p>
+                            <p class="info-text text-dark">@Model.TimeSlot</p>
+                            <p class="text-muted small">@Model.Date_Booking.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <thead class="border-bottom text-muted small uppercase">
+                                <tr>
+                                    <th scope="col" style="min-width: 200px;">DỊCH VỤ</th>
+                                    <th scope="col" class="text-center">THỜI LƯỢNG</th>
+                                    <th scope="col" class="text-end">ĐƠN GIÁ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.bookingDetails)
+                                {
+                                    <tr class="border-bottom-dashed">
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-bold text-dark">@detail.Service?.Service_Name</div>
+                                                    <div class="text-muted x-small">@detail.Service?.TypeOfService?.Type_Service_Name</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center text-muted">@detail.Service?.DurationInMinutes PHÚT</td>
+                                        <td class="text-end fw-semibold">@detail.Service?.Base_Price.ToString("#, ##0") <span class="text-muted small">đ</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row justify-content-end mt-4">
+                        <div class="col-md-6 col-lg-5">
+                            <div class="d-flex justify-content-between py-2">
+                                <span class="text-muted">Thời gian dự kiến:</span>
+                                <span class="fw-semibold">@Model.TotalDuration phút</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2">
+                                <span class="text-muted">Tạm tính:</span>
+                                <span class="fw-semibold">@Model.TotalPrice.ToString("#,##0") đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 text-danger">
+                                <span class="">Giảm giá:</span>
+                                <span class="fw-semibold">- @Model.DiscountAmount.ToString("#,##0") đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                <span class="h5 fw-bold mb-0">TỔNG CỘNG</span>
+                                <span class="h4 fw-bold text-primary mb-0">@Model.FinalPrice.ToString("#,##0") VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 no-print">
+            <div class="card shadow-lg border-0 rounded-4 sticky-top" style="top: 20px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 border-start border-4 border-primary ps-3">QUẢN LÝ ĐƠN HÀNG</h5>
+
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase fw-bold mb-2">Trạng thái hiện tại</label>
+                        @{
+                            var badgeColor = Model.Status == BookingStatus.Completed ? "bg-success-subtle text-success" :
+                            Model.Status == BookingStatus.InProgress ? "bg-info-subtle text-info" : "bg-warning-subtle text-warning";
+                        }
+                        <div class="d-flex align-items-center p-3 rounded-3 @badgeColor border">
+                            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                            <span class="fw-bold">@Model.Status</span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 op-1">
+
+                    @if (Model.Status != BookingStatus.Paid && Model.Status != BookingStatus.Canceled)
+                    {
+                        <form asp-action="ConfirmPayment" asp-controller="Payment" method="post">
+                            <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                            <input type="hidden" name="totalAmount" value="@Model.FinalPrice.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" />
+
+                            <label class="text-muted small text-uppercase fw-bold mb-3">Chọn hình thức thanh toán</label>
+
+                            <div class="payment-options d-grid gap-3 mb-4">
+                                <label class="payment-card-option">
+                                    <input type="radio" name="paymentMethod" value="Tiền mặt" checked>
+                                    <div class="option-content border rounded-3 p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box bg-success text-white rounded-circle me-3">
+                                                <i class="bi bi-cash-stack"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">Tiền mặt</div>
+                                                <div class="small text-muted">Thanh toán trực tiếp</div>
+                                            </div>
+                                            <i class="bi bi-check-circle-fill ms-auto check-icon text-success"></i>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="payment-card-option">
+                                    <input type="radio" name="paymentMethod" value="VNPay">
+                                    <div class="option-content border rounded-3 p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box bg-primary text-white rounded-circle me-3">
+                                                <i class="bi bi-qr-code"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">VNPAY / QR</div>
+                                                <div class="small text-muted">Chuyển khoản online</div>
+                                            </div>
+                                            <i class="bi bi-check-circle-fill ms-auto check-icon text-primary"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 shadow fw-bold text-uppercase">
+                                <i class="bi bi-shield-check me-2"></i> Xác nhận & Hoàn tất
+                            </button>
+                        </form>
+                    }
+                    else if (Model.Status == BookingStatus.Paid)
+                    {
+                        <div class="text-center py-4">
+                            <div class="mb-3 text-success">
+                                <i class="bi bi-patch-check-fill" style="font-size: 4rem;"></i>
+                            </div>
+                            <h5 class="fw-bold">Giao dịch đã hoàn tất</h5>
+                            <p class="text-muted small">Cảm ơn khách hàng đã sử dụng dịch vụ tại Luxury Salon!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f4f7f9;
+        }
+
+        .text-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #a0aec0;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .info-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .border-bottom-dashed {
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .x-small {
+            font-size: 0.75rem;
+        }
+
+        /* Payment Option UI */
+        .payment-card-option {
+            cursor: pointer;
+            display: block;
+        }
+
+            .payment-card-option input {
+                display: none;
+            }
+
+            .payment-card-option .option-content {
+                transition: all 0.2s;
+                position: relative;
+                border: 2px solid #edf2f7 !important;
+            }
+
+            .payment-card-option input:checked + .option-content {
+                border-color: var(--bs-primary) !important;
+                background-color: #f0f7ff;
+            }
+
+            .payment-card-option .check-icon {
+                display: none;
+            }
+
+            .payment-card-option input:checked + .option-content .check-icon {
+                display: block;
+            }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .col-lg-8 {
+                width: 100% !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #eee !important;
+            }
+
+            body {
+                background: white;
+            }
+        }
+    </style>
+}

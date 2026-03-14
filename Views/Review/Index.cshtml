@@ -1,0 +1,107 @@
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<ReviewModel>
+
+@{
+    ViewData["Title"] = "Lịch sử đánh giá";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="mb-5 d-flex justify-content-between align-items-end">
+                <div>
+                    <h2 class="fw-bold text-dark border-start border-4 border-warning ps-3">Lịch sử đánh giá</h2>
+                    <p class="text-muted ps-3 mb-0">Cảm ơn bạn đã chia sẻ trải nghiệm dịch vụ</p>
+                </div>
+            </div>
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+                    <i class="bi bi-chat-heart text-light-emphasis" style="font-size: 4rem;"></i>
+                    <p class="mt-3 text-muted">Bạn chưa viết đánh giá nào.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden position-relative review-card">
+                        <div class="position-absolute" style="top: 15px; right: 15px; z-index: 10;">
+                            <button type="button" class="btn btn-delete-custom"
+                                    onclick="confirmDelete('@Url.Action("Delete", "Review", new { id = item.Id })', 'đánh giá @item.Comment')">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <div class="col-md-8 p-4 p-lg-5">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= item.Rating ? "bi-star-fill text-warning" : "bi-star text-muted") fs-5"></i>
+                                            }
+                                        </div>
+                                        <span class="badge rounded-pill bg-light text-muted fw-normal border">
+                                            @item.Created_At.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </div>
+
+                                    <div class="review-content mb-4">
+                                        <p class="fs-5 text-dark italic font-serif">"@item.Comment"</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 bg-light p-4 p-lg-5 border-start d-flex flex-column justify-content-center">
+                                    <h6 class="text-uppercase fw-bold small text-muted mb-3" style="letter-spacing: 1px;">Chi tiết đơn hàng</h6>
+
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="text-muted small">Ngày làm:</span>
+                                        <span class="fw-bold small text-dark">@item.Booking?.Booking_Date.ToString("dd/MM/yyyy")</span>
+                                    </div>
+
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="text-muted small">Chi nhánh:</span>
+                                        <span class="fw-bold small text-dark text-end">@(item.Booking?.Branch?.Branch_Name ?? "Salon T&D")</span>
+                                    </div>
+
+                                    <hr class="my-3 opacity-10">
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small">Tổng tiền:</span>
+                                        <span class="text-danger fw-bold fs-5">@(item.Booking?.FinalPrice.ToString("#,##0"))đ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-delete-custom {
+        background-color: #fff;
+        color: #dc3545;
+        border: 1px solid #f8d7da;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        padding: 0;
+    }
+
+        .btn-delete-custom:hover {
+            background-color: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+            transform: rotate(90deg);
+        }
+</style>

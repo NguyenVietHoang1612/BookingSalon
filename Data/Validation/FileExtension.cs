@@ -11,7 +11,7 @@ namespace BookingSalon.Data.Validation
             
             if (value is IFormFile file)
             {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif" };
                 var fileExtension = Path.GetExtension(file.FileName).ToLower();
 
                 if (!allowedExtensions.Contains(fileExtension))

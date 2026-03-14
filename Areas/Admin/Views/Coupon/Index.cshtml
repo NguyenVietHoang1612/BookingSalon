@@ -1,0 +1,245 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@model PaginatedList<CouponModel>
+
+@{
+    ViewData["title"] = "Quản lý Coupon";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+
+        <!-- Header -->
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý Coupon</h2>
+            </div>
+
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text"
+                                       value="@ViewBag.SearchTerm"
+                                       name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm mã coupon...">
+                                <button type="submit"
+                                        class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="col-sm-4 col-12">
+                            <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                               asp-action="Create"
+                               style="padding: 0.6rem 1.5rem;">
+                                <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                            </a>
+                        </div>
+                   }
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width:80px">Id</th>
+                        <th>Mã</th>
+                        <th>Loại</th>
+                        <th>Giá trị</th>
+                        <th>Đơn tối thiểu</th>
+                        <th>Đã dùng</th>
+                        <th>Hết hạn</th>
+                        <th>Trạng thái</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th class="text-center">Hành động</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isExpired = item.Expires_At < DateTime.Now;
+                        var isOutOfUsage = item.Used_Count >= item.Usage_Limit;
+
+                        <tr>
+                            <td class="fw-bold text-dark">@item.Id</td>
+
+                            <td>
+                                <span class="badge bg-dark" style="font-size:0.85rem">
+                                    @item.Code
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (item.Discount_Type == DiscountType.Percentage)
+                                {
+                                    <span class="text-success fw-bold">Phần trăm (%)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-primary fw-bold">Số tiền cố định</span>
+                                }
+                            </td>
+
+                            <td class="fw-bold text-success">
+                                @if (item.Discount_Type == DiscountType.Percentage)
+                                {
+                                    @(item.Discount_value.ToString("0.##") + " %")
+                                }
+                                else
+                                {
+                                    @(item.Discount_value.ToString("#,##0") + " đ")
+                                }
+                            </td>
+
+                            <td class="text-muted">
+                                @item.Min_Order_Amount.ToString("#,##0") đ
+                            </td>
+
+                            <td>
+                                <span class="text-muted">
+                                    @item.Used_Count / @item.Usage_Limit
+                                </span>
+                            </td>
+
+                            <td class="text-muted">
+                                @{
+                                    var remaining = item.Expires_At - DateTime.Now;
+                                }
+
+                                @if (remaining.TotalSeconds > 0)
+                                {
+                                    <span>@(remaining.Days) ngày @(remaining.Hours)h:@(remaining.Minutes) phút</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Hết hạn</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (!item.IsActive)
+                                {
+                                    <span class="badge bg-secondary">Tắt</span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="badge bg-danger">Hết hạn</span>
+                                }
+                                else if (isOutOfUsage)
+                                {
+                                    <span class="badge bg-warning text-dark">Hết lượt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Đang hoạt động</span>
+                                }
+                            </td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-center pe-4">
+                                    <a asp-action="Update"
+                                    asp-route-id="@item.Id"
+                                    class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="confirmDelete('@Url.Action("Delete", "Coupon", new { id = item.Id })', 'Coupon: @item.Code')">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / Tổng <b>@Model.TotalPages</b> trang
+            </div>
+
+            <div class="col-sm-6">
+                <nav>
+                    <ul class="pagination justify-content-end mb-0">
+
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-pageNumber="1"
+                               asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-pageNumber="@(Model.PageIndex - 1)"
+                               asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-pageNumber="@i"
+                                       asp-route-term="@ViewBag.SearchTerm">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-pageNumber="@(Model.PageIndex + 1)"
+                               asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-pageNumber="@Model.TotalPages"
+                               asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+}

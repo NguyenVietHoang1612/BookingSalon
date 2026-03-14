@@ -1,0 +1,481 @@
+﻿@using BookingSalon.Models.ViewModel
+@model HomeViewModel;
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<header class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content text-center">
+        <h1>Luxury Hair Salon</h1>
+        <p>Nơi tạo nên phong cách & đẳng cấp của bạn</p>
+    </div>
+</header>
+
+<section id="about" class="section-padding">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4">
+                <img src="/Images/Salon2.jpg" class="img-fluid rounded shadow" alt="">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="section-title">Về Chúng Tôi</h2>
+                <p>
+                    Luxury Hair Salon là chuỗi salon tóc cao cấp, nơi hội tụ những stylist
+                    hàng đầu với hơn 10 năm kinh nghiệm trong ngành làm đẹp.
+                </p>
+                <p>
+                    Chúng tôi không chỉ cắt tóc, mà còn tạo nên phong cách phù hợp với
+                    từng cá nhân, giúp bạn tự tin hơn trong cuộc sống.
+                </p>
+                <ul class="list-unstyled about-list">
+                    <li><i class="bi bi-check-circle"></i> Công nghệ tạo kiểu hiện đại</li>
+                    <li><i class="bi bi-check-circle"></i> Sản phẩm chăm sóc tóc cao cấp</li>
+                    <li><i class="bi bi-check-circle"></i> Không gian sang trọng</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="stylist-section" class="section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Đội Ngũ Stylist</h2>
+
+        <div class="hairstyle-slider-wrapper">
+            <button class="slider-btn prev">&#10094;</button>
+
+            <div class="hairstyle-slider stylist-slider">
+                
+
+                @foreach (var stylist in Model.StylistLists)
+                {
+                    if (!string.IsNullOrEmpty(stylist.nameImage))
+                    {
+                        <div class="hairstyle-card stylist-card position-relative">
+                            <img src="/media/users/@stylist.nameImage" class="w-100 h-100 object-fit-cover">
+
+                            <div class="position-absolute top-0 start-0 m-2 px-2 py-1 bg-dark bg-opacity-75 text-warning rounded shadow-sm">
+                                <i class="fas fa-star"></i> @stylist.rating.ToString("0.0")
+                            </div>
+
+                            <div class="overlay p-3">
+                                <h6 class="text-white text-truncate m-0">@stylist.stylistName</h6>
+                                <span class="text-white small">Chi nhánh: @stylist.AddressBranch</span>
+                            </div>
+                        </div>
+                    }
+                    
+                }
+            </div>
+
+            <button class="slider-btn next">&#10095;</button>
+        </div>
+    </div>
+</section>
+
+<section id="skinner-section" class="section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Đội Ngũ Skinner</h2>
+
+        <div class="hairstyle-slider-wrapper">
+            <button class="slider-btn prev">&#10094;</button>
+
+            <div class="hairstyle-slider stylist-slider">
+
+
+                @foreach (var skinner in Model.SkinnertList)
+                {
+                    if (!string.IsNullOrEmpty(skinner.nameImage))
+                    {
+                        <div class="hairstyle-card stylist-card">
+                            <img src="/media/users/@skinner.nameImage">
+                            <div class="overlay">
+                                <h6 class="text-white">@skinner.skinnerName</h6>
+                                <span class="text-white">Chi nhánh: @skinner.AddressBranch</span>
+                            </div>
+                        </div>
+                    }
+
+                }
+            </div>
+
+            <button class="slider-btn next">&#10095;</button>
+        </div>
+    </div>
+</section>
+
+<section id="achievement-section" class="section-padding bg-dark text-white">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">
+            Kiểu Tóc Nổi Bật
+        </h2>
+
+        <div class="hairstyle-slider-wrapper">
+            <button class="slider-btn prev">&#10094;</button>
+            
+            <div class="hairstyle-slider">
+
+                @foreach (var stylist in Model.StylistImageList)
+                {
+                        <div class="hairstyle-card">
+                            <img src="~/media/portfolios/@stylist.nameImage">
+                            <div class="overlay">
+                                <h5>@stylist.title</h5>
+                                <span>Stylist: @stylist.nameStylist</span>
+                            </div>
+                        </div>
+                }
+                
+            </div>
+
+            <button class="slider-btn next">&#10095;</button>
+        </div>
+    </div>
+</section>
+
+<section id="news" class="section-padding">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="section-title mb-0">Tin Tức & Xu Hướng</h2>
+                <p class="text-muted mt-2">Cập nhật những bí quyết làm đẹp mới nhất từ chuyên gia</p>
+            </div>
+            <a asp-controller="News" asp-action="Index" class="btn btn-outline-gold">Xem tất cả</a>
+        </div>
+
+        <div class="row g-4">
+            @if (Model.NewsList != null && Model.NewsList.Any())
+            {
+                @foreach (var news in Model.NewsList)
+                {
+                    <div class="col-md-4">
+                        <div class="news-card h-100 border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden" style="height: 220px;">
+                                <img src="@(string.IsNullOrEmpty(news.Thumbnail) ? "/images/default-news.jpg" : "/media/news/" + news.Thumbnail)"
+                                     class="w-100 h-100 object-fit-cover transition-transform" alt="@news.Title">
+                            </div>
+                            <div class="p-4">
+                                <small class="text-gold fw-bold">@news.PublishedDate.ToString("dd/MM/yyyy")</small>
+                                <h5 class="fw-bold mt-2 mb-3">
+                                    <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id"
+                                       class="text-dark text-decoration-none hover-gold">
+                                        @news.Title
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-0 text-truncate-2">
+                                    @news.Summary
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted italic">Hiện chưa có tin tức nào mới nhất.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Styles {
+<style>
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .hero-section {
+            height: 100vh;
+            background: url('/Images/Salon1.jpg') center/cover;
+            position: relative;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+        }
+
+        .hero-content {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+        }
+
+  
+        .about-list li {
+            margin-bottom: 10px;
+        }
+
+        .stylist-card {
+            height: 340px;
+        }
+
+        .stylist-card img {
+            filter: grayscale(20%);
+        }
+
+        .stylist-card:hover img {
+            filter: grayscale(0%);
+        }
+
+        .hairstyle-slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            max-width: 1420px; 
+            margin: 0 auto;
+        }
+
+        .hairstyle-slider {
+            display: flex;
+            gap: 30px;
+            transition: transform 0.5s ease;
+            width: max-content;
+        }
+
+        .hairstyle-card {
+            flex: 0 0 260px;
+            width: 260px;
+            height: 340px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+            .hairstyle-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.6s ease;
+            }
+
+            .hairstyle-card:hover img {
+                transform: scale(1.1);
+            }
+
+            .hairstyle-card .overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                padding: 20px;
+            }
+
+            .hairstyle-card h5 {
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .hairstyle-card span {
+                font-size: 14px;
+                opacity: 0.8;
+            }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6); 
+            border: none;
+            color: #c9a14a; 
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+            .slider-btn:hover {
+                background: #c9a14a;
+                color: white;
+            }
+
+
+            .slider-btn.prev {
+                left: 10px;
+            }
+
+            .slider-btn.next {
+                right: 10px;
+            }
+
+        .news-card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+            .news-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .explore-section {
+            background: #f8f9fa;
+        }
+
+        .explore-card {
+            background: white;
+            padding: 35px 20px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+            .explore-card i {
+                font-size: 36px;
+                color: #c9a14a;
+                margin-bottom: 15px;
+            }
+
+            .explore-card h5 {
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+
+            .explore-card p {
+                font-size: 15px;
+                color: #666;
+            }
+
+            .explore-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+            }
+
+        .btn-outline-gold {
+            color: #c9a14a;
+            border-color: #c9a14a;
+            padding: 8px 25px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-gold:hover {
+                background: #c9a14a;
+                color: white;
+            }
+
+        .news-card {
+            transition: transform 0.3s ease;
+            background: #fff;
+        }
+
+            .news-card:hover {
+                transform: translateY(-8px);
+            }
+
+        .object-fit-cover {
+            object-fit: cover;
+        }
+
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .hover-gold:hover {
+            color: #c9a14a !important;
+        }
+
+        .transition-transform {
+            transition: transform 0.5s ease;
+        }
+
+        .news-card:hover .transition-transform {
+            transform: scale(1.1);
+        }
+
+                            </style>
+                        }
+
+    @section Scripts {
+    <script>
+                function initSlider(containerId) {
+            const container = document.querySelector(containerId);
+            if (!container) return;
+
+            const slider = container.querySelector('.hairstyle-slider');
+            const cards = container.querySelectorAll('.hairstyle-card');
+            const nextBtn = container.querySelector('.next');
+            const prevBtn = container.querySelector('.prev');
+
+            if (cards.length === 0) return;
+
+            let index = 0;
+
+            function getVisibleCards() {
+                const wrapper = container.querySelector('.hairstyle-slider-wrapper');
+                const cardWidth = cards[0].offsetWidth + 30; 
+                return Math.floor(wrapper.offsetWidth / cardWidth);
+            }
+
+            function updateSlider() {
+                const cardWidth = cards[0].offsetWidth + 30;
+                const visibleCards = getVisibleCards();
+                const maxIndex = cards.length - visibleCards;
+
+
+                if (cards.length <= visibleCards) {
+                    if (nextBtn) nextBtn.style.display = 'none';
+                    if (prevBtn) prevBtn.style.display = 'none';
+                    slider.style.transform = 'translateX(0)';
+                    slider.style.justifyContent = 'center'; 
+                    return;
+                } else {
+                    if (nextBtn) nextBtn.style.display = 'flex';
+                    if (prevBtn) prevBtn.style.display = 'flex';
+                    slider.style.justifyContent = 'flex-start';
+                }
+
+                if (index > maxIndex) index = maxIndex;
+                if (index < 0) index = 0;
+
+                slider.style.transform = `translateX(-${index * cardWidth}px)`;
+            }
+
+            nextBtn.addEventListener('click', () => {
+                const visibleCards = getVisibleCards();
+                const maxIndex = cards.length - visibleCards;
+                index = (index < maxIndex) ? index + 1 : 0; 
+                updateSlider();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                const visibleCards = getVisibleCards();
+                const maxIndex = cards.length - visibleCards;
+                index = (index > 0) ? index - 1 : maxIndex; 
+                updateSlider();
+            });
+
+            window.addEventListener('resize', updateSlider);
+
+            updateSlider();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSlider('#stylist-section');    
+            initSlider('#skinner-section');    
+            initSlider('#achievement-section');
+        });
+    </script>
+    }

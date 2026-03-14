@@ -1,5 +1,5 @@
 ﻿@using BookingSalon.Models.Entities
-@model Service
+@model ServiceModel
 @{
     ViewData["title"] = "Thêm dịch vụ";
 }
@@ -31,9 +31,27 @@
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Giá dịch vụ</label>
-                        <input asp-for="Price" class="form-control" placeholder="Nhập giá dịch vụ" />
-                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                        <label class="form-label fw-semibold">Giá cơ bản dịch vụ</label>
+                        <input asp-for="Base_Price" class="form-control" placeholder="Nhập giá dịch vụ" />
+                        <span asp-validation-for="Base_Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Giá khuyến mãi</label>
+                        <input asp-for="Promotion_Price" class="form-control" placeholder="Nhập giá khuyến mãi" />
+                        <span asp-validation-for="Promotion_Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Ngày bắt đầu giảm giá</label>
+                        <input type="date" asp-for="Promotion_Start" class="form-control" placeholder="Ngày giảm giá" />
+                        <span asp-validation-for="Base_Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Ngày kết thúc giảm giá</label>
+                        <input type="date" asp-for="Promotion_End" class="form-control" placeholder="Ngày hết giảm giá" />
+                        <span asp-validation-for="Base_Price" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
@@ -64,13 +82,12 @@
                         <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-add fw-bold">
-                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                    <div class="col-12 d-flex gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary fw-bold px-4">
+                            <i class="bi bi-save me-2"></i> Thêm mới dịch vụ
                         </button>
-
-                        <a asp-action="Index" class="btn btn-danger fw-bold">
-                            <i class="bi bi-x-lg me-2">Hủy thêm mới</i>
+                        <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                            <i class="bi bi-x-lg me-2"></i> Hủy bỏ
                         </a>
                     </div>
                 </div>
@@ -81,6 +98,7 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script src="/js//ChoicesSelectList.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -1,0 +1,399 @@
+﻿@using BookingSalon.Areas.Admin.Models;
+@using BookingSalon.Areas.Admin.Models.ViewModel
+@model StatisticalViewModel
+
+<div class="container-fluid py-4" style="background-color: #fdf2f8; min-height: 100vh;">
+    <h2 class="title-main fw-bold mb-4">Dashboard Quản trị</h2>
+
+    @* Thống kê tổng quan *@
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #ec4899; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng khách hàng</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountCustomer</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #eab308; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng stylist</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountStylist</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #f59e0b; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng skinner</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountSkinner</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #10b981; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng reception</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountReception</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #3b82f6; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng chi nhánh</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountBranch</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #fbbf24; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng số hạng đang có</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountRank</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #059669; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng dịch vụ đang hoạt động</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountServiceActive</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #f43f5e; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng Coupon</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountCoupon</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #db2777; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng tin tức đang hoạt động</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountNews</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #a855f7; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng lịch hẹn</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.CountBooking</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-0 shadow-sm text-white h-100" style="background-color: #4b5563; border-radius: 15px;">
+                <div class="card-body p-3">
+                    <p class="mb-1 opacity-75 small">Tổng doanh thu trong tháng</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.TotalRevenueinMounth.ToString("#,##0") đ</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Biểu đồ tổng số lượng *@
+    <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 15px;">
+        <h4 class="fw-bold mb-4 text-center">Biểu đồ thống kê tổng số lượng hệ thống đang hoạt động</h4>
+        <div id="main-chart-count" style="height: 400px; width: 100%;"></div>
+    </div>
+
+    @* Bộ lọc thời gian cho Top dữ liệu *@
+    <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 15px;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="fw-bold mb-0">Lọc Top dữ liệu</h4>
+                <small class="text-muted">Thống kê hiệu suất nhân viên và dịch vụ</small>
+            </div>
+            <div class="d-flex gap-2 align-items-end flex-wrap">
+                <div class="input-group" style="width: 180px;">
+                    <label class="form-label w-100 small text-secondary">Từ ngày</label>
+                    <input type="date" id="topStartDate" class="form-control" style="border-radius: 8px;">
+                </div>
+                <div class="input-group" style="width: 180px;">
+                    <label class="form-label w-100 small text-secondary">Đến ngày</label>
+                    <input type="date" id="topEndDate" class="form-control" style="border-radius: 8px;">
+                </div>
+                <button class="btn btn-primary p-4 d-flex align-items-center justify-content-center" onclick="loadDynamicStats()" style="border-radius: 8px; height: 38px;">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+                <button id="btnExportExcel" class="btn btn-success p-4 d-flex align-items-center justify-content-center" style="border-radius: 8px; height: 38px;">
+                    <i class="fas fa-file-excel"></i> Xuất Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        @* Top Stylist *@
+        <div class="col-lg-6 col-md-6">
+            <div class="card border-0 shadow-sm p-4" style="border-radius: 15px; height: 100%;">
+                <h4 class="fw-bold mb-3 text-primary"><i class="fas fa-cut me-2"></i>Top Stylist</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody id="stylistTableBody">
+                            @foreach (var item in Model.StylistRevenues.Take(5))
+                            {
+                                <tr>
+                                    <td class="ps-0">
+                                        <div class="fw-bold text-truncate" style="max-width: 250px;">@item.StaffName</div>
+                                        <div class="small text-muted">@item.Email</div>
+                                        <span class="badge bg-light text-dark border mt-1">@item.BranchName</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <div class="fw-bold text-success">@item.TotalRevenue.ToString("N0")đ</div>
+                                        <small class="text-muted">@item.TotalBookings ca</small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @* Top Skinner *@
+        <div class="col-lg-6 col-md-6">
+            <div class="card border-0 shadow-sm p-4" style="border-radius: 15px; height: 100%;">
+                <h4 class="fw-bold mb-3 text-warning"><i class="fas fa-magic me-2"></i>Top Skinner</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody id="skinnerTableBody">
+                            @foreach (var item in Model.SkinnerRevenues.Take(5))
+                            {
+                                <tr>
+                                    <td class="ps-0">
+                                        <div class="fw-bold text-truncate" style="max-width: 250px;">@item.StaffName</div>
+                                        <div class="small text-muted">@item.Email</div>
+                                        <span class="badge bg-light text-dark border mt-1">@item.BranchName</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <div class="fw-bold text-success">@item.TotalRevenue.ToString("N0")đ</div>
+                                        <small class="text-muted">@item.TotalBookings ca</small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Dịch vụ *@
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-4" style="border-radius: 15px;">
+                <h4 class="fw-bold mb-4 text-info"><i class="fas fa-chart-pie me-2"></i>Tỷ trọng và Hiệu quả Dịch vụ</h4>
+                <div class="row" id="serviceContainer">
+                    @foreach (var sv in Model.ServiceRevenues.Take(6)) 
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-bold text-secondary">@sv.ServiceName</span>
+                                <span class="fw-bold">@sv.Percentage.ToString("0.0")%</span>
+                            </div>
+                            <div class="progress" style="height: 12px; border-radius: 10px;">
+                                @{
+                                    var color = sv.Percentage > 30 ? "bg-success" : (sv.Percentage > 15 ? "bg-primary" : "bg-info");
+                                }
+                                <div class="progress-bar @color progress-bar-striped progress-bar-animated" style="width: @sv.Percentage%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">@sv.UsageCount lượt dùng</small>
+                                <small class="fw-bold text-dark">@sv.TotalRevenue.ToString("N0") đ</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Doanh thu *@
+    <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 15px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Doanh thu giữa các chi nhánh</h4>
+                <small class="text-muted">Dữ liệu tổng hợp theo từng cơ sở</small>
+            </div>
+            <div class="d-flex gap-2 align-items-end">
+                <div class="input-group" style="width: 200px;">
+                    <label class="form-label w-100 small text-secondary">Từ ngày</label>
+                    <input type="date" id="branchStartDate" class="form-control">
+                </div>
+                <div class="input-group" style="width: 200px;">
+                    <label class="form-label w-100 small text-secondary">Đến ngày</label>
+                    <input type="date" id="branchEndDate" class="form-control">
+                </div>
+                <button class="btn btn-primary d-flex d-flex align-items-center justify-content-center" style="padding: 12px" onclick="loadBranchRevenue()">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+            </div>
+        </div>
+        <div id="branch-revenue-chart" style="height: 400px; width: 100%;"></div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+}
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+        var branchChart;
+
+        $(document).ready(function () {
+            var mainChartOptions = {
+                series: [{
+                    name: 'Số lượng',
+                    data: [
+                        @ViewBag.CountCustomer,
+                        @ViewBag.CountStylist,
+                        @ViewBag.CountSkinner,
+                        @ViewBag.CountReception,
+                        @ViewBag.CountBranch,
+                        @ViewBag.CountRank,
+                        @ViewBag.CountServiceActive,
+                        @ViewBag.CountCoupon,
+                        @ViewBag.CountNews,
+                        @ViewBag.CountBooking,
+                    ]
+                }],
+                chart: { type: 'bar', height: 450, toolbar: { show: true } },
+                plotOptions: { bar: { distributed: true, borderRadius: 6, columnWidth: '60%', dataLabels: { position: 'top' } } },
+                colors: ['#ec4899', '#eab308', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#059669', '#f43f5e', '#fbbf24', '#db2777', '#6366f1'],
+                
+                xaxis: {
+                    categories: ['Khách hàng', 'Stylist', 'Skinner', 'Reception', 'Chi nhánh', 'Hạng', 'Dịch vụ', 
+                    'Tổng coupon', 'Tổng tin tức', 'Tổng lịch hẹn trong tháng'],
+                    labels: { rotate: -45, style: { fontSize: '12px', fontWeight: 'bold' } }
+                },
+                dataLabels: { enabled: true, offsetY: -20, style: { colors: ['#333'] } },
+                legend: { show: false },
+                title: { align: 'center', style: { fontSize: '18px' } }
+            };
+            var mainChart = new ApexCharts(document.querySelector("#main-chart-count"), mainChartOptions);
+            mainChart.render();
+
+            //Khởi tạo biểu đồ doanh thu chi nhánh
+            var branchOptions = {
+                series: [],
+                chart: { type: 'bar', height: 380 },
+                xaxis: { type: 'category' },
+                yaxis: { labels: { formatter: (val) => new Intl.NumberFormat('vi-VN').format(val) + " đ" } },
+                tooltip: { y: { formatter: (val) => new Intl.NumberFormat('vi-VN').format(val) + " đ" } },
+                dataLabels: { enabled: true, formatter: (val) => new Intl.NumberFormat('vi-VN').format(val), style: { fontSize: '10px' } }
+            };
+            branchChart = new ApexCharts(document.querySelector("#branch-revenue-chart"), branchOptions);
+            branchChart.render();
+
+            //Thiết lập ngày mặc định và load dữ liệu doanh thu
+            var today = new Date().toISOString().split('T')[0];
+            var sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            $('#branchStartDate').val(sevenDaysAgo.toISOString().split('T')[0]);
+            $('#branchEndDate').val(today);
+            loadBranchRevenue();
+
+            $('#btnExportExcel').on('click', function () {
+
+                var start = $('#topStartDate').val();
+                var end = $('#topEndDate').val();
+
+                if (!start || !end) {
+                    alert("Vui lòng chọn đầy đủ Từ ngày và Đến ngày để xuất báo cáo!");
+                    return;
+                }
+
+                var url = '/Admin/Dashboard/ExportStaffAndServiceExcel?startDate=' + start + '&endDate=' + end;
+
+                window.location.href = url;
+            });
+
+            $('#timeFilter').on('change', function () {
+                loadDynamicStats($(this).val());
+            });
+        });
+
+        // Hàm load doanh thu chi nhánh 
+        function loadBranchRevenue() {
+            var start = $('#branchStartDate').val();
+            var end = $('#branchEndDate').val();
+            if (start > end) { alert("Ngày bắt đầu không được lớn hơn ngày kết thúc!"); return; }
+
+            $.get('/Admin/Dashboard/GetRevenueData', { startDate: start, endDate: end }, function (res) {
+                branchChart.updateOptions({ xaxis: { categories: res.dates } });
+                branchChart.updateSeries(res.series);
+            }).fail(function() { alert("Có lỗi khi tải dữ liệu biểu đồ."); });
+        }
+
+        // Hàm load thống kê Top (Stylist/Skinner/Service)
+        function loadDynamicStats() {
+            var start = $('#topStartDate').val();
+            var end = $('#topEndDate').val();
+
+            $('#stylistTableBody, #skinnerTableBody, #serviceContainer').css('opacity', '0.5');
+
+            $.get('/Admin/Dashboard/GetTopStats', { startDate: start, endDate: end }, function (data) {
+                $('#stylistTableBody, #skinnerTableBody, #serviceContainer').css('opacity', '1');
+
+                // Render Stylist
+                $('#stylistTableBody').html(data.stylists.map(item => `
+                    <tr>
+                        <td class="ps-0">
+                            <div class="fw-bold">${item.staffName}</div>
+                            <div class="small text-muted">${item.email}</div>
+                        </td>
+                        <td class="text-end">
+                            <div class="fw-bold text-success">${new Intl.NumberFormat('vi-VN').format(item.totalRevenue)}đ</div>
+                            <small class="text-muted">${item.totalBookings} ca</small>
+                        </td>
+                    </tr>`).join(''));
+
+                // Render Skinner
+                $('#skinnerTableBody').html(data.skinners.map(item => `
+                    <tr>
+                        <td class="ps-0">
+                            <div class="fw-bold">${item.staffName}</div>
+                            <div class="small text-muted">${item.email}</div>
+                        </td>
+                        <td class="text-end">
+                            <div class="fw-bold text-success">${new Intl.NumberFormat('vi-VN').format(item.totalRevenue)}đ</div>
+                            <small class="text-muted">${item.totalBookings} ca</small>
+                        </td>
+                    </tr>`).join(''));
+
+                // Render Services
+                $('#serviceContainer').html(data.services.map(sv => `
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex justify-content-between mb-1 small fw-bold">
+                            <span>${sv.serviceName}</span>
+                            <span>${sv.percentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: ${sv.percentage}%"></div>
+                        </div>
+                    </div>`).join(''));
+            });
+        }
+    </script>
+
+}

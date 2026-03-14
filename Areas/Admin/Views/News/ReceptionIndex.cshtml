@@ -1,0 +1,184 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@model PaginatedList<NewsModel>
+
+@{
+    ViewData["title"] = "Danh sách tin tức";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý tin tức</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm tiêu đề hoặc tác giả..."
+                                       style="focus: none; box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-4 col-12">
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 50px">Id</th>
+                        <th>Hình ảnh</th>
+                        <th>Tiêu đề bài viết</th>
+                        <th>Tóm tắt</th>
+                        <th>Tác giả</th>
+                        <th>Ngày đăng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="newsTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-dark">@item.Id</td>
+                            <td>
+                                <div class="image-warp">
+                                    <img src="@(string.IsNullOrEmpty(item.Thumbnail)
+                                                                             ? "https://ui-avatars.com/api/?name=News&background=random"
+                                                                             : Url.Content("~/media/news/" + item.Thumbnail))" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-primary">@item.Title</div>
+                        </td>
+                        <td>
+                            <div class="text-muted summary-text">@item.Summary</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">
+                                <i class="bi bi-person me-1"></i> @(item.Author?.FullName ?? "N/A")
+                            </span>
+                        </td>
+                        <td class="text-muted">
+                            @item.PublishedDate.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">Hiển thị</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Đang ẩn</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete('@Url.Action("Delete", "News", new { id = item.Id })', '@item.Title')">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
+            </div>
+            <div class="col-sm-6">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+
+    <style>
+        .image-warp {
+            width: 120px;
+            height: 70px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+            .image-warp img {
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+
+        .summary-text {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+}

@@ -1,0 +1,117 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@model PaginatedList<ReviewModel>
+
+@{
+    ViewData["title"] = "Quản lý đánh giá";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý đánh giá</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <form asp-action="Index" method="get">
+                    <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                        <input type="text" value="@ViewBag.SearchTerm" name="term"
+                               class="form-control border-0 ps-4"
+                               placeholder="Tìm kiếm theo bình luận, khách hàng"
+                               style="box-shadow: none;">
+                        <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 150px">Khách hàng</th>
+                        <th style="width: 150px">Nhân viên</th>
+                        <th style="width: 120px">Đánh giá</th>
+                        <th>Nội dung</th>
+                        <th>Ngày tạo</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">@item.Customer?.FullName</div>
+                                <small class="text-muted">ID Booking: #@item.Booking_Id</small>
+                            </td>
+                            <td>
+                                <div class="text-muted">@item.Staff?.FullName</div>
+                            </td>
+                            <td>
+                                <div class="text-warning">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= item.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-muted text-truncate" style="max-width: 250px;" title="@item.Comment">
+                                    @item.Comment
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.Reply_Comment))
+                                {
+                                    <div class="mt-1 ps-2 border-start border-primary" style="font-size: 0.85rem;">
+                                        <b class="text-primary">Admin trả lời:</b> @item.Reply_Comment
+                                    </div>
+                                }
+                            </td>
+                            <td class="text-muted">@item.Created_At.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / <b>@Model.TotalPages</b>
+            </div>
+            <div class="col-sm-6">
+                <nav>
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+}

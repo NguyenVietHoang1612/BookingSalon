@@ -1,0 +1,39 @@
+﻿@model BookingSalon.Models.Entities.NewsModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <article class="mx-auto" style="max-width: 800px;">
+        <h1 class="fw-bold mb-3">@Model.Title</h1>
+
+        <div class="text-muted mb-4 border-bottom pb-3">
+            <span><i class="bi bi-person"></i> @(Model.Author?.FullName ?? "Admin")</span> |
+            <span><i class="bi bi-calendar-event"></i> @Model.PublishedDate.ToString("dd/MM/yyyy")</span>
+        </div>
+
+        <p class="lead fw-semibold text-secondary mb-4">@Model.Summary</p>
+
+        @if (!string.IsNullOrEmpty(Model.Thumbnail))
+        {
+            <img src="/media/news/@Model.Thumbnail" class="img-fluid rounded-3 mb-4 w-100" />
+        }
+
+        <div class="news-content">
+            @Html.Raw(Model.Content)
+        </div>
+    </article>
+</div>
+
+<style>
+    .news-content {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+
+        .news-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+</style>

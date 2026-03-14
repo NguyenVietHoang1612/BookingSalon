@@ -1,109 +1,290 @@
-﻿@using BookingSalon.Areas.Admin.Models
+﻿@using BookingSalon.Areas.Admin.Models.ViewModel
 @model UserUpdateViewModel
 
 @{
-    ViewData["title"] = "Cập nhật người dùng";
+    ViewData["title"] = "Cập nhật mới khách hàng";
 }
 
-
 <div class="container-fluid py-5 px-md-5">
-    <div class="card main-card p-4 p-lg-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-primary">Quản lý Người dùng</h2>
+    <div class="card main-card p-4 p-lg-5 shadow-sm border-0" style="border-radius: 15px;">
+        <div class="d-flex">
+            <h2 class="fw-bold text-primary"><i class="bi bi-person-plus me-2"></i>Cập nhật mới khách hàng</h2>
         </div>
 
         <div class="form-section">
-            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-person-plus me-2"></i>Cập nhật người dùng</h5>
-
-            <form asp-action="Update" enctype="multipart/form-data" enctype="multipart/form-data">
+            <form asp-action="Update" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
 
+                <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                    <i class="bi bi-person-vcard me-2 text-primary"></i>1. Thông tin cá nhân & Tài khoản
+                </h5>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-12 col-md-6 col-lg-4 text-center border-end">
+                        <label class="form-label d-block fw-semibold">Ảnh đại diện</label>
+                        <div class="mb-3 position-relative">
+                            <img src="@(string.IsNullOrEmpty(Model.User.Avatar_Name) ? "/img/default-avatar.png" : "/media/users/" + Model.User.Avatar_Name)"
+                                 id="previewAvatar"
+                                 class="rounded-circle img-thumbnail shadow-sm"
+                                 style="width: 150px; height: 150px; object-fit: cover;" />
+                        </div>
+                        <div class="px-3">
+                            <input asp-for="User.Avatar_Image_Upload" type="file" class="form-control form-control-sm"
+                                   accept="image/*" onchange="previewImage(this)" />
+                            <span asp-validation-for="User.Avatar_Image_Upload" class="text-danger small"></span>
+                            <div class="form-text mt-2 small">Định dạng hỗ trợ: JPG, PNG, JPEG</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                <input asp-for="User.FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                                <span asp-validation-for="User.FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input asp-for="User.Email" type="email" class="form-control" placeholder="example@gmail.com" />
+                                <span asp-validation-for="User.Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-semibold">Số điện thoại</label>
+                                <input asp-for="User.PhoneNumber" class="form-control" placeholder="090xxxxxxx" />
+                                <span asp-validation-for="User.PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+                                <select id="ddlProvince" class="form-control" asp-items="ViewBag.Provinces">
+                                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-semibold">Quận / Huyện</label>
+                                <select id="ddlDistrict" class="form-control">
+                                    <option value="">-- Chọn Quận / Huyện --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Phường / Xã</label>
+                                <select asp-for="User.WardId" id="ddlWard" class="form-control">
+                                    <option value="">-- Chọn Phường / Xã --</option>
+                                </select>
+                                <span asp-validation-for="User.WardId" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Số nhà, tên đường</label>
+                                <input asp-for="User.Address" class="form-control" placeholder="Ví dụ: 123 Đường ABC" />
+                                <span asp-validation-for="User.Address" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                            <input type="hidden" asp-for="User.RoleId" value="@Model.CustomerRole" />
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Trạng thái</label>
+                                <select asp-for="User.Status" class="form-control">
+                                    <option value="true">Hủy chặn tài khoản</option>
+                                    <option value="false">Chặn tài khoản</option>
+                                </select>
+                                <span asp-validation-for="User.Status" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5" />
+
+                <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                    <i class="bi bi-gem me-2 text-warning"></i>2. Thiết lập hạng khách hàng
+                </h5>
                 <div class="row g-4">
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Họ và tên</label>
-                        <input asp-for="User.FullName" class="form-control" placeholder="Nhập họ tên" />
-                        <span asp-validation-for="User.FullName" class="text-danger small mt-1 d-block"></span>
+                    <input type="hidden" asp-for="CustomerRank.Customer_Id" class="form-control" value="@Model.User.Id"/>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Hạng hiện tại</label>
+                        <input class="form-control bg-light" value="@Model.CustomerRank?.Rank?.RankName" readonly />
+                        <small class="text-muted">Hệ thống tự động tính dựa trên tổng tích lũy</small>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Điểm hiện có (để đổi quà)</label>
+                        <input asp-for="CustomerRank.CurrentPoints" type="number" class="form-control" />
+                        <span asp-validation-for="CustomerRank.CurrentPoints" class="text-danger small d-block mt-1"></span>
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Email</label>
-                        <input asp-for="User.Email" class="form-control" placeholder="Nhập email" />
-                        <span asp-validation-for="User.Email" class="text-danger small mt-1 d-block"></span>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Tổng điểm tích lũy (Lifetime)</label>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <input asp-for="CustomerRank.LifetimePoints" type="number" class="form-control" readonly />
+                        }
+                        else
+                        {
+                            <input asp-for="CustomerRank.LifetimePoints" type="number" class="form-control bg-light" readonly />
+                        }
+                        <span asp-validation-for="CustomerRank.LifetimePoints" class="text-danger small d-block mt-1"></span>
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Số điện thoại </label>
-                        <input asp-for="User.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
-                        <span asp-validation-for="User.PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                   
+                </div>
+
+                <div class="row g-4 mt-2">      
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Phần trăm giảm giá (%)</label>
+                        <input class="form-control bg-light" value="@(Model.CustomerRank?.Rank?.DiscountPercent ?? 0)%" readonly />
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Địa chỉ đang ở</label>
-                        <input asp-for="User.Address" class="form-control" placeholder="Nhập địa chỉ" />
-                        <span asp-validation-for="User.Address" class="text-danger small mt-1 d-block"></span>
+                    <div class="col-md-4">
+                        <div class="h-100 d-flex align-items-center pt-4">
+                            <div class="form-check form-switch custom-switch-container mb-0">
+                                <input class="form-check-input" asp-for="CustomerRank.Is_Active" type="checkbox" id="isActiveRank">
+                                <label class="form-check-label fw-semibold ms-2" for="isActiveRank">Kích hoạt hạng thành viên</label>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Tên vai trò</label>
-                        <select asp-for="User.RoleId" asp-items="ViewBag.Roles" class="form-control" id="select-roles">
-                        </select>
-                        <span asp-validation-for="User.RoleId" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Mật khẩu</label>
-                        <input type="password" asp-for="Password" class="form-control" autocomplete="new-password" placeholder="Để trống nếu không muốn đổi mật khẩu" />
-                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Xác minh tài khoản</label>
-                        <select class="form-control form-label fw-semibold" asp-for="User.EmailConfirmed">
-                            <option value="true">Chấp nhận tài khoản</option>
-                            <option value="false">Không xác minh tài khoản</option>
-                        </select>
-                        <span asp-validation-for="User.EmailConfirmed" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Trạng thái</label>
-                        <select asp-for="User.Status" class="form-control">
-                            <option value="true">Hủy chặn tài khoản</option>
-                            <option value="false">Chặn tài khoản</option>
-                        </select>
-
-                        <span asp-validation-for="User.Status" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Thêm ảnh avatar</label>
-                        <input asp-for="User.Avatar_Image_Upload" class="form-control" placeholder="Chọn ảnh" />
-                        <span asp-validation-for="User.Avatar_Image_Upload" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-add fw-bold">
-                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
-                        </button>
-
-                        <a asp-action="Index" class="btn btn-danger fw-bold">
-                            <i class="bi bi-x-lg me-2">Hủy thêm mới</i>
-                        </a>
-                    </div>
+                <div class="col-12 d-flex gap-3 mt-5 pt-3">
+                    <button type="submit" class="btn btn-primary fw-bold px-5 py-2 shadow-sm">
+                        <i class="bi bi-person-check-fill me-2"></i> Lưu khách hàng
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="/js//ChoicesSelectList.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+@section Styles {
+    <style>
+        .form-switch .form-check-input {
+            width: 3.5rem !important;
+            height: 1.75rem !important;
+            cursor: pointer;
+        }
 
-            initSelectSearch('select-roles', 'Chọn Role người dùng...');
-        });
-    </script>
+        .custom-switch-container {
+            display: flex;
+            align-items: center;
+            height: 38px;
+        }
+
+        .form-check-label {
+            margin-left: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .choices__inner {
+            border-radius: 0.375rem !important;
+            min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+        }
+
+        .choices__list--dropdown {
+            border-radius: 0.375rem;
+        }
+    </style>
+
 }
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="/js/ChoicesSelectList.js"></script>
+
+    <script>
+        var provinceChoices, districtChoices, wardChoices;
+        var selectedProvinceId = '@ViewBag.SelectedProvinceId';
+        var selectedDistrictId = '@ViewBag.SelectedDistrictId';
+        var selectedWardId = '@Model.User.WardId';
+        $(document).ready(function () {
+            provinceChoices = initSelectSearch('ddlProvince', 'Chọn Tỉnh / Thành phố...');
+            districtChoices = initSelectSearch('ddlDistrict', 'Chọn Quận / Huyện...');
+            wardChoices = initSelectSearch('ddlWard', 'Chọn Phường / Xã...');
+
+            if (selectedProvinceId) {
+                    provinceChoices.setChoiceByValue(selectedProvinceId);
+
+                    $.getJSON('/Admin/Users/GetDistricts', { provinceId: selectedProvinceId }, function (districts) {
+
+                        var districtData = districts.map(d => ({
+                            value: d.id.toString(),
+                            label: d.name,
+                            selected: d.id == selectedDistrictId
+                        }));
+
+                        districtChoices.setChoices(districtData, 'value', 'label', true);
+
+                        if (selectedDistrictId) {
+                            $.getJSON('/Admin/Users/GetWards', { districtId: selectedDistrictId }, function (wards) {
+
+                                var wardData = wards.map(w => ({
+                                    value: w.id.toString(),
+                                    label: w.name,
+                                    selected: w.id == selectedWardId
+                                }));
+
+                                wardChoices.setChoices(wardData, 'value', 'label', true);
+                            });
+                        }
+                    });
+            }
+            
+            $('#ddlProvince').on('change', function () {
+                var pId = $(this).val();
+
+                districtChoices.clearStore();
+                districtChoices.setChoices([{ value: '', label: '-- Chọn Quận/Huyện --', selected: true }]);
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (pId) {
+                    $.getJSON('/Admin/Users/GetDistricts', { provinceId: pId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        districtChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+
+            $('#ddlDistrict').on('change', function () {
+                var dId = $(this).val();
+
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (dId) {
+                    $.getJSON('/Admin/Users/GetWards', { districtId: dId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        wardChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#previewAvatar').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

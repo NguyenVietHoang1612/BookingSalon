@@ -1,0 +1,224 @@
+﻿@using BookingSalon.Models.ViewModel
+@model ProfileViewModel
+
+@{
+    ViewData["Title"] = "Trang cá nhân";
+
+    var avatarDisplay = string.IsNullOrEmpty(Model.CurrentAvatar)
+        ? "/img/default-avatar.png"
+        : "/media/users/" + Model.CurrentAvatar;
+}
+
+<div class="container-fluid py-5 px-md-5 bg-light min-vh-100">
+    <div class="card main-card p-4 p-lg-5 shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 1100px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary"><i class="bi bi-person-circle me-2"></i>Hồ sơ cá nhân</h2>
+            <span class="text-muted small">Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy")</span>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-12 col-md-4 text-center border-end">
+                    <label class="form-label d-block fw-semibold mb-3">Ảnh đại diện</label>
+                    <div class="mb-3 position-relative">
+                        <img src="@avatarDisplay"
+                             id="previewAvatar"
+                             class="rounded-circle img-thumbnail shadow-sm"
+                             style="width: 180px; height: 180px; object-fit: cover;" />
+                    </div>
+                    <div class="px-3 mb-4">
+                        <input asp-for="Avatar_Image_Upload" type="file" class="form-control form-control-sm"
+                               accept="image/*" onchange="previewImage(this)" />
+                        <span asp-validation-for="Avatar_Image_Upload" class="text-danger small"></span>
+                    </div>
+
+                    <div class="rank-card p-3 bg-white border rounded shadow-sm mx-2">
+                        <h6 class="text-uppercase text-secondary fw-bold small mb-2">Hạng thành viên</h6>
+                        <div class="badge bg-warning text-dark fs-6 p-2 mb-2 w-100">
+                            <i class="bi bi-gem me-1"></i> @(Model.RankName ?? "Thành viên mới")
+                        </div>
+                        <div class="d-flex justify-content-between small px-2">
+                            <span>Điểm hiện tại:</span>
+                            <strong class="text-primary">@Model.CurrentPoints</strong>
+                        </div>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 70%"></div>
+                        </div>
+
+                        @if (Model.PointsToNextRank != null)
+                        {
+                            <div class="small text-muted mt-2">
+                                Cần thêm <strong>@Model.PointsToNextRank</strong> điểm để lên hạng
+                                <strong>@Model.NextRankName</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-8">
+                    <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                        <i class="bi bi-person-vcard me-2 text-primary"></i>Thông tin tài khoản
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="090xxxxxxx" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+                            <select id="ddlProvince" class="form-control" asp-items="ViewBag.Provinces">
+                                <option value="">-- Chọn Tỉnh / Thành --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-semibold">Quận / Huyện</label>
+                            <select id="ddlDistrict" class="form-control">
+                                <option value="">-- Chọn Quận / Huyện --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-semibold">Phường / Xã</label>
+                            <select asp-for="WardId" id="ddlWard" class="form-control">
+                                <option value="">-- Chọn Phường / Xã --</option>
+                            </select>
+                            <span asp-validation-for="WardId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Địa chỉ chi tiết</label>
+                            <input asp-for="Address" class="form-control" placeholder="Số nhà, tên đường..." />
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold px-5 py-2 shadow-sm">
+                            <i class="bi bi-save2-fill me-2"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .main-card {
+            background: #ffffff;
+        }
+        .choices__inner {
+            border-radius: 0.375rem !important;
+            background-color: #fff !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .rank-card {
+            transition: transform 0.3s;
+        }
+
+            .rank-card:hover {
+                transform: translateY(-5px);
+            }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="/js/ChoicesSelectList.js"></script>
+    <script>
+        var provinceChoices, districtChoices, wardChoices;
+        var selectedProvinceId = '@ViewBag.SelectedProvinceId';
+        var selectedDistrictId = '@ViewBag.SelectedDistrictId';
+        var selectedWardId = '@Model.WardId';
+
+        $(document).ready(function () {
+            provinceChoices = initSelectSearch('ddlProvince', 'Chọn Tỉnh / Thành phố...');
+            districtChoices = initSelectSearch('ddlDistrict', 'Chọn Quận / Huyện...');
+            wardChoices = initSelectSearch('ddlWard', 'Chọn Phường / Xã...');
+
+
+            if (selectedProvinceId) {
+                provinceChoices.setChoiceByValue(selectedProvinceId);
+                $.getJSON('/Profile/GetDistricts', { provinceId: selectedProvinceId }, function (districts) {
+                    var districtData = districts.map(d => ({
+                        value: d.id.toString(),
+                        label: d.name,
+                        selected: d.id == selectedDistrictId
+                    }));
+                    districtChoices.setChoices(districtData, 'value', 'label', true);
+
+                    if (selectedDistrictId) {
+                        $.getJSON('/Profile/GetWards', { districtId: selectedDistrictId }, function (wards) {
+                            var wardData = wards.map(w => ({
+                                value: w.id.toString(),
+                                label: w.name,
+                                selected: w.id == selectedWardId
+                            }));
+                            wardChoices.setChoices(wardData, 'value', 'label', true);
+                        });
+                    }
+                });
+            }
+
+            $('#ddlProvince').on('change', function () {
+                var pId = $(this).val();
+                districtChoices.clearStore();
+                wardChoices.clearStore();
+                if (pId) {
+                    $.getJSON('/Profile/GetDistricts', { provinceId: pId }, function (data) {
+                        var choicesData = data.map(item => ({ value: item.id.toString(), label: item.name }));
+                        districtChoices.setChoices(choicesData, 'value', 'label', true);
+                    });
+                }
+            });
+
+            $('#ddlDistrict').on('change', function () {
+                var dId = $(this).val();
+                wardChoices.clearStore();
+                if (dId) {
+                    $.getJSON('/Profile/GetWards', { districtId: dId }, function (data) {
+                        var choicesData = data.map(item => ({ value: item.id.toString(), label: item.name }));
+                        wardChoices.setChoices(choicesData, 'value', 'label', true);
+                    });
+                }
+            });
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#previewAvatar').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

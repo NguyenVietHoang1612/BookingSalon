@@ -1,0 +1,59 @@
+﻿@using BookingSalon.Models.ViewModel;
+@model AuthOtpViewModel;
+
+
+@{
+    ViewData["Title"] = "Xác nhận mã OTP";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="account-container">
+    <div class="account-box">
+        <h2 class="text-center mb-2">Xác nhận OTP</h2>
+        <p class="text-center text-muted mb-4">
+            Mã xác thực đã được gửi đến số <br />
+            <span class="fw-bold text-dark">@Model.PhoneNumber</span>
+        </p>
+
+        <form asp-action="VerifyOtp" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            @* Hidden field để gửi kèm SĐT lên Controller mà không bắt user nhập lại *@
+            <input type="hidden" asp-for="PhoneNumber" />
+
+            <div class="mb-3">
+                <label asp-for="OtpCode" class="form-label d-block text-center">Nhập mã 6 chữ số</label>
+                <input asp-for="OtpCode" class="form-control form-control-lg text-center fw-bold" 
+                       placeholder="· · · · · ·" 
+                       maxlength="6" 
+                       style="font-size: 2rem; letter-spacing: 0.5rem;"
+                       type="text" 
+                       inputmode="numeric" 
+                       autocomplete="one-time-code" 
+                       required />
+                <span asp-validation-for="OtpCode" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 p-2 fw-bold">
+                XÁC NHẬN ĐĂNG NHẬP
+            </button>
+
+            <div class="text-center mt-4">
+                <p class="small text-muted mb-1">Không nhận được mã?</p>
+                <a asp-action="Login" class="text-decoration-none">Thử lại với số khác</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const otpInput = document.querySelector('input[name="OtpCode"]');
+            if(otpInput) otpInput.focus();
+        });
+    </script>
+}

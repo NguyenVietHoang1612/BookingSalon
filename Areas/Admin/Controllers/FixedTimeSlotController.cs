@@ -32,10 +32,11 @@ namespace BookingSalon.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(FixedTimeSlot fixedTime)
+        public async Task<IActionResult> Create(FixedTimeSlotModel fixedTime)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu khung giờ!";
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -54,7 +55,8 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
-                TempData["ErrorMessage"] = result.Errors;
+                TempData["Error"] = $"Thêm khung giờ thất bại: " + result.Errors;
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error);
@@ -62,7 +64,7 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(fixedTime);
 
             }
-
+            TempData["Success"] = "Thêm khung giờ thành công!";
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Update(int id)
@@ -71,10 +73,9 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (fixTimeSlot == null) return NotFound();
 
-            FixedTimeSlot fixTimeDetail = new FixedTimeSlot
+            FixedTimeSlotModel fixTimeDetail = new FixedTimeSlotModel
             {
                 TimeLabel = fixTimeSlot.Data.TimeLabel,
-                Sort_Order = fixTimeSlot.Data.Sort_Order
             };
 
             return View(fixTimeDetail);
@@ -82,10 +83,12 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, FixedTimeSlot fixedTime)
+        public async Task<IActionResult> Update(int id, FixedTimeSlotModel fixedTime)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu khung giờ!";
+
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -104,6 +107,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
+                TempData["Error"] = $"Cập nhật khung giờ thất bại!" + result.Errors;
 
                 foreach (var error in result.Errors)
                 {
@@ -113,14 +117,22 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(fixedTime);
 
             }
+            TempData["Success"] = "Cập nhật khung giờ thành công!";
 
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _fixedTimeSlotService.DeleteAsync(id);
-            return Ok(new { message = "Đã chuyển trạng thái user sang ngừng hoạt động" });
+            var result = await _fixedTimeSlotService.DeleteAsync(id);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { success = true, message = "Xóa thành công" });
+            }
+
+            return BadRequest(new { success = false, message = "Không thể xóa dữ liệu" });
         }
     }
 }

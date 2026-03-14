@@ -6,11 +6,14 @@ namespace BookingSalon.Services.Interface
 {
     public interface IBranchService
     {
-        Task<ServiceResult<IEnumerable<Branch>>> GetAllAsync();
-        Task<ServiceResult<Branch>> GetByIdAsync(int id);
-        Task<ServiceResult<Branch>> CreateAsync(Branch branch);
-        Task<ServiceResult<Branch>> UpdateAsync(int id, Branch branch);
-        Task<ServiceResult<Branch>> DeleteAsync(int id);
-        Task<PaginatedList<Branch>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
+        Task<ServiceResult<IEnumerable<BranchModel>>> GetAllAsync();
+        Task<IEnumerable<BranchModel>> GetAllBranchActiveAsync();
+        Task<ServiceResult<BranchModel>> GetByIdAsync(int id);
+        Task<WardModel> GetWardById(BranchModel branch);
+        Task<ServiceResult<BranchModel>> CreateAsync(BranchModel branch);
+        Task<ServiceResult<BranchModel>> UpdateAsync(int id, BranchModel branch);
+        Task<ServiceResult<BranchModel>> DeleteAsync(int id);
+        Task<PaginatedList<BranchModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
+
     }
 }

@@ -1,45 +1,40 @@
-﻿﻿@using BookingSalon.Models.ViewModel;
-@model LoginViewModel;
+﻿@using BookingSalon.Models.ViewModel;
+@model AuthOtpViewModel;
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Đăng nhập";
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
 <div class="account-container">
     <div class="account-box">
-        <h2 class="text-center mb-4">Login</h2>
-        <form asp-action="Login" method="post">
+        <h2 class="text-center mb-4">Đăng nhập Đặt lịch</h2>
+        <p class="text-center text-muted">Nhập số điện thoại để nhận mã xác thực OTP</p>
+
+        <form asp-action="SendOtp" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+                <input asp-for="PhoneNumber" class="form-control form-control-lg" 
+                       placeholder="Ví dụ: 0912345678" 
+                       type="tel" 
+                       inputmode="tel" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+
+            <div class="alert alert-info small">
+                <i class="fas fa-info-circle"></i> Hệ thống sẽ tự động tạo tài khoản nếu bạn chưa từng đặt lịch tại Salon.
             </div>
-            <div class="float-end">
-                <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none">
-                    Forgot password?
+
+            <button type="submit" class="btn btn-success w-100 p-2 fw-bold">
+                TIẾP TỤC & NHẬN MÃ OTP
+            </button>
+
+            <div class="text-center mt-4">
+                <a asp-controller="Home" asp-action="Home" class="text-decoration-none text-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại trang chủ
                 </a>
-            </div>
-            <div class="form-check mb-3">
-                <label class="form-check-label">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    @Html.DisplayNameFor(a => a.RememberMe)
-                </label>
-            </div>
-            <input type="submit" value="Login" class="btn btn-success w-100 p-2" />
-
-            <p class="text-center mt-2">
-                Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
-            </p>
-
-            <div class="text-center">
-                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
             </div>
         </form>
     </div>

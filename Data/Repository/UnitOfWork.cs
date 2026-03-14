@@ -27,6 +27,32 @@ namespace BookingSalon.Data.Repository
             return (IRepository<TEntity>)_repositories[type];
         }
 
+        public async Task BeginTransactionAsync()
+        {
+            _transaction = await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+                await _transaction?.CommitAsync();
+            }
+            finally
+            {
+                _transaction?.Dispose();
+                _transaction = null;
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            await _transaction?.RollbackAsync();
+            _transaction?.Dispose();
+            _transaction = null;
+        }
+
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();

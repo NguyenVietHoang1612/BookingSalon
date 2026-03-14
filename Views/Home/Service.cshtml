@@ -1,0 +1,210 @@
+﻿@using BookingSalon.Models.ViewModel
+@model BarberViewModel
+@{
+    ViewData["Title"] = "Dịch vụ & Chi nhánh";
+}
+
+<section class="hero-section py-5 position-relative overflow-hidden" style="background-color: #fdf7e7;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5 text-center text-lg-start">
+                <h6 class="text-warning text-uppercase fw-bold mb-3 l-spacing-2">Since 2026</h6>
+                <h1 class="fw-black text-uppercase display-4 mb-3 lh-1">
+                    The <span class="text-outline">LUXURYSALON</span><br />
+                    <span class="text-dark">Barbershop</span>
+                </h1>
+                <p class="fst-italic fs-4 text-muted mb-4">"Bespoke Barbering for Gentlemen"</p>
+                <div class="d-inline-flex align-items-center bg-dark text-warning py-2 px-4 rounded-pill fw-bold">
+                    <i class="bi bi-clock me-2"></i> 07:30  - 20:00 
+                </div>
+            </div>
+
+            <div class="col-lg-7 d-none d-lg-block">
+                <div class="ps-5 border-start border-warning border-4">
+                    <p class="fs-5 text-dark fw-medium lh-base">
+                        LUXURYSALON không chỉ là nơi cắt tóc, mà là không gian lưu giữ những giá trị lịch lãm của quý ông Sài Gòn xưa.
+                    </p>
+                    <p class="text-muted mb-0">
+                        Mỗi đường kéo là một tác phẩm nghệ thuật, được cá nhân hóa hoàn hảo cho từng gương mặt và chất tóc của bạn.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-black py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="text-white text-uppercase fw-bold l-spacing-2"><span class="text-warning">Chi Nhánh</span></h2>
+            <div class="mx-auto bg-warning mt-2" style="height: 3px; width: 50px;"></div>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var branch in Model.Branches)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="branch-card-luxury position-relative overflow-hidden rounded-3 shadow-lg">
+                        <img src=@(string.IsNullOrEmpty(branch.Branch_Image) ? "/media/logo/BranchLogo.jpg" : "/media/branches/" + branch.Branch_Image)
+                             class="img-fluid w-100" style="height: 350px; object-fit: cover;" />
+                        <div class="branch-info-overlay p-4 d-flex flex-column justify-content-end">
+                            <h4 class="text-warning fw-bold text-uppercase mb-1">@branch.Branch_Name</h4>
+                            <p class="text-light small mb-0"><i class="bi bi-geo-alt-fill me-2"></i>@branch.Address</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="bg-dark py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-uppercase fw-bold text-warning display-6">
+                Khám phá dịch vụ
+            </h2>
+            <div class="mx-auto bg-warning mb-3" style="height: 2px; width: 60px;"></div>
+            <p class="text-secondary">Các dịch vụ được thiết kế riêng cho phong cách của bạn</p>
+        </div>
+
+        @foreach (var category in Model.Categories)
+        {
+            <div class="mb-5">
+                <h3 class="text-uppercase fw-semibold text-light mb-4 border-start border-warning border-4 ps-3">
+                    @category.Type_Service_Name
+                </h3>
+
+                <div class="row g-4">
+                    @foreach (var svc in category.Services.Where(x => x.Status))
+                    {
+                        bool isPromoActive = svc.Promotion_Price.HasValue &&
+                        (!svc.Promotion_Start.HasValue || svc.Promotion_Start <= DateTime.Now) &&
+                        (!svc.Promotion_End.HasValue || svc.Promotion_End >= DateTime.Now);
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card bg-black text-light h-100 border-0 shadow service-card">
+
+                                @if (isPromoActive)
+                                {
+                                    <div class="promo-tag">SALE</div>
+                                }
+
+                                <img src="~/media/services/@svc.ImageName"
+                                     class="card-img-top service-img"
+                                     alt="@svc.Service_Name"
+                                     onerror="this.src='/images/placeholder-service.jpg'">
+
+                                <div class="card-body d-flex flex-column p-4">
+                                    <h5 class="text-uppercase fw-bold mb-2">@svc.Service_Name</h5>
+                                    <p class="text-secondary small mb-4 flex-grow-1">@svc.description</p>
+
+                                    <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-3">
+                                        <span class="small text-secondary">
+                                            <i class="bi bi-stopwatch"></i> @svc.DurationInMinutes phút
+                                        </span>
+                                        <div class="text-end">
+                                            @if (isPromoActive)
+                                            {
+                                                <span class="d-block text-decoration-line-through text-secondary small">@((svc.Base_Price).ToString("#,##0")) đ</span>
+                                                <span class="fw-bold text-warning fs-5">@(svc.Promotion_Price.Value.ToString("#,##0")) đ</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold text-warning fs-5">@(svc.Base_Price.ToString("#,##0")) đ</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-5">
+            <a asp-controller="Booking" asp-action="Booking"
+               class="btn btn-warning btn-lg rounded-0 px-5 fw-bold text-uppercase shadow-lg">
+                Đặt lịch ngay
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .l-spacing-1 {
+            letter-spacing: 1px;
+        }
+
+        .l-spacing-2 {
+            letter-spacing: 2px;
+        }
+
+        .fw-black {
+            font-weight: 900;
+        }
+
+        .text-outline {
+            -webkit-text-stroke: 1px #212529;
+            color: transparent;
+        }
+
+        .w-fit {
+            width: fit-content;
+        }
+
+        .branch-card-luxury img {
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .branch-card-luxury:hover img {
+            transform: scale(1.1);
+        }
+
+        .branch-info-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.9));
+            transition: all 0.4s;
+        }
+
+        .branch-card-luxury:hover .branch-info-overlay {
+            background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,1));
+        }
+
+
+        .service-card {
+            transition: all .3s ease;
+            border: 1px solid #333 !important;
+        }
+
+            .service-card:hover {
+                transform: translateY(-8px);
+                border-color: #ffc107 !important;
+            }
+
+        .service-img {
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .promo-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 2px 12px;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 5;
+            border-radius: 2px;
+        }
+    </style>
+}
+

@@ -17,57 +17,64 @@ namespace BookingSalon.Services
             _fileService = fileService;
         }
 
-        public async Task<IEnumerable<Service>> GetAllServiceAsync()
+        public async Task<IEnumerable<ServiceModel>> GetAllServiceAsync()
         {       
-            return await _unitOfWork.Repository<Service>()
+            return await _unitOfWork.Repository<ServiceModel>()
                 .Query()
                 .Include(s => s.TypeOfService)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<TypeOfService>> GetAllTypeOfServiceAsync()
+        public async Task<IEnumerable<TypeOfServiceModel>> GetAllTypeOfServiceAsync()
         {
-            var typeOfServices = await _unitOfWork.Repository<TypeOfService>().GetAllAsync();
+            var typeOfServices = await _unitOfWork.Repository<TypeOfServiceModel>().GetAllAsync();
             return typeOfServices;
         }
 
-        public async Task<ServiceResult<Service>> GetByIdAsync(int id)
+        public async Task<ServiceResult<ServiceModel>> GetByIdAsync(int id)
         {
             try
             {
-                var branch = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
+                var service = _unitOfWork.Repository<ServiceModel>().Query()
+                    .Include(s => s.TypeOfService)
+                    .Where(s => s.ServiceId == id)
+                    .FirstOrDefault();
 
-                if (branch == null)
-                    return ServiceResult<Service>.Failed("Không tìm thấy dịch vụ");
 
-                return ServiceResult<Service>.Success(branch);
+                if (service == null)
+                    return ServiceResult<ServiceModel>.Failed("Không tìm thấy dịch vụ");
+
+                return ServiceResult<ServiceModel>.Success(service);
             }
             catch (Exception ex)
             {
-                return ServiceResult<Service>.Failed($"Lỗi: {ex.Message}");
+                return ServiceResult<ServiceModel>.Failed($"Lỗi: {ex.Message}");
             }
         }
 
-        public async Task<ServiceResult<Service>> CreateAsync(Service service)
+        public async Task<ServiceResult<ServiceModel>> CreateAsync(ServiceModel service)
         {
             if (string.IsNullOrEmpty(service.Service_Name))
-                return ServiceResult<Service>.Failed("Tên dịch vụ không được để trống");
+                return ServiceResult<ServiceModel>.Failed("Tên dịch vụ không được để trống");
 
             try
             {
-                var repo = _unitOfWork.Repository<Service>();
+                var repo = _unitOfWork.Repository<ServiceModel>();
 
                 var exists = await repo.ExistsAsync(s => s.Service_Name == service.Service_Name);
                 if (exists)
-                    return ServiceResult<Service>.Failed("Tên dịch vụ đã tồn tại");
+                    return ServiceResult<ServiceModel>.Failed("Tên dịch vụ đã tồn tại");
 
-                var newService = new Service
+                var newService = new ServiceModel
                 {
                     Service_Name = service.Service_Name,
                     Type_Service_Id = service.Type_Service_Id,
-                    Price = service.Price,
+                    Base_Price = service.Base_Price,
                     Status = service.Status,
                     DurationInMinutes = service.DurationInMinutes,
+                    Promotion_Price = service.Promotion_Price ?? 0,
+                    Promotion_Start = service.Promotion_Start,
+                    Promotion_End = service.Promotion_End,
                     description = service.description,
                     Create_At = DateTime.Now
                 };
@@ -80,26 +87,31 @@ namespace BookingSalon.Services
                 await repo.AddAsync(newService);
                 await _unitOfWork.SaveChangesAsync();
 
-                return ServiceResult<Service>.Success(newService);     
+                return ServiceResult<ServiceModel>.Success(newService);     
             }
             catch (Exception ex)
             {
-                return ServiceResult<Service>.Failed($"Lỗi: {ex.Message}");
+                return ServiceResult<ServiceModel>.Failed($"Lỗi: {ex.Message}");
             }
         }
-        public async Task<ServiceResult<Service>> UpdateAsync(int id, Service service)
+        public async Task<ServiceResult<ServiceModel>> UpdateAsync(int id, ServiceModel service)
         {
             try
             {
-                var repo = _unitOfWork.Repository<Service>();
+                var repo = _unitOfWork.Repository<ServiceModel>();
                 var existingService = await repo.GetByIdAsync(id);
 
                 if (existingService == null)
-                    return ServiceResult<Service>.Failed("Không tìm thấy dịch vụ");
+                    return ServiceResult<ServiceModel>.Failed("Không tìm thấy dịch vụ");
+
+                string oldImageName = existingService.ImageName;
 
                 existingService.Service_Name = service.Service_Name;
                 existingService.Type_Service_Id = service.Type_Service_Id;
-                existingService.Price = service.Price;
+                existingService.Base_Price = service.Base_Price;
+                existingService.Promotion_Price = service.Promotion_Price;
+                existingService.Promotion_Start = service.Promotion_Start;
+                existingService.Promotion_End = service.Promotion_End;
                 existingService.DurationInMinutes = service.DurationInMinutes;
                 existingService.description = service.description;
                 existingService.Status = service.Status;
@@ -107,9 +119,9 @@ namespace BookingSalon.Services
 
                 if (service.Service_Image_Upload != null)
                 {
-                    if (service.ImageName != null)
+                    if (!string.IsNullOrEmpty(oldImageName))
                     {
-                        await _fileService.DeleteFileAsync(existingService.ImageName, "services");
+                        await _fileService.DeleteFileAsync(oldImageName, "services");
                     }
 
                     existingService.ImageName = await _fileService.UploadFileAsync(service.Service_Image_Upload, "services");
@@ -118,42 +130,45 @@ namespace BookingSalon.Services
                 repo.Update(existingService);
                 await _unitOfWork.SaveChangesAsync();
 
-                return ServiceResult<Service>.Success(existingService);    
+                return ServiceResult<ServiceModel>.Success(existingService);    
             }
             catch (Exception ex)
             {
-                return ServiceResult<Service>.Failed($"Lỗi: {ex.Message}");
+                return ServiceResult<ServiceModel>.Failed($"Lỗi: {ex.Message}");
             }
         }
 
-        public async Task<ServiceResult<Service>> DeleteAsync(int id)
+        public async Task<ServiceResult<ServiceModel>> DeleteAsync(int id)
         {
             try
             {
-                var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
+                var service = await _unitOfWork.Repository<ServiceModel>().GetByIdAsync(id);
 
                 if (service == null)
-                    return ServiceResult<Service>.Failed("Không tìm thấy dịch vụ");
+                    return ServiceResult<ServiceModel>.Failed("Không tìm thấy dịch vụ");
+
+                string imageName = service.ImageName;
+               
+
+                _unitOfWork.Repository<ServiceModel>().Delete(service);
+                await _unitOfWork.SaveChangesAsync();
 
                 if (service.ImageName != null)
                 {
-                    await _fileService.DeleteFileAsync(service.ImageName, "services");
+                    await _fileService.DeleteFileAsync(imageName, "services");
                 }
 
-                _unitOfWork.Repository<Service>().Delete(service);
-                await _unitOfWork.SaveChangesAsync();
-
-                return ServiceResult<Service>.Success(service);    
+                return ServiceResult<ServiceModel>.Success(service);    
             }
             catch (Exception ex)
             {
-                return ServiceResult<Service>.Failed($"Lỗi: {ex.Message}");
+                return ServiceResult<ServiceModel>.Failed($"Lỗi: {ex.Message}");
             }
         }
 
-        public async Task<PaginatedList<Service>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
+        public async Task<PaginatedList<ServiceModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm)
         {
-            var query = _unitOfWork.Repository<Service>()
+            var query = _unitOfWork.Repository<ServiceModel>()
                 .Query();
                 
 
@@ -165,7 +180,18 @@ namespace BookingSalon.Services
 
             query = query.Include(s => s.TypeOfService).OrderBy(s => s.ServiceId);
 
-            return await PaginatedList<Service>.CreateAsync(query, pageNumber, pageSize);
+            return await PaginatedList<ServiceModel>.CreateAsync(query, pageNumber, pageSize);
+        }
+
+        public async Task<IEnumerable<ServiceModel>> GetAllServiceActiveAsync()
+        {
+            var servicesActive = await _unitOfWork.Repository<ServiceModel>()
+                .Query()
+                .Where(s => s.Status == true)
+                .Include(s => s.TypeOfService)
+                .ToListAsync();
+
+            return servicesActive;
         }
     }
 }

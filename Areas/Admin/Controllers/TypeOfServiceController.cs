@@ -38,10 +38,12 @@ namespace BookingSalon.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TypeOfService typeOfService)
+        public async Task<IActionResult> Create(TypeOfServiceModel typeOfService)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu loại dịch vụ!";
+
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -60,6 +62,8 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
+                TempData["Error"] = "Thêm loại dịch vụ thất bại: " + result.Errors;
+
                 TempData["ErrorMessage"] = result.Errors;
                 foreach (var error in result.Errors)
                 {
@@ -68,6 +72,8 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(typeOfService);
 
             }
+
+            TempData["Success"] = $"Thêm loại dịch vụ {typeOfService.Type_Service_Name} thành công!";
 
             return RedirectToAction(nameof(Index));
         }
@@ -78,7 +84,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (typeOfService == null) return NotFound();
 
-            TypeOfService tOS = new TypeOfService
+            TypeOfServiceModel tOS = new TypeOfServiceModel
             {
                 Type_Service_Name = typeOfService.Data.Type_Service_Name
             };
@@ -88,10 +94,12 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, TypeOfService typeOfService)
+        public async Task<IActionResult> Update(int id, TypeOfServiceModel typeOfService)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu loại dịch vụ!";
+
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -110,6 +118,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
+                TempData["Error"] = "Cập nhật loại dịch vụ thất bại: " + result.Errors;
 
                 foreach (var error in result.Errors)
                 {
@@ -119,14 +128,20 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(typeOfService);
 
             }
+            TempData["Success"] = $"Cập nhật loại dịch vụ {typeOfService.Type_Service_Name} thành công!";
 
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            await _typeOfServiceService.DeleteAsync(id);
-            return Ok(new { message = "Đã chuyển trạng thái user sang ngừng hoạt động" });
+            var result = await _typeOfServiceService.DeleteAsync(id);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Xóa loại dịch vụ thành công" });
+            }
+
+            return BadRequest(new { success = false, message = "Không thể xóa dữ liệu" });
         }
     }
 }

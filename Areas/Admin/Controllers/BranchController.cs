@@ -1,14 +1,12 @@
 ﻿using BookingSalon.Areas.Admin.Models;
 using BookingSalon.Data;
+using BookingSalon.Data.Repository; 
 using BookingSalon.Models.Entities;
-using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookingSalon.Areas.Admin.Controllers
 {
@@ -17,11 +15,12 @@ namespace BookingSalon.Areas.Admin.Controllers
     public class BranchController : Controller
     {
         private readonly IBranchService _branchService;
+        private readonly IAddressService _addressService;
 
-
-        public BranchController(IBranchService branchService)
+        public BranchController(IBranchService branchService, IAddressService addressService)
         {
             _branchService = branchService;
+            _addressService = addressService;
         }
 
         public async Task<IActionResult> Index(int? pageNumber, string term)
@@ -37,103 +36,127 @@ namespace BookingSalon.Areas.Admin.Controllers
             return View(pagedData);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var provinces = await _addressService.GetAllProvinceAsync();
+            ViewBag.Provinces = new SelectList(provinces, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Branch branch)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BranchModel branch)
         {
             if (!ModelState.IsValid)
             {
-                List<string> errors = new List<string>();
-                foreach (var value in ModelState.Values)
-                {
-                    foreach (var error in value.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-
-                string errorMessage = string.Join("; ", errors);
-
-                return BadRequest(errorMessage);
+                TempData["Warning"] = $"Lỗi Bind dữ liệu hạng thành viên!";
+                await PopulateAddressDropdowns(branch); 
+                return View(branch);
             }
 
             var result = await _branchService.CreateAsync(branch);
-
             if (!result.Succeeded)
             {
-                TempData["ErrorMessage"] = result.Errors;
+                TempData["Error"] = $"Thêm hạng thành viên {branch.Branch_Name} thất bại: " + result.Errors;
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error);
                 }
+                await PopulateAddressDropdowns(branch);
                 return View(branch);
-
             }
-
+            TempData["Success"] = "Thêm hạng thành viên thành công!";
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Update(int id)
         {
-            var branch = await _branchService.GetByIdAsync(id);
+            var result = await _branchService.GetByIdAsync(id);
+            if (!result.Succeeded || result.Data == null) return NotFound();
 
-            if (branch == null) return NotFound();
+            var branch = result.Data;
+            var provinces = await _addressService.GetAllProvinceAsync();
+            ViewBag.Provinces = new SelectList(provinces, "Id", "Name");
+            await PopulateAddressDropdowns(branch);
 
-            Branch branchDetail = new Branch
-            {
-                Branch_Name = branch.Data.Branch_Name,
-                Address = branch.Data.Address,
-                Phone = branch.Data.Phone,
-                Status = branch.Data.Status
-            };
-
-            return View(branchDetail);
+            return View(branch);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, Branch branch)
+        public async Task<IActionResult> Update(int id, BranchModel branch)
         {
             if (!ModelState.IsValid)
             {
-                List<string> errors = new List<string>();
-                foreach (var value in ModelState.Values)
-                {
-                    foreach (var error in value.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
+                TempData["Warning"] = $"Lỗi Bind dữ liệu hạng thành viên!";
 
-                string errorMessage = string.Join("; ", errors);
-
-                return BadRequest(errorMessage);
+                await PopulateAddressDropdowns(branch);
+                return View(branch);
             }
 
             var result = await _branchService.UpdateAsync(id, branch);
-
             if (!result.Succeeded)
             {
+                TempData["Error"] = $"Cập nhật hạng thành viên {branch.Branch_Name} thất bại: " + result.Errors;
 
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error);
                 }
-
+                await PopulateAddressDropdowns(branch);
                 return View(branch);
-
             }
+            TempData["Success"] = "Thêm hạng thành viên thành công!";
 
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetDistricts(int provinceId)
+        {
+            var districts = await _addressService.GetAllDistrictByProvinceIdAsync(provinceId);
+            return Json(districts);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetWards(int districtId)
+        {
+            var wards = await _addressService.GetAllWardByDistrictIdAsync(districtId);
+            return Json(wards);
+        }
+
+        private async Task PopulateAddressDropdowns(BranchModel branch)
+        {
+            var provinces = await _addressService.GetAllProvinceAsync();
+            ViewBag.Provinces = new SelectList(provinces, "Id", "Name");
+
+            if (branch.WardId > 0)
+            {
+                var ward = await _branchService.GetWardById(branch);
+
+                if (ward != null)
+                {
+                    var districts = await _addressService.GetAllDistrictByProvinceIdAsync(ward.District.ProvinceId);
+
+                    var wards = await _addressService.GetAllWardByDistrictIdAsync(ward.DistrictId);
+
+                    ViewBag.Districts = new SelectList(districts, "Id", "Name", ward.DistrictId);
+                    ViewBag.Wards = new SelectList(wards, "Id", "Name", ward.Id);
+                    ViewBag.SelectedProvinceId = ward.District.ProvinceId;
+                }
+            }
+        }
+
         public async Task<IActionResult> SoftDelete(int id)
         {
-            await _branchService.DeleteAsync(id);
-            return Ok(new { message = "Đã chuyển trạng thái user sang ngừng hoạt động" });
+            var result = await _branchService.DeleteAsync(id);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { success = true, message = "Xóa thành công" });
+            }
+
+            return BadRequest(new { success = false, message = "Không thể xóa dữ liệu" });
         }
     }
 }

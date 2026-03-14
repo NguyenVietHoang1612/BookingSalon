@@ -1,5 +1,7 @@
 using BookingSalon.Models;
 using BookingSalon.Models.Entities;
+using BookingSalon.Models.ViewModel;
+using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,36 +12,55 @@ namespace BookingSalon.Controllers
 
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ITypeOfServiceService _typeOfServiceSalon;
+        private readonly IHomeService _homeService;
 
+        private readonly IBranchService _branchService;
+        private readonly IStaffProfileService _stylistProfileService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<Users> userManager)
+        public HomeController( 
+            IBranchService branchService, IStaffProfileService stylistProfileService, ITypeOfServiceService typeOfServiceService, IHomeService homeService)
         {
-            _logger = logger;
+            _branchService = branchService;
+            _stylistProfileService = stylistProfileService;
+            _typeOfServiceSalon = typeOfServiceService;
+            _homeService = homeService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Service()
+        {
+            var branches = await _branchService.GetAllAsync();
+            var profileStylist = await _stylistProfileService.GetAllAsync();
+            var typeOfService = await _typeOfServiceSalon.GetAllTypeServiceAsync();
+
+            var homeVM = new BarberViewModel
+            {
+                Branches = branches.Data,
+                Categories = typeOfService,
+                FeaturedStylists = profileStylist
+            };
+
+            return View(homeVM);
+        }
+
+        public async Task<IActionResult> Home()
         {
             if (User.Identity.IsAuthenticated)
             {
 
                 if (User.IsInRole("Admin"))
                 {
-                    return RedirectToAction("Index", "Users", new { area = "Admin" });
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                 }
-
-
-                if (User.IsInRole("Stylist"))
+                else if (User.IsInRole("Stylist") || User.IsInRole("Skinner") || User.IsInRole("Reception"))
                 {
-                    
+                    return RedirectToAction("StaffUpdate", "Profile", new { area = "Admin" });
                 }
             }
-            return View();
-        }
 
-        public IActionResult Privacy()
-        {
-            return View();
+            
+            var homeViewModel = await _homeService.GetAllStaffAsync();
+            return View(homeViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

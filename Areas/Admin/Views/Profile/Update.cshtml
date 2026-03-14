@@ -1,0 +1,253 @@
+﻿@using BookingSalon.Areas.Admin.Models.ViewModel
+@model UserViewModel
+
+@{
+    ViewData["title"] = "Cập nhật thông tin cá nhân ";
+}
+
+<div class="container-fluid py-5 px-md-5">
+    <div class="card main-card p-4 p-lg-5 shadow-sm border-0" style="border-radius: 15px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary"><i class="bi bi-person-plus me-2"></i>Thông tin cá nhân</h2>
+        </div>
+
+        <div class="form-section">
+            <form asp-action="Update" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-12 col-md-6 col-lg-4 text-center border-end">
+                        <label class="form-label d-block fw-semibold">Ảnh đại diện</label>
+                        <div class="mb-3 position-relative">
+                            <img src="@(string.IsNullOrEmpty(Model.avatarName) ? "/img/default-avatar.png" : "/media/users/" + Model.avatarName)"
+                                 id="previewAvatar"
+                                 class="rounded-circle img-thumbnail shadow-sm"
+                                 style="width: 150px; height: 150px; object-fit: cover;" />
+                        </div>
+                        <div class="px-3">
+                            <input asp-for="Avatar_Image_Upload" type="file" class="form-control form-control-sm"
+                                   accept="image/*" onchange="previewImage(this)" />
+                            <span asp-validation-for="Avatar_Image_Upload" class="text-danger small"></span>
+                            <div class="form-text mt-2 small">Định dạng hỗ trợ: JPG, PNG, JPEG</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label fw-semibold">Email (Tên đăng nhập) <span class="text-danger">*</span></label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="example@gmail.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <label class="form-label fw-semibold">Số điện thoại</label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="090xxxxxxx" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-lg-4">
+                                <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+                                <select id="ddlProvince" class="form-control" asp-items="ViewBag.Provinces">
+                                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-lg-4">
+                                <label class="form-label fw-semibold">Quận / Huyện</label>
+                                <select id="ddlDistrict" class="form-control">
+                                    <option value="">-- Chọn Quận / Huyện --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label fw-semibold">Phường / Xã</label>
+                                <select asp-for="WardId" id="ddlWard" class="form-control">
+                                    <option value="">-- Chọn Phường / Xã --</option>
+                                </select>
+                                <span asp-validation-for="WardId" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label fw-semibold">Số nhà, tên đường</label>
+                                <input asp-for="Address" class="form-control" placeholder="Ví dụ: 123 Đường ABC" />
+                                <span asp-validation-for="Address" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Mật khẩu</label>
+
+                                <div class="input-group">
+                                    <input asp-for="Password"
+                                           id="passInput"
+                                           type="password"
+                                           class="form-control"
+                                           autocomplete="new-password" />
+
+                                    <button class="btn btn-outline-secondary"
+                                            type="button"
+                                            onclick="togglePass()">
+                                        <i id="toggleIcon" class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex gap-3 mt-5 pt-3">
+                    <button type="submit" class="btn btn-primary fw-bold px-5 py-2 shadow-sm">
+                        <i class="bi bi-person-check-fill me-2"></i> Lưu thông tin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .form-switch .form-check-input {
+            width: 3.5rem !important;
+            height: 1.75rem !important;
+            cursor: pointer;
+        }
+
+        .custom-switch-container {
+            display: flex;
+            align-items: center;
+            height: 38px;
+        }
+
+        .form-check-label {
+            margin-left: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .choices__inner {
+            border-radius: 0.375rem !important;
+            min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+        }
+
+        .choices__list--dropdown {
+            border-radius: 0.375rem;
+        }
+    </style>
+
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="/js/ChoicesSelectList.js"></script>
+
+    <script>
+        var provinceChoices, districtChoices, wardChoices;
+        var selectedProvinceId = '@ViewBag.SelectedProvinceId';
+        var selectedDistrictId = '@ViewBag.SelectedDistrictId';
+        var selectedWardId = '@Model.WardId';
+        $(document).ready(function () {
+            provinceChoices = initSelectSearch('ddlProvince', 'Chọn Tỉnh / Thành phố...');
+            districtChoices = initSelectSearch('ddlDistrict', 'Chọn Quận / Huyện...');
+            wardChoices = initSelectSearch('ddlWard', 'Chọn Phường / Xã...');
+
+            if (selectedProvinceId) {
+                    provinceChoices.setChoiceByValue(selectedProvinceId);
+
+                    $.getJSON('/Admin/Users/GetDistricts', { provinceId: selectedProvinceId }, function (districts) {
+
+                        var districtData = districts.map(d => ({
+                            value: d.id.toString(),
+                            label: d.name,
+                            selected: d.id == selectedDistrictId
+                        }));
+
+                        districtChoices.setChoices(districtData, 'value', 'label', true);
+
+                        if (selectedDistrictId) {
+                            $.getJSON('/Admin/Users/GetWards', { districtId: selectedDistrictId }, function (wards) {
+
+                                var wardData = wards.map(w => ({
+                                    value: w.id.toString(),
+                                    label: w.name,
+                                    selected: w.id == selectedWardId
+                                }));
+
+                                wardChoices.setChoices(wardData, 'value', 'label', true);
+                            });
+                        }
+                    });
+            }
+
+            $('#ddlProvince').on('change', function () {
+                var pId = $(this).val();
+
+                districtChoices.clearStore();
+                districtChoices.setChoices([{ value: '', label: '-- Chọn Quận/Huyện --', selected: true }]);
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (pId) {
+                    $.getJSON('/Admin/Users/GetDistricts', { provinceId: pId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        districtChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+
+            $('#ddlDistrict').on('change', function () {
+                var dId = $(this).val();
+
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (dId) {
+                    $.getJSON('/Admin/Users/GetWards', { districtId: dId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        wardChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+
+
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#previewAvatar').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function togglePass() {
+            var x = document.getElementById("passInput");
+            var icon = document.getElementById("toggleIcon");
+            if (x.type === "password") {
+                x.type = "text";
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                x.type = "password";
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+            }
+        }
+    </script>
+}

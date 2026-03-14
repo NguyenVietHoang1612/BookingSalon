@@ -4,15 +4,15 @@ namespace BookingSalon.Models.ViewModel
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email is required")]
+        [Required(ErrorMessage = "Vui lòng nhập Email")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
+        [Required(ErrorMessage = "Vui lòng nhập Password")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Remember Me?")]
+        [Display(Name = "Nhớ")]
         public bool RememberMe { get; set; }
     }
 }

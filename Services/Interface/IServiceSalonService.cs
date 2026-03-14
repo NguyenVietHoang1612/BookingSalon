@@ -6,12 +6,12 @@ namespace BookingSalon.Services.Interface
 {
     public interface IServicesSalonService
     {
-        Task<IEnumerable<Service>> GetAllServiceAsync();
-        Task<IEnumerable<TypeOfService>> GetAllTypeOfServiceAsync();
-        Task<ServiceResult<Service>> GetByIdAsync(int id);
-        Task<ServiceResult<Service>> CreateAsync(Service service);
-        Task<ServiceResult<Service>> UpdateAsync(int id, Service service);
-        Task<ServiceResult<Service>> DeleteAsync(int id);
-        Task<PaginatedList<Service>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
+        Task<IEnumerable<ServiceModel>> GetAllServiceAsync();
+        Task<IEnumerable<ServiceModel>> GetAllServiceActiveAsync();
+        Task<ServiceResult<ServiceModel>> GetByIdAsync(int id);
+        Task<ServiceResult<ServiceModel>> CreateAsync(ServiceModel service);
+        Task<ServiceResult<ServiceModel>> UpdateAsync(int id, ServiceModel service);
+        Task<ServiceResult<ServiceModel>> DeleteAsync(int id);
+        Task<PaginatedList<ServiceModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }

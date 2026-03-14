@@ -5,6 +5,8 @@ using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,16 +22,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied"; 
 });
 
-builder.Services.AddIdentity<Users, IdentityRole>(options =>
+builder.Services.AddIdentity<UsersModel, IdentityRole>(options =>
 {
+    options.Password.RequiredLength = 1; 
     options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 4;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = true;
+
+    options.User.RequireUniqueEmail = false; 
+    options.SignIn.RequireConfirmedEmail = false; 
+    options.SignIn.RequireConfirmedPhoneNumber = false; 
     options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedPhoneNumber = false;
 })
     .AddEntityFrameworkStores<BookingContext>()
     .AddDefaultTokenProviders();
@@ -43,16 +46,30 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IAppRolesService, AppRolesService>();
 builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IUsersService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IServicesSalonService, ServicesSalonService>();
 builder.Services.AddScoped<IFixedTimeSlotService, FixedTimeSlotService>();
 builder.Services.AddScoped<ITypeOfServiceService, TypeOfServiceService>();
-builder.Services.AddScoped<IStylistProfileService, StylistProfileService>();
+builder.Services.AddScoped<IStaffProfileService, StaffProfileService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IStatisticalService, StatisticalService>();
+builder.Services.AddScoped<IWorkScheduleService, WorkScheduleService>();
+builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<IRankService, RankService>();
+builder.Services.AddScoped<ICustomerRankService, CustomerRankService>();
+builder.Services.AddScoped<IStaffPortfolioService, StaffPortfolioService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
 
+QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
 
@@ -88,12 +105,12 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
      name: "areas",
-     pattern: "{area:exists}/{controller=Branch}/{action=Index}/{id?}"
+     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}"
     );
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Home}/{id?}")
     .WithStaticAssets();
 
 

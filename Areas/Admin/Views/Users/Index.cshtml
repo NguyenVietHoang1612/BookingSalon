@@ -1,136 +1,141 @@
 ﻿@using BookingSalon.Areas.Admin.Models
+@using BookingSalon.Areas.Admin.Models.ViewModel
 @using BookingSalon.Data.Repository
-@model PaginatedList<UserViewModel>
+@model PaginatedList<CustomerRankVM>
 
 @{
-    ViewData["title"] = "Danh sách người dùng";
+    ViewData["title"] = "Danh sách khách hàng";
 
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<style>
-    .avatar-wrapper {
-        width: 100px;
-        height: 100px;
-        flex-shrink: 0;
-    }
-
-        .avatar-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-    .text-truncate {
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-</style>
-
 <div class="container-fluid py-2 px-md-5">
     <div class="card main-card p-2 p-lg-4">
         <div class="row align-items-center mb-5">
-                <div class="d-flex justify-content-between align-items-center col-xl-6 col-lg-5">
-                    <h2 class="fw-bold text-primary">Quản lý người dùng</h2>
-                </div>
-
-                <div class="col-xl-6 col-lg-7">
-                    <div class="row g-3 justify-content-lg-end">
-                        <div class="col-sm-7 col-12">
-                            <form asp-action="Index" method="get">
-                                <div class="input-group search-group">
-                                    <input type="text" name="term" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm theo tên loại dịch vụ...">
-                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý khách hàng</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="row g-2 justify-content-lg-end">
+                                <div class="col-sm-7 col-12">
+                                    <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                        <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                               class="form-control border-0 ps-4"
+                                               placeholder="Tìm kiếm tên, sđt khách hàng..."
+                                               style="focus: none; box-shadow: none;">
+                                        <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="col-sm-5 col-12 d-grid">
-                            <a class="btn btn-primary shadow-sm text-decoration-none text-white" asp-controller="Users" asp-action="Create">
-                                <i class="bi bi-plus-lg me-2"></i>
-                                Thêm người dùng
-                            </a>
-                        </div>
+                                <div class="col-sm-5 col-12">
+                                    <select name="sortOrder" class="form-select border-0 shadow-sm rounded-3 h-100" onchange="this.form.submit()">
+                                        <option value="" selected="@(string.IsNullOrEmpty(ViewBag.SortOrder))">Mặc định</option>
+                                        <option value="rank_desc" selected="@(ViewBag.SortOrder == "rank_desc")">Rank: Cao -> Thấp</option>
+                                        <option value="rank_asc" selected="@(ViewBag.SortOrder == "rank_asc")">Rank: Thấp -> Cao</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-sm-4 col-12">
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row g-4">
-                @foreach (var item in Model)
-                {
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-                        <div class="card h-100 shadow-sm border-0">
-                            <div class="card-header bg-light py-2 border-bottom-0 d-flex justify-content-between">
-                                <small class="text-muted fw-bold fst-italic">
-                                    @(item.User.EmailConfirmed ? "Đã kích hoạt" : "Chưa kích hoạt")
-                                </small>
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-light py-2 border-bottom-0 d-flex justify-content-between">
+                            <small class="text-muted fw-bold fst-italic">
+                                @(item.Status ? "" : "Đã chặn")
+                            </small>
+                        </div>
 
-                                <small class="text-muted fw-bold fst-italic">
-                                    @(item.User.Status ? "" : "Đã chặn")
-                                </small>
-                            </div>
-
-                            <div class="card-body pt-1">
-                                <div class="row g-0">
-                                    @* Dùng row g-0 để chia không gian chính xác *@
-                                    <div class="col-8 pe-2">
-                                        <h5 class="fw-bold mb-1 text-truncate" title="@item.User.FullName">
-                                            @(item.User.FullName ?? "Unnamed")
+                        <div class="card-body pt-1">
+                            <div class="row g-0">
+                                    <div class="col-12 col-lg-10 pe-2 ">
+                                        <h5 class="fw-bold mb-1 text-truncate" title="@item.CustomerName">
+                                            @(item.CustomerName ?? "Unnamed")
                                         </h5>
                                         <p class="small text-muted mb-2 text-truncate">
-                                            <strong>About:</strong> @item.RoleName
+                                            <i class="bi bi-award-fill text-warning me-1"></i>
+                                            <strong>Rank:</strong> @(item.ActiveRank? item.RankName: "Chưa đăng ký thẻ thành viên")
                                         </p>
 
                                         <div class="d-flex align-items-start mb-1 overflow-hidden">
-                                            <i class="bi bi-geo-alt-fill text-muted me-1 small"></i>
-                                            <p class="small mb-0 text-truncate"><strong>Id:</strong> @item.User.Id</p>
+                                            <i class="bi bi-coin text-primary me-2 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Điểm hiện tại:</strong> @item.CurrentPoints</p>
                                         </div>
 
                                         <div class="d-flex align-items-start mb-1 overflow-hidden">
-                                            <i class="bi bi-geo-alt-fill text-muted me-1 small"></i>
-                                            <p class="small mb-0 text-truncate"><strong>Email:</strong> @item.User.Email</p>
-                                        </div>
-
-                                        <div class="d-flex align-items-start overflow-hidden">
-                                            <i class="bi bi-telephone-fill text-muted me-1 small"></i>
-                                            <p class="small mb-0 text-truncate"><strong>Phone:</strong> @item.User.PhoneNumber</p>
+                                            <i class="bi bi-star-fill text-success me-2 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Tổng điểm tích lũy:</strong> @item.LifetimePoints</p>
                                         </div>
 
                                         <div class="d-flex align-items-start mb-1 overflow-hidden">
-                                            <i class="bi bi-geo-alt-fill text-muted me-1 small"></i>
-                                            <p class="small mb-0 text-truncate"><strong>Địa chỉ:</strong> @item.User.Address</p>
+                                            <i class="bi bi-envelope-fill text-muted me-2 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Email:</strong> @item.CustomerEmail</p>
+                                        </div>
+
+                                        <div class="d-flex align-items-start mb-1 overflow-hidden">
+                                            <i class="bi bi-telephone-fill text-muted me-2 small"></i>
+                                            <p class="small mb-0 text-truncate"><strong>Phone:</strong> @item.CustomerPhone</p>
+                                        </div>
+
+                                        <div class="d-flex align-items-start mb-1 overflow-hidden">
+                                            <i class="bi bi-geo-alt-fill text-danger me-2 small"></i>
+                                            <p class="small mb-0">
+                                                <strong>Địa chỉ:</strong> @item.Address@if (item.Ward != null && item.Ward.District != null && item.Ward.District.Province != null)
+                                                {
+                                                    <span>@item.Ward.Name, @item.Ward.District.Name, @item.Ward.District.Province.Name</span>
+                                                }
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div class="col-4 d-flex justify-content-center align-items-start">
+                                    <div class="col-12 col-lg-2 d-flex justify-content-center align-items-start">
                                         <div class="avatar-wrapper">
-                                            <img src="@(string.IsNullOrEmpty(item.User.Avatar_Name)
-                                                     ? "https://ui-avatars.com/api/?name=" + item.User.FullName
-                                                     : Url.Content("~/media/users/" + item.User.Avatar_Name))"
-                                             class="rounded-circle border"
-                                             alt="Avatar">
-                                        </div>
+                                            <img src="@(string.IsNullOrEmpty(item.AvatarName)
+                                                                    ? "https://ui-avatars.com/api/?name=" + item.CustomerName
+                                                                    : Url.Content("~/media/users/" + item.AvatarName))"
+                                                class="rounded-circle border"
+                                                style="width: 80px; height: 80px; object-fit: cover;"
+                                                alt="Avatar">
                                     </div>
-                                </div>
+                                    </div>
                             </div>
+                        </div>
 
-                            <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 pb-3">
-                                <a asp-action="Update" asp-route-Id="@item.User.Id" class="btn btn-warning btn-sm px-3 fw-bold text-dark shadow-sm text-decoration-none">
-                                    <i class="bi bi-slash-circle"></i> Cập nhật
-                                </a>
-
-                                <form id="delete-form-@item.User.Id" asp-action="SoftDelete" asp-route-id="@item.User.Id" method="post" class="m-0">
-                                    <button type="button" class="btn btn-danger btn-sm px-3 fw-bold shadow-sm" onclick="confirmDelete('@Url.Action("SoftDelete", "Users", new { id = item.User.Id })', '@item.User.Email')">
+                        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 pb-3">
+                            <a asp-action="Update" asp-route-Id="@item.CustomerId" class="btn btn-warning btn-sm px-3 fw-bold text-dark shadow-sm text-decoration-none">
+                                <i class="bi bi-slash-circle"></i> Cập nhật
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form id="delete-form-@item.CustomerId" asp-action="SoftDelete" asp-route-id="@item.CustomerId" method="post" class="m-0">
+                                    <button type="button" class="btn btn-danger btn-sm px-3 fw-bold shadow-sm" onclick="confirmDelete('@Url.Action("SoftDelete", "Users", new { id = item.CustomerId })', '@item.CustomerEmail')">
                                         <i class="bi bi-x-lg"></i> Xóa
                                     </button>
                                 </form>
-                            </div>
+                            }
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
+        </div>
         <div class="row align-items-center mt-3">
             <div class="col-sm-6 text-muted">
                 Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
@@ -140,36 +145,35 @@
                     <ul class="pagination justify-content-end mb-0">
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm" asp-route-sortOrder="@ViewBag.SortOrder">
                                 <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm" asp-route-sortOrder="@ViewBag.SortOrder">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
 
                         @for (int i = 1; i <= Model.TotalPages; i++)
                         {
-                            // Logic để chỉ hiển thị một vài số trang nếu tổng số quá lớn
                             if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
                             {
                                 <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm" asp-route-sortOrder="@ViewBag.SortOrder">@i</a>
                                 </li>
                             }
                         }
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm" asp-route-sortOrder="@ViewBag.SortOrder">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm" asp-route-sortOrder="@ViewBag.SortOrder">
                                 <i class="bi bi-chevron-double-right"></i>
                             </a>
                         </li>
@@ -178,4 +182,28 @@
             </div>
         </div>
     </div>
+<div/>
 
+
+@section Styles {
+        <style>
+            .avatar-wrapper {
+                width: 100px;
+                height: 100px;
+                flex-shrink: 0;
+            }
+
+                .avatar-wrapper img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+            .text-truncate {
+                display: block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        </style>
+}

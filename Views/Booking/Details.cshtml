@@ -1,0 +1,271 @@
+﻿@using BookingSalon.Models.ViewModel.BookingSalonViewModel
+@model BookingDetailViewModel
+@using BookingSalon.Models.Entities
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Chi tiết lịch hẹn #" + Model.BookingId;
+}
+
+
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <a asp-action="History" class="btn btn-light border rounded-pill px-4 shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i> Trở lại lịch sử
+        </a>
+        <div>
+            @if (Model.Status == BookingStatus.PendingConfirmation || Model.Status == BookingStatus.Confirmed)
+            {
+                <form asp-action="Cancel" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.BookingId" />
+                    <button type="submit" class="btn btn-outline-danger rounded-pill px-4 shadow-sm"
+                            onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?')">
+                        Hủy lịch đặt
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow border-0 overflow-hidden">
+        <div class="invoice-container">
+            <div class="invoice-header d-flex justify-content-between align-items-start">
+                <div>
+                    <h3 class="invoice-title fw-bold mb-1">Chi tiết lịch hẹn</h3>
+                    <p class="small text-muted mb-0">Ngày đặt: @Model.Create_At.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+                <div class="text-end">
+                    @{
+                        var statusColor = Model.Status switch
+                        {
+                            BookingStatus.PendingConfirmation => "#6c757d",
+                            BookingStatus.Confirmed => "#0dcaf0",
+                            BookingStatus.InProgress => "#ffc107",
+                            BookingStatus.Completed => "#198754",
+                            BookingStatus.Paid => "#0d6efd",
+                            BookingStatus.Canceled => "#dc3545",
+                            _ => "#000"
+                        };
+                        var statusText = Model.Status switch
+                        {
+                            BookingStatus.PendingConfirmation => "Chờ xác nhận",
+                            BookingStatus.Confirmed => "Đã xác nhận",
+                            BookingStatus.InProgress => "Đang thực hiện",
+                            BookingStatus.Completed => "Hoàn thành",
+                            BookingStatus.Paid => "Đã thanh toán",
+                            BookingStatus.Canceled => "Đã hủy",
+                            _ => "Không xác định"
+                        };
+                    }
+                    <div class="status-badge text-white" style="background-color: @statusColor;">
+                        @statusText
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-sm-4">
+                    <div class="info-label text-uppercase"><i class="bi bi-shop me-1"></i> Tại chi nhánh</div>
+                    <div class="info-content">
+                        @Model.Branch_Name<br />
+                        <span class="fw-normal text-muted small">@Model.Branch_Address</span><br />
+                        <span class="fw-normal text-muted small"><i class="bi bi-telephone me-1"></i> @Model.Branch_Phone</span>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label text-uppercase"><i class="bi bi-person-check me-1"></i> Đội ngũ thực hiện</div>
+                    <div class="info-content">
+                        Stylist: @Model.Stylist_Name<br />
+                        @if (!string.IsNullOrEmpty(Model.Skinner_Name))
+                        {
+                            <span class="fw-normal text-muted small">Skinner: @Model.Skinner_Name</span>
+                        }
+                        else
+                        {
+                            <span class="fw-normal text-muted small italic">Chưa chỉ định Skinner</span>
+                        }
+                    </div>
+                </div>
+                <div class="col-sm-4 text-md-end">
+                    <div class="info-label text-uppercase"><i class="bi bi-calendar3 me-1"></i> Thời gian hẹn</div>
+                    <div class="info-content text-primary fs-5">
+                        @Model.TimeSlot.ToString(@"hh\:mm")<br />
+                        <span class="text-dark">@Model.Date_Booking.ToString("dd/MM/yyyy")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-invoice">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%">Dịch vụ sử dụng</th>
+                            <th class="text-center">Thời gian</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.bookingDetails != null)
+                        {
+                            foreach (var detail in Model.bookingDetails)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(detail.Service?.ImageName))
+                                            {
+                                                <img src="~/media/services/@detail.Service.ImageName" class="rounded-3 me-3" style="width: 55px; height: 55px; object-fit: cover;" />
+                                            }
+                                            <div>
+                                                <div class="fw-bold text-dark">@detail.Service?.Service_Name</div>
+                                                <div class="small text-muted">@detail.Service?.TypeOfService?.Type_Service_Name</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">@detail.Service?.DurationInMinutes phút</td>
+                                    <td class="text-end">@detail.BasePriceSnapshot.ToString("#,##0") đ</td>
+                                    <td class="text-end fw-bold">@detail.BasePriceSnapshot.ToString("#,##0") đ</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row justify-content-end">
+                <div class="col-md-5">
+                    <div class="total-section">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tổng thời gian:</span>
+                            <span class="fw-bold">@Model.TotalDuration phút</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span>@Model.FinalPrice.ToString("#,##0") đ</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tổng giảm giá:</span>
+                            <span>@Model.DiscountAmount.ToString("#,##0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <h5 class="fw-bold mb-0">TỔNG CỘNG:</h5>
+                            <h4 class="fw-bold grand-total mb-0">@Model.FinalPrice.ToString("#,##0") VNĐ</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-top">
+                <div class="row align-items-center">
+                    <div class="col-sm-8">
+                        <div class="info-label text-uppercase mb-2">Lưu ý cho khách hàng</div>
+                        <p class="small text-muted italic mb-0">
+                            - Vui lòng có mặt tại <strong>@Model.Branch_Name</strong> trước 10 phút.<br />
+                            - Nếu quý khách đến muộn quá 15 phút, lịch hẹn có thể bị dời sang khung giờ khác.<br />
+                            - Cảm ơn quý khách <strong>@Model.Customer_Name</strong> đã lựa chọn dịch vụ của chúng tôi!
+                        </p>
+                    </div>
+                    <div class="col-sm-4 text-center mt-4 mt-sm-0">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="info-label text-uppercase mb-1">Trợ giúp nhanh</div>
+                            <div class="fw-bold">1900 xxxx</div>
+                            <div class="small text-muted">Hỗ trợ 24/7</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .invoice-container {
+            background-color: #fff;
+            padding: 40px;
+            color: #333;
+            border-radius: 15px;
+        }
+
+        .invoice-header {
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .invoice-title {
+            color: #556080;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .info-content {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .table-invoice thead th {
+            background-color: #f8f9fa;
+            border-top: none;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 12px;
+        }
+
+        .table-invoice tbody td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .total-section {
+            border-top: 2px solid #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .grand-total {
+            color: #d9534f;
+            font-size: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .invoice-container {
+                padding: 0;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            body {
+                background-color: #fff !important;
+            }
+        }
+    </style>
+}

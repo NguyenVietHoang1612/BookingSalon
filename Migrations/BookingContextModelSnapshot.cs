@@ -22,68 +22,16 @@ namespace BookingSalon.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Booking", b =>
-                {
-                    b.Property<int>("Booking_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Booking_Id"));
-
-                    b.Property<DateOnly>("Booking_Date")
-                        .HasColumnType("date");
-
-                    b.Property<int>("Branch_Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Create_At")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Customer_Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Slot_Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Stylist_Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("TotalDuration")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Booking_Id");
-
-                    b.HasIndex("Branch_Id");
-
-                    b.HasIndex("Customer_Id");
-
-                    b.HasIndex("Slot_Id");
-
-                    b.HasIndex("Stylist_Id");
-
-                    b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.BookingDetail", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingDetailModel", b =>
                 {
                     b.Property<int>("Booking_Detail_Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Booking_Detail_Id"));
+
+                    b.Property<decimal>("BasePriceSnapshot")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Booking_Id")
                         .HasColumnType("int");
@@ -93,11 +41,22 @@ namespace BookingSalon.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<int?>("Service_Id")
+                    b.Property<int>("DurationSnapshot")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ServiceNameSnapshot")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Service_Id")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("Booking_Detail_Id");
 
@@ -108,7 +67,137 @@ namespace BookingSalon.Migrations
                     b.ToTable("BookingDetails");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Branch", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingImageModel", b =>
+                {
+                    b.Property<int>("Image_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Image_Id"));
+
+                    b.Property<int>("Booking_Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Image_Id");
+
+                    b.HasIndex("Booking_Id");
+
+                    b.ToTable("BookingImages", (string)null);
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingModel", b =>
+                {
+                    b.Property<int>("Booking_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Booking_Id"));
+
+                    b.Property<DateTime>("Booking_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Branch_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CouponCodeSnapshot")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int?>("Coupon_Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Create_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Customer_Id")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<byte?>("DiscountTypeSnapshot")
+                        .HasColumnType("tinyint");
+
+                    b.Property<decimal?>("DiscountValueSnapshot")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("End_Slot_Id")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("FinalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Skinner_Id")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Start_Slot_Id")
+                        .HasColumnType("int");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Stylist_Id")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("TotalDuration")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Update_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("UpdatedById")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Booking_Id");
+
+                    b.HasIndex("Branch_Id");
+
+                    b.HasIndex("Coupon_Id");
+
+                    b.HasIndex("Customer_Id");
+
+                    b.HasIndex("End_Slot_Id");
+
+                    b.HasIndex("Skinner_Id");
+
+                    b.HasIndex("Start_Slot_Id");
+
+                    b.HasIndex("Stylist_Id");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.BranchModel", b =>
                 {
                     b.Property<int>("BranchId")
                         .ValueGeneratedOnAdd()
@@ -118,23 +207,27 @@ namespace BookingSalon.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Branch_Image")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Branch_Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("Phone")
+                    b.Property<bool?>("Is_Main_Branch")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
@@ -147,14 +240,159 @@ namespace BookingSalon.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<int>("WardId")
+                        .HasColumnType("int");
+
                     b.HasKey("BranchId");
 
                     b.HasIndex("Branch_Name");
 
-                    b.ToTable("Branches");
+                    b.HasIndex("WardId");
+
+                    b.ToTable("Branch");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.FixedTimeSlot", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.CouponModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<byte>("Discount_Type")
+                        .HasColumnType("tinyint");
+
+                    b.Property<decimal>("Discount_value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Expires_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaxUsagePerUser")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Min_Order_Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Updated_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("Usage_Limit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Used_Count")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coupon");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.CouponUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CouponId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UsedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CouponId", "UserId");
+
+                    b.ToTable("CouponUsage");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.CustomerRankModel", b =>
+                {
+                    b.Property<string>("Customer_Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CurrentPoints")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Is_Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LifetimePoints")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RankId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Update_At")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Customer_Id");
+
+                    b.HasIndex("RankId");
+
+                    b.ToTable("CustomerRank");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.DistrictModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProvinceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvinceId");
+
+                    b.ToTable("District");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.FixedTimeSlotModel", b =>
                 {
                     b.Property<int>("SlotId")
                         .ValueGeneratedOnAdd()
@@ -167,31 +405,87 @@ namespace BookingSalon.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<int>("Sort_Order")
-                        .HasColumnType("int");
-
                     b.Property<TimeSpan>("TimeLabel")
-                        .HasMaxLength(5)
-                        .HasColumnType("time");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("time")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("SlotId");
 
-                    b.HasIndex("Sort_Order")
+                    b.HasIndex("TimeLabel")
                         .IsUnique();
 
                     b.ToTable("FixedTimeSlots");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Payment", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.NewsModel", b =>
                 {
-                    b.Property<int>("PaymentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("PublishedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Summary")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Thumbnail")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("Updated_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("Title");
+
+                    b.ToTable("News");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.PaymentModel", b =>
+                {
+                    b.Property<Guid>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
@@ -199,36 +493,157 @@ namespace BookingSalon.Migrations
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Created_At")
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("OrderInfo")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Method")
+                    b.Property<string>("PaymentMethod")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.Property<DateTime>("Payment_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TypePay")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("ProcessedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PaymentId");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
+                    b.HasIndex("BookingId");
 
-                    b.ToTable("Payments");
+                    b.HasIndex("ProcessedBy");
+
+                    b.ToTable("Payments", (string)null);
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Service", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.ProvinceModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Province");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.RankModel", b =>
+                {
+                    b.Property<int>("RankId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RankId"));
+
+                    b.Property<DateTime?>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("DiscountPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("MaxBookingDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinPoint")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RankName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("Update_At")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RankId");
+
+                    b.ToTable("Ranks");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ReviewModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Booking_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Customer_Id")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RepliedById")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Reply_Comment")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Staff_Id")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Updated_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Booking_Id")
+                        .IsUnique();
+
+                    b.HasIndex("Customer_Id");
+
+                    b.HasIndex("RepliedById");
+
+                    b.HasIndex("Staff_Id");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ServiceModel", b =>
                 {
                     b.Property<int>("ServiceId")
                         .ValueGeneratedOnAdd()
@@ -236,26 +651,43 @@ namespace BookingSalon.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
 
+                    b.Property<decimal>("Base_Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("Create_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("DurationInMinutes")
-                        .HasMaxLength(10)
                         .HasColumnType("int");
 
                     b.Property<string>("ImageName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<bool>("IsPromotionActive")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bit")
+                        .HasComputedColumnSql("CASE \r\n                            WHEN [Promotion_Price] IS NOT NULL \r\n                                 AND [Promotion_Price] > 0\r\n                                 AND [Promotion_Start] <= GETDATE() \r\n                                 AND [Promotion_End] >= GETDATE() THEN CAST(1 AS BIT) \r\n                            ELSE CAST(0 AS BIT) \r\n                     END");
+
+                    b.Property<DateTime?>("Promotion_End")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<decimal?>("Promotion_Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Promotion_Start")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Service_Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -264,11 +696,13 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.HasKey("ServiceId");
 
@@ -277,7 +711,7 @@ namespace BookingSalon.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistImage", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffPortfolioModel", b =>
                 {
                     b.Property<int>("ImageId")
                         .ValueGeneratedOnAdd()
@@ -285,19 +719,28 @@ namespace BookingSalon.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
 
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Create_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("StylistProfileId")
-                        .IsRequired()
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StaffProfileId")
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("Update_At")
                         .ValueGeneratedOnAdd()
@@ -306,14 +749,15 @@ namespace BookingSalon.Migrations
 
                     b.HasKey("ImageId");
 
-                    b.HasIndex("StylistProfileId");
+                    b.HasIndex("StaffProfileId");
 
-                    b.ToTable("StylistImages");
+                    b.ToTable("StaffPortfolio");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistProfile", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffProfileModel", b =>
                 {
-                    b.Property<string>("StylistId")
+                    b.Property<string>("StaffId")
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Branch_Id")
@@ -325,70 +769,77 @@ namespace BookingSalon.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<TimeSpan>("End_Work_Time")
-                        .HasColumnType("time");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("time")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Staff_Bio")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<TimeSpan>("Start_Work_Time")
-                        .HasColumnType("time");
-
-                    b.Property<int>("StylistExperience")
-                        .HasMaxLength(50)
-                        .HasColumnType("int");
-
-                    b.Property<string>("StylistSkill")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("time")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("StylistId");
-
-                    b.HasIndex("Branch_Id");
-
-                    b.ToTable("StylistProfiles");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistTimeWork", b =>
-                {
-                    b.Property<int>("Stylist_Time_Work_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Stylist_Time_Work_Id"));
-
-                    b.Property<DateTime>("Create_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<bool>("Is_Available")
-                        .HasColumnType("bit");
+                    b.HasKey("StaffId");
+
+                    b.HasIndex("Branch_Id");
+
+                    b.ToTable("StaffProfile");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffScheduleModel", b =>
+                {
+                    b.Property<int>("ScheduleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScheduleId"));
+
+                    b.Property<int>("Booking_Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Create_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("Slot_Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("Stylist_Id")
+                    b.Property<string>("Staff_Id")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime?>("Update_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateOnly>("Work_Date")
                         .HasColumnType("date");
 
-                    b.HasKey("Stylist_Time_Work_Id");
+                    b.HasKey("ScheduleId");
+
+                    b.HasIndex("Booking_Id");
 
                     b.HasIndex("Slot_Id");
 
-                    b.HasIndex("Stylist_Id", "Work_Date", "Slot_Id")
-                        .IsUnique();
+                    b.HasIndex("Staff_Id", "Work_Date", "Slot_Id")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Unique_Stylist_Slot_Per_Day");
 
-                    b.ToTable("stylistTimeWorks");
+                    b.ToTable("StaffSchedule");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.TypeOfService", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.TypeOfServiceModel", b =>
                 {
                     b.Property<int>("TypeOfServiceId")
                         .ValueGeneratedOnAdd()
@@ -403,18 +854,20 @@ namespace BookingSalon.Migrations
 
                     b.Property<string>("Type_Service_Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("Update_At")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("TypeOfServiceId");
 
                     b.ToTable("TypeOfServices");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Users", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.UsersModel", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -423,12 +876,12 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Avatar_Name")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -439,17 +892,20 @@ namespace BookingSalon.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -466,8 +922,8 @@ namespace BookingSalon.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(15)
@@ -498,11 +954,10 @@ namespace BookingSalon.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("WardId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasFilter("[Email] IS NOT NULL");
+                    b.HasKey("Id");
 
                     b.HasIndex("FullName");
 
@@ -514,7 +969,37 @@ namespace BookingSalon.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("WardId");
+
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.WardModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.ToTable("Ward");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -650,73 +1135,222 @@ namespace BookingSalon.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Booking", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingDetailModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("Branch_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BookingSalon.Models.Entities.Users", "Customer")
-                        .WithMany()
-                        .HasForeignKey("Customer_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlot", "StartSlot")
-                        .WithMany()
-                        .HasForeignKey("Slot_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BookingSalon.Models.Entities.Users", "Stylist")
-                        .WithMany()
-                        .HasForeignKey("Stylist_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("StartSlot");
-
-                    b.Navigation("Stylist");
-                });
-
-            modelBuilder.Entity("BookingSalon.Models.Entities.BookingDetail", b =>
-                {
-                    b.HasOne("BookingSalon.Models.Entities.Booking", "Booking")
+                    b.HasOne("BookingSalon.Models.Entities.BookingModel", "Booking")
                         .WithMany("BookingDetails")
                         .HasForeignKey("Booking_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BookingSalon.Models.Entities.Service", "Service")
+                    b.HasOne("BookingSalon.Models.Entities.ServiceModel", "Service")
                         .WithMany("BookingDetails")
                         .HasForeignKey("Service_Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Booking");
 
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Payment", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingImageModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Booking", "Booking")
-                        .WithOne("Payment")
-                        .HasForeignKey("BookingSalon.Models.Entities.Payment", "BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("BookingSalon.Models.Entities.BookingModel", "Booking")
+                        .WithMany("BookingImages")
+                        .HasForeignKey("Booking_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Booking");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Service", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.TypeOfService", "TypeOfService")
+                    b.HasOne("BookingSalon.Models.Entities.BranchModel", "Branch")
+                        .WithMany()
+                        .HasForeignKey("Branch_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.CouponModel", "Coupon")
+                        .WithMany()
+                        .HasForeignKey("Coupon_Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Customer")
+                        .WithMany()
+                        .HasForeignKey("Customer_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlotModel", "EndSlot")
+                        .WithMany()
+                        .HasForeignKey("End_Slot_Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BookingSalon.Models.Entities.StaffProfileModel", "SkinnerProfile")
+                        .WithMany()
+                        .HasForeignKey("Skinner_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlotModel", "StartSlot")
+                        .WithMany()
+                        .HasForeignKey("Start_Slot_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.StaffProfileModel", "StylistProfile")
+                        .WithMany()
+                        .HasForeignKey("Stylist_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Coupon");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("EndSlot");
+
+                    b.Navigation("SkinnerProfile");
+
+                    b.Navigation("StartSlot");
+
+                    b.Navigation("StylistProfile");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.BranchModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.WardModel", "Ward")
+                        .WithMany()
+                        .HasForeignKey("WardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ward");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.CouponUsage", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.CouponModel", "Coupon")
+                        .WithMany()
+                        .HasForeignKey("CouponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Coupon");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.CustomerRankModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Customer")
+                        .WithOne()
+                        .HasForeignKey("BookingSalon.Models.Entities.CustomerRankModel", "Customer_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.RankModel", "Rank")
+                        .WithMany()
+                        .HasForeignKey("RankId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Rank");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.DistrictModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.ProvinceModel", "Province")
+                        .WithMany("Districts")
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.NewsModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.PaymentModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.BookingModel", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "StaffId")
+                        .WithMany()
+                        .HasForeignKey("ProcessedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("StaffId");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ReviewModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.BookingModel", "Booking")
+                        .WithOne()
+                        .HasForeignKey("BookingSalon.Models.Entities.ReviewModel", "Booking_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Customer")
+                        .WithMany()
+                        .HasForeignKey("Customer_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "RepliedBy")
+                        .WithMany()
+                        .HasForeignKey("RepliedById");
+
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Staff")
+                        .WithMany()
+                        .HasForeignKey("Staff_Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("RepliedBy");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ServiceModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.TypeOfServiceModel", "TypeOfService")
                         .WithMany("Services")
                         .HasForeignKey("Type_Service_Id")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -725,53 +1359,81 @@ namespace BookingSalon.Migrations
                     b.Navigation("TypeOfService");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistImage", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffPortfolioModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.StylistProfile", "StylistProfile")
-                        .WithMany("StylistImages")
-                        .HasForeignKey("StylistProfileId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("BookingSalon.Models.Entities.StaffProfileModel", "StaffProfile")
+                        .WithMany("StaffPortfolio")
+                        .HasForeignKey("StaffProfileId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("StylistProfile");
+                    b.Navigation("StaffProfile");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistProfile", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffProfileModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Branch", "Branch")
+                    b.HasOne("BookingSalon.Models.Entities.BranchModel", "Branch")
                         .WithMany()
                         .HasForeignKey("Branch_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BookingSalon.Models.Entities.Users", "Stylist")
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", "Staff")
                         .WithOne()
-                        .HasForeignKey("BookingSalon.Models.Entities.StylistProfile", "StylistId")
+                        .HasForeignKey("BookingSalon.Models.Entities.StaffProfileModel", "StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Branch");
 
-                    b.Navigation("Stylist");
+                    b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistTimeWork", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffScheduleModel", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlot", "TimeSlot")
+                    b.HasOne("BookingSalon.Models.Entities.BookingModel", "Booking")
+                        .WithMany()
+                        .HasForeignKey("Booking_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingSalon.Models.Entities.FixedTimeSlotModel", "TimeSlot")
                         .WithMany()
                         .HasForeignKey("Slot_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BookingSalon.Models.Entities.Users", "Stylist")
+                    b.HasOne("BookingSalon.Models.Entities.StaffProfileModel", "StaffProfile")
                         .WithMany()
-                        .HasForeignKey("Stylist_Id")
+                        .HasForeignKey("Staff_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Stylist");
+                    b.Navigation("Booking");
+
+                    b.Navigation("StaffProfile");
 
                     b.Navigation("TimeSlot");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.UsersModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.WardModel", "Ward")
+                        .WithMany()
+                        .HasForeignKey("WardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Ward");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.WardModel", b =>
+                {
+                    b.HasOne("BookingSalon.Models.Entities.DistrictModel", "District")
+                        .WithMany("Wards")
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("District");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -785,7 +1447,7 @@ namespace BookingSalon.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Users", null)
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -794,7 +1456,7 @@ namespace BookingSalon.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Users", null)
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -809,7 +1471,7 @@ namespace BookingSalon.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookingSalon.Models.Entities.Users", null)
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -818,31 +1480,41 @@ namespace BookingSalon.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BookingSalon.Models.Entities.Users", null)
+                    b.HasOne("BookingSalon.Models.Entities.UsersModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Booking", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.BookingModel", b =>
                 {
                     b.Navigation("BookingDetails");
 
-                    b.Navigation("Payment");
+                    b.Navigation("BookingImages");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.Service", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.DistrictModel", b =>
+                {
+                    b.Navigation("Wards");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ProvinceModel", b =>
+                {
+                    b.Navigation("Districts");
+                });
+
+            modelBuilder.Entity("BookingSalon.Models.Entities.ServiceModel", b =>
                 {
                     b.Navigation("BookingDetails");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.StylistProfile", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.StaffProfileModel", b =>
                 {
-                    b.Navigation("StylistImages");
+                    b.Navigation("StaffPortfolio");
                 });
 
-            modelBuilder.Entity("BookingSalon.Models.Entities.TypeOfService", b =>
+            modelBuilder.Entity("BookingSalon.Models.Entities.TypeOfServiceModel", b =>
                 {
                     b.Navigation("Services");
                 });

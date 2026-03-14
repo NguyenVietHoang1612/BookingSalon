@@ -1,0 +1,163 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@model PaginatedList<StaffPortfolioModel>
+
+@{
+    ViewData["title"] = "Danh sách Portfolio của tôi";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4 shadow-sm border-0">
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold text-dark">Quản lý bộ sưu tập</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="StaffIndex" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm theo tiêu đề ảnh..."
+                                       style="box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-4 col-12">
+ 
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="StaffCreate" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px">ID</th>
+                        <th>Hình ảnh</th>
+                        <th>Tiêu đề tác phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="portfolioTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-dark">@item.ImageId</td>
+                            <td>
+                                <div class="d-flex align-content-center justify-content-center image-warp border shadow-sm">
+                                    <img src="@Url.Content("~/media/portfolios/" + item.ImageUrl)" class="w-100 h-100" />
+                                </div>
+                            </td>
+                            <td class="text-muted fw-semibold">@item.Title</td>
+                            <td class="text-muted">@(item.Category == PortfolioCategory.Hair ? "Kiểu tóc" : "Làm đẹp")</td>
+                            <td class="text-muted">@item.Create_At.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (item.IsFeatured)
+                                {
+                                    <span class="badge bg-light-success text-success border border-success px-3 rounded-pill">Đã duyệt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light-warning text-warning border border-warning px-3 rounded-pill">Chờ duyệt</span>
+                                }
+                            </td>
+                            <td class="text-center pe-4">
+                                <a asp-action="StaffUpdate" asp-route-id="@item.ImageId" class="btn btn-sm btn-outline-primary rounded-2 me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-2"
+                                        onclick="confirmDelete('@Url.Action("StaffDelete", "StaffPortfolio", new { id = item.ImageId })', '@item.Title')">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
+            </div>
+            <div class="col-sm-6">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="StaffIndex" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="StaffIndex" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="StaffIndex" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="StaffIndex" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="StaffIndex" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+    <style>
+        .image-warp {
+            width: 70px;
+            height: 70px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+            .image-warp img {
+                object-fit: cover;
+            }
+
+        .bg-light-success {
+            background-color: #e8fadf;
+        }
+
+        .bg-light-warning {
+            background-color: #fff8e1;
+        }
+    </style>
+}

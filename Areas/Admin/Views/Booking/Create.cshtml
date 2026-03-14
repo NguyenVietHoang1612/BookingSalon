@@ -1,0 +1,379 @@
+﻿@model BookingSalon.Models.ViewModel.BookingSalonViewModel.BookingViewModel
+@using System.Security.Claims
+
+@{
+    ViewData["title"] = "Tạo lịch hẹn mới";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+
+
+<div class="container-fluid py-5 px-md-5">
+    <div class="card main-card p-4 p-lg-5 shadow-sm border-0" style="border-radius:15px;">
+
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">
+                <i class="bi bi-calendar-plus-fill me-2"></i>Tạo lịch hẹn mới
+            </h2>
+        </div>
+
+        <form asp-action="Create" method="post" id="formBooking">
+
+            <input type="hidden" asp-for="NewBooking.UpdatedById" value="@userId" />
+
+            <!--  THÔNG TIN CƠ BẢN -->
+
+            <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                <i class="bi bi-person-fill me-2 text-primary"></i>
+                1. Thông tin khách hàng & chi nhánh
+            </h5>
+
+            <div class="row g-4 mb-5">
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Khách hàng</label>
+                    <select asp-for="NewBooking.Customer_Id" class="form-control select-search" id="customerId">
+                        @foreach (var user in Model.Customers)
+                        {
+                            <option value="@user.Id">
+                                @user.FullName - @user.PhoneNumber
+                            </option>
+                        }
+                    </select>
+
+                    <input type="hidden" id="rankPercent" value="0" />
+                    <div id="customerRankNote" class="small text-primary fw-bold mt-1"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Chi nhánh</label>
+                    <select asp-for="NewBooking.Branch_Id"
+                            class="form-control select-search"
+                            id="branchId">
+                        @foreach (var b in Model.Branches)
+                        {
+                            <option value="@b.BranchId">
+                                @b.Branch_Name
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!--  DỊCH VỤ -->
+            <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                <i class="bi bi-scissors me-2 text-danger"></i>
+                2. Dịch vụ sử dụng
+            </h5>
+
+            <div class="mb-4">
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm fw-bold"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalServices">
+                    <i class="bi bi-plus-circle me-1"></i> Thêm dịch vụ
+                </button>
+            </div>
+
+            <div id="displaySelectedServices"
+                 class="p-3 bg-light rounded border mb-4 text-secondary">
+                Chưa có dịch vụ nào...
+            </div>
+
+            <div id="hiddenDetails"></div>
+            <input type="hidden" asp-for="NewBooking.TotalDuration" id="totalDuration" />
+            <input type="hidden" id="totalPriceInput" />
+
+            <!--  NHÂN SỰ & THỜI GIAN -->
+            <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                <i class="bi bi-clock-history me-2 text-warning"></i>
+                3. Nhân sự & Thời gian
+            </h5>
+
+            <div class="row g-4 mb-5">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Ngày thực hiện</label>
+                    <input type="date"
+                           asp-for="NewBooking.Booking_Date"
+                           id="bookingDate"
+                           class="form-control"
+                           min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Stylist</label>
+                    <select asp-for="NewBooking.Stylist_Id" class="form-control" id="stylistId" style="width: 100%">
+                        <option value="">Chọn stylist...</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Skinner (Tùy chọn)</label>
+                    <select asp-for="NewBooking.Skinner_Id" class="form-control" id="skinnerId" style="width: 100%">
+                        <option value="">Chọn skinner...</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-clock me-1 text-primary"></i>
+                        Khung giờ trống
+                    </label>
+
+                    <div id="timeSlotsArea" class="d-flex flex-wrap gap-2 mt-2">
+                        <span class="text-muted small">
+                            Chọn stylist và ngày để xem lịch...
+                        </span>
+                    </div>
+
+                    <input type="hidden"
+                           asp-for="NewBooking.Start_Slot_Id"
+                           id="startSlotId" />
+                </div>
+            </div>
+
+
+            
+
+            <!--  HÓA ĐƠN TẠM TÍNH -->
+            <h5 class="fw-bold mb-4 text-dark border-bottom pb-2">
+                <i class="bi bi-receipt me-2 text-success"></i>
+                4. Thông tin dịch vụ
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="invoiceBody"
+                         class="p-3 bg-light rounded border fs-6 mb-3">
+                        Chưa chọn dịch vụ
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Thời lượng:</span>
+                        <span id="txtDuration" class="fw-bold">0 phút</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Giảm giá (Rank):</span>
+                        <span id="txtRankDiscount">0đ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 text-danger">
+                        <span>Giảm giá (Coupon):</span>
+                        <span id="txtCouponDiscount">0đ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 fs-5">
+                        <span class="fw-bold">TỔNG:</span>
+                        <span id="txtTotal"
+                              class="text-primary fw-bold">
+                            0đ
+                        </span>
+                    </div>
+
+                    <div class="mb-3 p-3 border rounded bg-white shadow-sm">
+                        <label class="form-label fw-bold text-primary">
+                            <i class="bi bi-ticket-perforated me-1"></i> Mã giảm giá (Coupon)
+                        </label>
+                        <div class="input-group">
+                            <input type="text" id="couponCodeInput" name="CouponCode" class="form-control" placeholder="Nhập mã giảm giá...">
+                            <button class="btn btn-dark" type="button" id="btnApplyCoupon">Áp dụng</button>
+                        </div>
+                        <div id="couponMessage" class="small mt-1"></div>
+
+                        <input type="hidden" id="couponDiscountValue" value="0" />
+                        <input type="hidden" id="couponDiscountType" value="" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Ghi chú
+                        </label>
+                        <textarea asp-for="NewBooking.Note"
+                                  class="form-control"
+                                  rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-5 pt-3">
+                <button type="submit"
+                        class="btn btn-primary fw-bold px-5 py-2 shadow-sm">
+                    <i class="bi bi-save me-2"></i> Xác nhận đặt lịch
+                </button>
+                @if(User.IsInRole("Admin"))
+                {
+                    <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="ReceptionIndex" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                    </a>
+                }
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalServices" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-sm rounded-4">
+
+            <div class="modal-header bg-white border-bottom">
+                <h5 class="modal-title fw-bold text-primary">
+                    <i class="bi bi-scissors me-2"></i>
+                    Danh mục dịch vụ
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+
+            <div class="modal-body bg-light p-4">
+
+                @foreach (var type in Model.TypeOfServices)
+                {
+                    <div class="mb-5">
+
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-4">
+                            <i class="bi bi-gem me-2 text-primary"></i>
+                            @type.Type_Service_Name
+                        </h6>
+
+                        <div class="row g-4">
+                            @foreach (var s in Model.Services
+                                                    .Where(x => x.Type_Service_Id == type.TypeOfServiceId))
+                            {
+                                <div class="col-12 col-md-6 col-lg-4">
+
+                                    <div class="card h-100 border-0 shadow-sm service-item-card rounded-4"
+                                         id="svc-@s.ServiceId"
+                                         onclick="toggleService('@s.ServiceId',
+                                                                         '@type.TypeOfServiceId',
+                                                                         '@s.Service_Name',
+                                                                         '@(s.IsPromotionActive ? s.Promotion_Price : s.Base_Price)',
+                                                                         '@s.DurationInMinutes')">
+
+                                        <div class="position-relative">
+                                            <img src="~/media/services/@s.ImageName"
+                                                 class="card-img-top rounded-top-4"
+                                                 style="height:160px; object-fit:cover;"
+                                                 onerror="this.src='/media/logo/BranchLogo.jpg'">
+
+                                            <span class="badge bg-primary position-absolute top-0 end-0 m-2">
+                                                <i class="bi bi-clock me-1"></i>
+                                                @s.DurationInMinutes phút
+                                            </span>
+                                        </div>
+
+                                        <div class="card-body d-flex flex-column">
+
+                                            <h6 class="fw-bold text-dark mb-2">
+                                                @s.Service_Name
+                                            </h6>
+
+                                            <div class="mt-auto">
+
+                                                @if (s.IsPromotionActive)
+                                                {
+                                                    <div class="small text-muted text-decoration-line-through">
+                                                        @((s.Base_Price).ToString("#,##0"))đ
+                                                    </div>
+                                                    <div class="text-danger fw-bold fs-5">
+                                                        @(s.Promotion_Price.Value.ToString("#,##0"))đ
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-primary fw-bold fs-5">
+                                                        @(s.Base_Price.ToString("#,##0"))đ
+                                                    </div>
+                                                }
+
+                                                <button type="button"
+                                                        class="btn btn-outline-primary btn-sm mt-2 w-100 fw-semibold btn-select">
+                                                    CHỌN
+                                                </button>
+
+                                            </div>
+
+                                            <input type="radio"
+                                                   name="group_@type.TypeOfServiceId"
+                                                   class="d-none"
+                                                   id="radio-@s.ServiceId">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+
+            <div class="modal-footer bg-white border-top">
+                <button type="button"
+                        class="btn btn-primary fw-bold px-4"
+                        data-bs-dismiss="modal">
+                    Xác nhận
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/ChoicesSelectList.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+
+        .select2-container .select2-selection--single {
+            height: 45px !important;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dee2e6;
+            border-radius: 8px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+        }
+
+        #timeSlotsArea .slot-btn {
+            min-width: 80px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+            #timeSlotsArea .slot-btn.active {
+                background: #0d6efd !important;
+                color: white !important;
+                border-color: #0d6efd !important;
+            }
+
+            #timeSlotsArea .slot-btn.disabled {
+                background: #f1f3f5;
+                color: #adb5bd !important;
+                cursor: not-allowed;
+            }
+
+    </style>
+}
+    @section Scripts {
+
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="/js/ChoicesSelectList.js"></script>
+        <script src="~/js/Admin/Booking.js"></script>
+    }

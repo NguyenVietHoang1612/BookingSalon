@@ -1,39 +1,17 @@
-﻿
-html, body {
+﻿body {
     height: 100%;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background: url('/images/bg-customer.jpg') no-repeat center center fixed;
-    background-size: cover;
+    font-family: Arial, sans-serif;
+    background-color: #eef1f4;
 }
 
-
-.flex-grow-1 {
-    flex: 1;
-}
-
-.nav-pills .nav-link {
-    color: #333;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-    .nav-pills .nav-link.active,
-    .nav-pills .show > .nav-link {
-        background-color: #4CAF50 !important;
-        color: white !important;
-    }
-
-    .nav-pills .nav-link:hover:not(.active) {
-        background-color: #e9ecef;
-    }
 
 h1, h2, h3, h4, h5, h6 {
     color: #FFE2C0;
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 10px;
 }
 
 footer {

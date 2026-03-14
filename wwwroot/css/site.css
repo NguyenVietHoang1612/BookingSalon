@@ -1,5 +1,6 @@
 ﻿html {
-  font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 * {
@@ -19,25 +20,21 @@
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-/*html {
-  position: relative;
-  min-height: 100%;
-}
 
 body {
     font-family: Arial, sans-serif;
     background-color: #eef1f4;
-    margin-bottom: 60px;
-}*/
+}
 
 .choices__list--dropdown .choices__list {
     max-height: 220px !important;
     overflow-y: auto !important;
 }
 
-    .choices__list--dropdown .choices__list::-webkit-scrollbar {
-        width: 6px;
-    }
+
+.choices__list--dropdown .choices__list::-webkit-scrollbar {
+    width: 6px;
+}
 
     .choices__list--dropdown .choices__list::-webkit-scrollbar-thumb {
         background-color: #ccc;
@@ -74,3 +71,4 @@ body {
     padding: 25px;
     margin-bottom: 30px;
 }
+

@@ -1,5 +1,5 @@
 ﻿@using BookingSalon.Models.Entities
-@model Branch
+@model BranchModel
 
 @{
     ViewData["title"] = "Thêm chi nhánh";
@@ -14,7 +14,7 @@
         <div class="form-section">
             <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-person-plus me-2"></i>Thêm chi nhánh mới</h5>
 
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
 
                 <div class="row g-4">
@@ -25,34 +25,69 @@
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Địa chỉ chi nhánh</label>
-                        <input asp-for="Address" class="form-control" placeholder="Nhập địa chỉ" />
+                        <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+                        <select id="ddlProvince" class="form-control" asp-items="ViewBag.Provinces">
+                            <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Quận / Huyện</label>
+                        <select id="ddlDistrict" class="form-control">
+                            <option value="">-- Chọn Quận / Huyện --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Phường / Xã</label>
+                        <select asp-for="WardId" id="ddlWard" class="form-control">
+                            <option value="">-- Chọn Phường / Xã --</option>
+                        </select>
+                        <span asp-validation-for="WardId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-6">
+                        <label class="form-label fw-semibold">Số nhà, tên đường</label>
+                        <input asp-for="Address" class="form-control" placeholder="Ví dụ: 123 Đường ABC" />
                         <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Số điện thoại chi nhánh</label>
-                        <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
-                        <span asp-validation-for="Phone" class="text-danger small mt-1 d-block"></span>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
-                        <label class="form-label fw-semibold">Chi nhánh hoạt động</label>
+                        <label class="form-label fw-semibold">Thêm ảnh chi nhánh</label>
+                        <input asp-for="Branch_Image_Upload" class="form-control" placeholder="Chọn ảnh" />
+                        <span asp-validation-for="Branch_Image_Upload" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Trạng thái hoạt động</label>
                         <select asp-for="Status" class="form-control">
                             <option value="true">Chi nhánh hoạt động</option>
                             <option value="false">Chi nhánh không hoạt động</option>
                         </select>
-
                         <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-add fw-bold">
-                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
-                        </button>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Có phải trụ sở chính không?</label>
+                        <select asp-for="Is_Main_Branch" class="form-control">
+                            <option value="true">Có</option>
+                            <option value="false">Không</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
+                    </div>
 
-                        <a asp-action="Index" class="btn btn-danger fw-bold">
-                            <i class="bi bi-x-lg me-2">Hủy thêm mới</i>
+                    <div class="col-12 d-flex gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary fw-bold px-4">
+                            <i class="bi bi-save me-2"></i> Thêm mới chi nhánh
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                            <i class="bi bi-x-lg me-2"></i> Hủy bỏ
                         </a>
                     </div>
                 </div>
@@ -61,7 +96,55 @@
     </div>
 </div>
 
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="/js/ChoicesSelectList.js"></script>
+
+    <script>
+        var provinceChoices, districtChoices, wardChoices;
+
+        $(document).ready(function () {
+            provinceChoices = initSelectSearch('ddlProvince', 'Chọn Tỉnh / Thành phố...');
+            districtChoices = initSelectSearch('ddlDistrict', 'Chọn Quận / Huyện...');
+            wardChoices = initSelectSearch('ddlWard', 'Chọn Phường / Xã...');
+
+            $('#ddlProvince').on('change', function () {
+                var pId = $(this).val();
+                
+                districtChoices.clearStore();
+                districtChoices.setChoices([{ value: '', label: '-- Chọn Quận/Huyện --', selected: true }]);
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (pId) {
+                    $.getJSON('/Admin/Branch/GetDistricts', { provinceId: pId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        districtChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+
+            $('#ddlDistrict').on('change', function () {
+                var dId = $(this).val();
+                
+                wardChoices.clearStore();
+                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+
+                if (dId) {
+                    $.getJSON('/Admin/Branch/GetWards', { districtId: dId }, function (data) {
+                        var choicesData = data.map(item => ({
+                            value: item.id.toString(),
+                            label: item.name,
+                            selected: false
+                        }));
+                        wardChoices.setChoices(choicesData, 'value', 'label', false);
+                    });
+                }
+            });
+        });
+    </script>
 }

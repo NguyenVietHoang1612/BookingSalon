@@ -1,78 +1,303 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using BookingSalon.Models.Entities;
-@inject SignInManager<Users> signInManager;
-@inject UserManager<Users> userManager;
+@inject SignInManager<UsersModel> signInManager;
+@inject UserManager<UsersModel> userManager;
+@inject RoleManager<IdentityRole> roleUser;
 
 @if (signInManager.IsSignedIn(User))
 {
+    var roleStylist = roleUser.FindByNameAsync("Stylist").Result;
+    var roleSkinner = roleUser.FindByNameAsync("Skinner").Result;
+    var roleAdmin = roleUser.FindByNameAsync("Admin").Result;
+    var roleReceptionist = roleUser.FindByNameAsync("Reception").Result;
     var currentUser = await userManager.GetUserAsync(User);
-    <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-paw"></i>
-            <span>Admin</span>
-        </div>
 
+
+    var user = await userManager.GetUserAsync(User);
+
+
+    <aside id="sidebar" class="sidebar">
+
+       
+        <div class="sidebar-header">
+            <i class="bi bi-person-badge"></i>
+            <span>
+                LUXURYSALON
+            </span>
+        </div>
+        
         <div class="user-info">
             <div class="user-icon" id="userIcon" class="">
-                <img src="@(string.IsNullOrEmpty(currentUser.FullName)
-                ? "https://ui-avatars.com/api/?name=" + User
+                <img src="@(string.IsNullOrEmpty(currentUser.Avatar_Name)
+                                     ? Url.Content("~/media/logo/BranchLogo.jpg")
                 : Url.Content("~/media/users/" + currentUser.Avatar_Name))"
                 class="rounded-circle border"
                 alt="Avatar">
             </div>
 
+
             <div class="user-details">
-                <p>Xin chào, <strong>Admin</strong></p>
+                <p>Xin chào @roleUser.FindByIdAsync(user.RoleId).Result.Name, <strong>@user.FullName</strong></p>
             </div>
+
         </div>
 
         <nav class="sidebar-nav">
             <p class="nav-heading">TỔNG QUAN</p>
             <ul class="main-sidebar" id="mainSidebar">
-                <li class="menu-item">
-                    <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                </li>
+                @if (currentUser.RoleId == roleAdmin.Id)
+                {
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item">
-                    <a asp-area="Admin" asp-controller="ProfileAdmin" asp-action="Update"><i class="fas fa-user-shield"></i> Profile </a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Profile" asp-action="Update">
+                            <i class="bi bi-person-gear"></i>
+                            <span>Thông tin cá nhân</span>
+                            
+                        </a>
+                    </li>
 
-                <li class="menu-item">
-                    <a asp-area="Admin" asp-controller="AppRoles" asp-action="Index"><i class="fas fa-user-shield"></i> Quản lý Role</a>
-                </li>
+                    <li class="menu-item has-submenu" data-menu="user-management">
+                        <a href="#" class="toggle-submenu"> 
+                            <i class="bi bi-people-fill"></i>
+                            <span>Quản lý người dùng </span>
+                             
+                            <i class="bi bi-chevron-down float-end"></i> 
+                        </a> 
+                        
+                        <ul class="submenu">
+                            <li class="menu-item">
+                                <a asp-area="Admin" asp-controller="Users" asp-action="Index"> 
+                                    <i class="bi bi-person"></i>
+                                    Quản lý Khách hàng 
+                                 </a> 
+                            </li>
+                            <li class="menu-item">
+                                <a asp-area="Admin" asp-controller="StaffProfile" asp-action="Index"> 
+                                    <i class="bi bi-person-badge"></i>
+                                    Quản lý nhân viên
+                                </a> 
+                            </li> 
+                        </ul> 
+                    </li>
 
-                <li class="menu-item">
-                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="fas fa-users"></i> Quản lý người dùng</a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Branch" asp-action="Index">
+                            <i class="bi bi-building"></i>
+                            <span>Quản lý chi nhánh</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item">
-                    <a asp-area="Admin" asp-controller="StylistProfile" asp-action="Index"><i class="fas fa-users"></i> Quản lý profile stylist</a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="ServiceSalon" asp-action="Index">
+                            <i class="bi bi-scissors"></i>
+                            <span>Quản lý dịch vụ</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item has-submenu">
-                    <a asp-area="Admin" asp-controller="Branch" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý chi nhánh<i class="fas fa-caret-down"></i></a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="TypeOfService" asp-action="Index">
+                            <i class="bi bi-diagram-3"></i>
+                            <span>Quản lý loại dịch vụ</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item has-submenu">
-                    <a asp-area="Admin" asp-controller="ServiceSalon" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý dịch vụ<i class="fas fa-caret-down"></i></a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="FixedTimeSlot" asp-action="Index">
+                            <i class="bi bi-clock"></i>
+                            <span>Quản lý khung giờ</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item has-submenu">
-                    <a asp-area="Admin" asp-controller="TypeOfService" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý loại dịch vụ<i class="fas fa-caret-down"></i></a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Booking" asp-action="Index">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>Quản lý lịch đặt</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item has-submenu">
-                    <a asp-area="Admin" asp-controller="FixedTimeSlot" asp-action="Index"><i class="fas fa-umbrella-beach"></i> Quản lý khung giờ<i class="fas fa-caret-down"></i></a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="News" asp-action="Index">
+                            <i class="bi bi-newspaper"></i>
+                            <span>Quản lý tin tức</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item">
-                    <a asp-area="Admin" asp-controller="Booking" asp-action="Index"><i class="fas fa-home"></i> Quản lý Booking</a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Rank" asp-action="Index">
+                            <i class="bi bi-trophy"></i>
+                            <span>Quản lý xếp hạng</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item">
-                    <a href="#"><i class="fas fa-envelope"></i> Liên hệ</a>
-                </li>
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Review" asp-action="Index">
+                            <i class="bi bi-star-half"></i>
+                            <span>Đánh giá của khách hàng</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Coupon" asp-action="Index">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span>Quản lý Coupon</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="StaffPortfolio" asp-action="AdminIndex">
+                            <i class="bi bi-images"></i>
+                            <span>Quản lý bộ sưu tập hiển thị web</span>
+                        </a>
+                    </li>
+                }
+                else if (currentUser.RoleId == roleStylist.Id || currentUser.RoleId == roleSkinner.Id)
+                {
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Profile" asp-action="StaffUpdate">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Thông tin cá nhân</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Profile" asp-action="WorkSchedule">
+                            <i class="bi bi-calendar-week"></i>
+                            <span>Xem lịch làm việc</span>
+                        </a>
+                    </li>
+
+                    if (currentUser.RoleId == roleStylist.Id)
+                    {
+                        <li class="menu-item">
+                            <a asp-area="Admin" asp-controller="Booking" asp-action="StylistIndex">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Quản lý lịch đặt</span>
+                            </a>
+                        </li>
+                    }
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Review" asp-action="StaffIndex">
+                            <i class="bi bi-star-half"></i>
+                            <span>Đánh giá của khách hàng</span>
+                            
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="StaffPortfolio" asp-action="StaffIndex">
+                            <i class="bi bi-images"></i>
+                            <span>Quản lý bộ sưu tập hiển thị web</span>
+                        </a>
+                    </li>
+                }
+                else if (currentUser.RoleId == roleReceptionist.Id)
+                {
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Profile" asp-action="StaffUpdate">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Thông tin cá nhân</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Users" asp-action="Index">
+                            <i class="bi bi-person"></i>
+                            <span>Quản lý khách hàng</span>
+                            
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Booking" asp-action="ReceptionIndex">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>Quản lý lịch đặt</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="News" asp-action="ReceptionIndex">
+                            <i class="bi bi-newspaper"></i>
+                            <span>Quản lý tin tức</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="Coupon" asp-action="Index">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span>Coupon</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-area="Admin" asp-controller="ServiceSalon" asp-action="Index">
+                            <i class="bi bi-scissors"></i>
+                            <span>Xem dịch vụ</span>
+                        </a>
+                    </li>
+                }
+
+
             </ul>
         </nav>
     </aside>
+
+
+    <script>
+             document.addEventListener("DOMContentLoaded", function () {
+
+                document.querySelectorAll(".toggle-submenu").forEach(function (item) {
+
+                let parent = item.closest(".has-submenu");
+                let menuKey = parent.dataset.menu;
+
+                if (localStorage.getItem("openMenu") === menuKey) {
+                    parent.classList.add("open");
+                }
+
+                item.addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    parent.classList.toggle("open");
+
+                    if (parent.classList.contains("open")) {
+                        localStorage.setItem("openMenu", menuKey);
+                    } else {
+                        localStorage.removeItem("openMenu");
+                    }
+                });
+
+            });
+
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            let currentPath = window.location.pathname.toLowerCase();
+
+            document.querySelectorAll(".sidebar-nav a").forEach(function (link) {
+
+                let linkPath = new URL(link.href).pathname.toLowerCase();
+
+                if (currentPath === linkPath) {
+
+                    let li = link.closest("li");
+
+                    li.classList.add("active");
+
+                    let submenuParent = li.closest(".has-submenu");
+                    if (submenuParent) {
+                        submenuParent.classList.remove("active"); 
+                    }
+                }
+            });
+
+        });
+    </script>
 }

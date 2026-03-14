@@ -1,5 +1,6 @@
 ﻿using BookingSalon.Areas.Admin.Models;
 using BookingSalon.Models.Entities;
+using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +10,16 @@ using System.Threading.Tasks;
 namespace BookingSalon.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Reception")]
     public class ServiceSalonController : Controller
     {
         private readonly IServicesSalonService _serviceSalonService;
+        private readonly ITypeOfServiceService _typeOfServiceService;
 
-        public ServiceSalonController(IServicesSalonService serviceSalonService)
+        public ServiceSalonController(IServicesSalonService serviceSalonService, ITypeOfServiceService typeOfServiceService)
         {
             _serviceSalonService = serviceSalonService;
+            _typeOfServiceService = typeOfServiceService;
         }
 
         public async Task<IActionResult> Index(int? pageNumber, string term)
@@ -32,19 +35,22 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             return View(listService);
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
-            var listService = await _serviceSalonService.GetAllTypeOfServiceAsync();
+            var listService = await _typeOfServiceService.GetAllTypeServiceAsync();
             ViewBag.TypeOfServiceList = new SelectList(listService, "TypeOfServiceId", "Type_Service_Name");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Service service)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(ServiceModel service)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu dịch vụ!";
+
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -63,7 +69,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
-                TempData["ErrorMessage"] = result.Errors;
+                TempData["Error"] = "Thêm dịch vụ thất bại: " + result.Errors;
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error);
@@ -71,24 +77,29 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(service);
 
             }
-
+            TempData["Success"] = $"Thêm dịch vụ {service.Service_Name} thành công!";
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
             var service = await _serviceSalonService.GetByIdAsync(id);
-            var typeOfService = await _serviceSalonService.GetAllTypeOfServiceAsync();
+            var typeOfService = await _typeOfServiceService.GetAllTypeServiceAsync();
 
             ViewBag.TypeOfServiceList = new SelectList(typeOfService, "TypeOfServiceId", "Type_Service_Name");
 
             if (service == null) return NotFound();
 
-            Service serviceDetail = new Service
+            ServiceModel serviceDetail = new ServiceModel
             {
                 Service_Name = service.Data.Service_Name,
                 Type_Service_Id = service.Data.Type_Service_Id,
-                Price = service.Data.Price,
+                Base_Price = service.Data.Base_Price,
                 DurationInMinutes = service.Data.DurationInMinutes,
+                Promotion_Start = service.Data.Promotion_Start,
+                Promotion_End = service.Data.Promotion_End,
+                Promotion_Price = service.Data.Promotion_Price,
                 description = service.Data.description,
                 ImageName = service.Data.ImageName,
                 Status = service.Data.Status
@@ -99,10 +110,12 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, Service service)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, ServiceModel service)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = $"Lỗi Bind dữ liệu dịch vụ!";
                 List<string> errors = new List<string>();
                 foreach (var value in ModelState.Values)
                 {
@@ -121,6 +134,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
+                TempData["Error"] = "Cập nhật dịch vụ thất bại: " + result.Errors;
 
                 foreach (var error in result.Errors)
                 {
@@ -130,14 +144,32 @@ namespace BookingSalon.Areas.Admin.Controllers
                 return View(service);
 
             }
+            TempData["Success"] = $"Cập nhật dịch vụ {service.Service_Name} thành công!";
 
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var result = await _serviceSalonService.GetByIdAsync(id);
+
+            if (!result.Succeeded)
+                return NotFound();
+
+            return View(result.Data);
+        }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            await _serviceSalonService.DeleteAsync(id);
-            return Ok(new { message = "Đã chuyển trạng thái user sang ngừng hoạt động" });
+            var result =  await _serviceSalonService.DeleteAsync(id);
+            
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Đã chuyển trạng thái user sang ngừng hoạt động" });
+            }
+
+            return BadRequest(new { success = false, message = "Không thể xóa dữ liệu" });
         }
     }
 }

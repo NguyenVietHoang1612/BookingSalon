@@ -5,11 +5,11 @@ namespace BookingSalon.Services.Interface
 {
     public interface IFixedTimeSlotService
     {
-        Task<IEnumerable<FixedTimeSlot>> GetAllListAsync();
-        Task<ServiceResult<FixedTimeSlot>> GetByIdAsync(int id);
-        Task<ServiceResult<FixedTimeSlot>> CreateAsync(FixedTimeSlot fixedTime);
-        Task<ServiceResult<FixedTimeSlot>> UpdateAsync(int id, FixedTimeSlot fixedTime);
-        Task<ServiceResult<FixedTimeSlot>> DeleteAsync(int id);
-        Task<PaginatedList<FixedTimeSlot>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
+        Task<IEnumerable<FixedTimeSlotModel>> GetAllListAsync();
+        Task<ServiceResult<FixedTimeSlotModel>> GetByIdAsync(int id);
+        Task<ServiceResult<FixedTimeSlotModel>> CreateAsync(FixedTimeSlotModel fixedTime);
+        Task<ServiceResult<FixedTimeSlotModel>> UpdateAsync(int id, FixedTimeSlotModel fixedTime);
+        Task<ServiceResult<FixedTimeSlotModel>> DeleteAsync(int id);
+        Task<PaginatedList<FixedTimeSlotModel>> GetPagedListAsync(int pageNumber, int pageSize, string searchTerm);
     }
 }

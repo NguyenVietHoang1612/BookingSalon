@@ -1,197 +1,330 @@
-﻿let bookingPayload = { branchId: null, stylistId: null, date: null, slotId: null };
+﻿let selectedServices = [];
 
-// Hàm mở Modal dịch vụ
-function openServiceModal() {
-    var modalElem = document.getElementById('serviceModal');
-    var modal = bootstrap.Modal.getInstance(modalElem) || new bootstrap.Modal(modalElem);
-    modal.show();
-}
 
-$('#branchSelect').change(function () {
-    const val = $(this).val();
-    $('#hiddenBranchId').val(val);
-    if (val) {
-        bookingPayload.branchId = val;
+// Load Modal Dịch vụ
+function toggleService(id, typeId, name, price, duration) {
+    const radio = document.getElementById('radio-' + id);
+    const card = document.getElementById('svc-' + id);
+    const btn = card.querySelector('.btn-select');
 
-        $('#step-2').removeClass('opacity-50 pe-none');
-        $('#step-2').find('.badge').addClass('bg-warning text-dark').removeClass('bg-secondary');
-        $('#servicePlaceholder').text('Mời anh chọn dịch vụ...');
-
-        if (selectedServices.length > 0) {
-            loadStylists(val);
-            bookingPayload.stylistId = null;
-            bookingPayload.slotId = null;
-            $('#timeSlotContainer').addClass('d-none');
-            $('#btnSubmit').addClass('disabled btn-secondary').removeClass('btn-warning text-dark shadow');
-        }
-    } else {
-        resetFrom(2);
-        $('#servicePlaceholder').text('Anh vui lòng chọn salon trước...');
+    if (card.classList.contains('selected')) {
+        radio.checked = false;
+        card.classList.remove('selected');
+        btn.innerText = "CHỌN";
+        selectedServices = selectedServices.filter(s => s.id !== id);
     }
-});
+    else {
+        $(`input[name="group_${typeId}"]`).each(function () {
+            const otherId = this.id.split('-')[1];
+            const otherCard = document.getElementById(`svc-${otherId}`);
+            if (otherCard) {
+                otherCard.classList.remove('selected');
+                otherCard.querySelector('.btn-select').innerText = "CHỌN";
+            }
+            this.checked = false;
+        });
 
-let selectedServices = [];
+        radio.checked = true;
+        card.classList.add('selected');
+        btn.innerText = "ĐÃ CHỌN";
 
-function toggleService(id, name, price, duration) {
-    const index = selectedServices.findIndex(s => s.id === id);
-    if (index > -1) {
-        selectedServices.splice(index, 1);
-        $(`#check-${id}`).prop('checked', false);
-        $(`#item-${id}`).removeClass('selected');
-    } else {
-        selectedServices.push({ id, name, price, duration });
-        $(`#check-${id}`).prop('checked', true);
-        $(`#item-${id}`).addClass('selected');
+        selectedServices = selectedServices.filter(s => s.typeId !== typeId);
+        selectedServices.push({
+            id: id,
+            typeId: typeId,
+            name: name,
+            price: parseFloat(price),
+            duration: parseInt(duration)
+        });
     }
-    updateModalSummary();
+
+    resetCouponDisplay();
+    renderInvoice();
 }
 
-function updateModalSummary() {
-    const count = selectedServices.length;
-    const total = selectedServices.reduce((sum, item) => sum + item.price, 0);
+function renderInvoice() {
+    let subTotal = 0;
+    let totalTime = 0;
+    let html = '';
+    let hidden = '';
+    let names = [];
 
-    $('#modalCount').text(`Đã chọn ${count} dịch vụ`);
-    $('#modalTotal').text(`${total.toLocaleString('vi-VN')} VNĐ`);
+    selectedServices.forEach((s, i) => {
+        subTotal += s.price;
+        totalTime += s.duration;
+        html += `<div class="invoice-row">
+                    <span>${s.name}</span>
+                    <span class="fw-bold">${s.price.toLocaleString('vi-VN')}đ</span>
+                 </div>`;
+        hidden += `<input type="hidden" name="BookingDetails[${i}].Service_Id" value="${s.id}" />`;
+        names.push(s.name);
+    });
+
+    const rankPercent = parseFloat($('#rankPercent').val()) || 0;
+    const rankDiscount = subTotal * (rankPercent / 100);
+    const couponDiscount = parseFloat($('#couponDiscountValue').val()) || 0;
+    const finalTotal = Math.max(0, subTotal - rankDiscount - couponDiscount);
+
+    $('#invoiceBody').html(html || '<p class="text-center text-muted small">Vui lòng chọn dịch vụ...</p>');
+    $('#txtDuration').text(totalTime + ' phút');
+    $('#txtRankDiscount').text(`-${rankDiscount.toLocaleString('vi-VN')}đ (${rankPercent}%)`);
+    $('#txtCouponDiscount').text(`-${couponDiscount.toLocaleString('vi-VN')}đ`);
+    $('#txtTotal').text(finalTotal.toLocaleString('vi-VN') + 'đ');
+
+    $('#totalDuration').val(totalTime);
+    $('#totalPriceBeforeDiscount').val(subTotal);
+    $('#hiddenDetails').html(hidden);
+    $('#displaySelectedServices').text(names.join(' + ') || "Chưa có dịch vụ nào được chọn...");
 }
 
-// hàm chức năng cho nút xong trong chọn service
-function confirmServices() {
-    if (selectedServices.length === 0) {
-        alert("Vui lòng chọn ít nhất 1 dịch vụ");
+// CHọn chi nhánh load nhân viên
+$('#branchId').change(function () {
+    const bId = $(this).val();
+
+    selectedServices = [];
+    $('#stylistId').val('');
+    $('#skinnerId').val('');
+    $('#startSlotId').val('');
+    $('#bookingDate').val(''); 
+
+    if (!bId) {
+        $('#stylistWrapper, #skinnerWrapper, #slotWrapper').addClass('d-none');
+        renderInvoice();
         return;
     }
-    let totalTime = 0;
-    selectedServices.forEach(s => {
-        totalTime += s.duration;
-    });
-    let hiddenHtml = '';
-    selectedServices.forEach((s, index) => {
-        hiddenHtml += `<input type="hidden" name="BookingDetails[${index}].Service_Id" value="${s.id}" />`;
-    });
-    $('#hiddenServiceInputs').html(hiddenHtml);
 
-    let htmlBadges = '';
-    selectedServices.forEach(s => {
-        htmlBadges += `<span class="badge bg-warning text-dark p-2 animate__animated animate__fadeIn">${s.name}</span>`;
-    });
-    $('#selectedServicesList').html(htmlBadges);
+    loadStaffCards(`/Booking/GetStaffStylist?branchId=${bId}`, '#stylistContainer', 'stylist');
+    loadStaffCards(`/Booking/GetStaffSkinner?branchId=${bId}`, '#skinnerContainer', 'skinner');
 
-    const finalTotal = selectedServices.reduce((sum, item) => sum + item.price, 0);
-    $('input[name="NewBooking.TotalPrice"]').val(finalTotal);
-
-    $('#totalPriceDisplay').html(`
-                <div>Tổng thanh toán: <span class="fs-7">${finalTotal.toLocaleString('vi-VN')} VNĐ</span></div>
-                <div class="text-info small">Dự kiến thực hiện: ${totalTime} phút</div>
-            `);
+    $('#timeSlotsArea').html('<span class="text-muted small italic">Vui lòng chọn stylist và ngày...</span>');
+    $('#slotWrapper').addClass('d-none');
+    renderInvoice();
+});
 
 
-    $('#step-3').removeClass('opacity-50 pe-none');
-    $('#step-3').find('.badge').addClass('bg-warning text-dark').removeClass('bg-secondary');
+// Load Nhân viên
+function loadStaffCards(url, containerId, type) {
+    const wrapperId = (type === 'stylist') ? '#stylistWrapper' : '#skinnerWrapper';
+    $(containerId).html('<div class="spinner-border text-warning spinner-border-sm"></div>');
 
-    bootstrap.Modal.getInstance(document.getElementById('serviceModal')).hide();
-
-    loadStylists(bookingPayload.branchId);
-}
-
-function loadStylists(branchId) {
-
-    $('#stylistSlider').html('<div class="text-center w-100 py-3"><div class="spinner-border spinner-border-sm text-warning"></div></div>');
-
-    $.get('/Booking/GetStylists', { branchId: branchId }, function (data) {
-        let html = '';
-        if (data && data.length > 0) {
-            html += `
-                        <div class="stylist-item" onclick="onStylistSelect('auto', this)">
-                            <img src="/media/users/default-stylist.png" class="stylist-avatar mb-1" style="filter: grayscale(1);">
-                            <div class="small fw-bold">Chọn hộ anh</div>
-                        </div>`;
-
-            data.forEach(s => {
-                html += `
-                            <div class="stylist-item" onclick="onStylistSelect('${s.id}', this)">
-                                <img src="/media/users/${s.img}" class="stylist-avatar mb-1" onerror="this.src='/media/users/default-stylist.png'">
-                                <div class="small">${s.name}</div>
-                            </div>`;
-            });
-        } else {
-            html = '<div class="text-secondary small ps-2 py-3">Rất tiếc, chi nhánh này hiện chưa có stylist sẵn sàng.</div>';
+    $.getJSON(url, function (data) {
+        if (!data || data.length === 0) {
+            $(wrapperId).addClass('d-none');
+            return;
         }
-        $('#stylistSlider').html(html);
-    }).fail(function () {
-        $('#stylistSlider').html('<div class="text-danger small">Lỗi nạp dữ liệu stylist.</div>');
+
+        let html = '';
+        if (type === 'stylist') {
+            data.forEach(staff => {
+                const ratingHtml = `
+            <div class="staff-rating" style="font-size: 0.8rem; color: #ffc107;">
+                <i class="fas fa-star"></i> ${staff.rating}
+            </div>`;
+
+                html += `
+            <div class="staff-card" data-id="${staff.id}" onclick="selectStaff(this, '${type}')">
+                <img src="/media/users/${staff.img || 'default.jpg'}" class="staff-img" onerror="this.src='/media/logo/BranchLogo.jpg'">
+                <div class="fw-bold text-white mt-1">${staff.name}</div>
+                ${ratingHtml}
+            </div>`;
+            });
+        }
+        else {
+            data.forEach(staff => {
+                html += `
+            <div class="staff-card" data-id="${staff.id}" onclick="selectStaff(this, '${type}')">
+                <img src="/media/users/${staff.img || 'default.jpg'}" class="staff-img" onerror="this.src='/media/logo/BranchLogo.jpg'">
+                <div class="fw-bold text-white mt-1">${staff.name}</div>
+            </div>`;
+            });
+        }
+        
+
+        $(containerId).html(html);
+        $(wrapperId).removeClass('d-none');
+        checkSliderButtons(containerId);
     });
 }
 
-// 4. Lazy Loading Khung giờ
-function onStylistSelect(id, el) {
-    $('.stylist-item').removeClass('active');
-    $(el).addClass('active');
-    bookingPayload.stylistId = id;
-    bookingPayload.date = $('#bookingDate').val();
+function selectStaff(element, type) {
+    const container = $(element).parent();
+    container.find('.staff-card').removeClass('selected');
+    $(element).addClass('selected');
 
-    $('#timeSlotContainer').removeClass('d-none');
-    $('#slotGrid').html('<div class="col-12 text-center py-3"><div class="spinner-border spinner-border-sm text-warning"></div></div>');
+    const id = $(element).data('id');
 
-    $.get('/Booking/GetSlots', { stylistId: bookingPayload.stylistId, dateStr: bookingPayload.date }, function (slots) {
-        let html = '';
-        if (slots && slots.length > 0) {
-            slots.forEach(slot => {
-                const disabled = slot.isAvailable ? '' : 'disabled';
-                const opacity = slot.isAvailable ? '' : 'opacity-25';
-                html += `
-                <div style="width: calc(25% - 8px);">
-                    <button type="button" class="btn slot-btn ${disabled} ${opacity}" onclick="onSlotSelect(${slot.slotId}, this)">
-                        ${slot.time}
-                    </button>
-                </div>`;
-            });
-        } else {
-            html = '<div class="col-12 text-center small text-danger">Hết khung giờ trống trong ngày này.</div>';
-        }
-        $('#slotGrid').html(html);
-    });
-
-    $('#hiddenStylistId').val(id);
-
-    let dateVal = $('#bookingDate').val();
-    if (!dateVal) {
-        dateVal = new Date().toISOString().split('T')[0];
+    if (type === 'stylist') {
+        $('#stylistId').val(id);
+    } else {
+        $('#skinnerId').val(id);
     }
-    $('#hiddenDate').val(dateVal);
+    $('#startSlotId').val('');
+    loadSlotsIfReady();
 }
 
-function onSlotSelect(id, el) {
+// Xử lý chọn Slot
+$('#bookingDate').change(function () {
+    $('#startSlotId').val('');
+    loadSlotsIfReady();
+});
+
+function loadSlotsIfReady() {
+    const date = $('#bookingDate').val();
+    const stylistId = $('#stylistId').val();
+    const duration = $('#totalDuration').val();
+    const skinnerId = $('#skinnerId').val() || "";
+
+    if (!date || !stylistId) return;
+
+    $('#timeSlotsArea').html('<div class="spinner-border text-warning spinner-border-sm"></div> Đang tìm lịch...');
+    $('#slotWrapper').removeClass('d-none');
+
+    $.ajax({
+        url: `/Booking/GetAvailableSlots`,
+        type: 'GET',
+        data: {
+            stylistId: stylistId,
+            skinnerId: skinnerId,
+            date: date,
+            durationMinus: duration
+        },
+        success: function (res) {
+            let html = '';
+
+            if (res && res.message) {
+                html = `<div class="alert alert-warning w-100 mb-0 py-2 small"><i class="bi bi-info-circle"></i> ${res.message}</div>`;
+            }
+            else if (!res || res.length === 0) {
+                html = `<div class="alert alert-danger w-100 mb-0 py-2 small"><i class="bi bi-x-circle"></i> Không tìm thấy lịch làm việc.</div>`;
+            }
+            else {
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+
+                const hasAvailableSlot = res.some(slot => {
+                    if (!slot.isAvailable) return false;
+                    if ($('#bookingDate').val() === todayStr) {
+                        const [hour, minute] = slot.timeRange.split(':');
+                        const slotTime = new Date();
+                        slotTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+                        return slotTime > now;
+                    }
+                    return true;
+                });
+
+                if (!hasAvailableSlot) {
+                    html = `<div class="alert alert-danger w-100 mb-0 py-2 small">
+                        <i class="bi bi-calendar-x"></i> Rất tiếc, không còn khung giờ nào khả dụng cho thợ này trong ngày đã chọn.
+                    </div>`;
+                } else {
+                    res.forEach(slot => {
+                        let disabledClass = slot.isAvailable ? '' : 'disabled';
+
+                        if ($('#bookingDate').val() === todayStr) {
+                            const [hour, minute] = slot.timeRange.split(':');
+                            const slotTime = new Date();
+                            slotTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+                            if (slotTime <= now) disabledClass = 'disabled';
+                        }
+
+                        html += `<div class="slot-btn ${disabledClass}" data-id="${slot.slotId}">
+                            ${slot.timeRange.substring(0, 5)}
+                         </div>`;
+                    });
+                }
+            }
+
+            $('#timeSlotsArea').html(html);
+            checkSlotSlider();
+        },
+        error: function (xhr) {
+            let errorText = "Lỗi hệ thống, vui lòng thử lại.";
+            if (xhr.status === 400) {
+                errorText = xhr.responseText || "Thông tin gửi đi không hợp lệ.";
+            }
+            $('#timeSlotsArea').html(`<div class="alert alert-danger w-100 mb-0 py-2 small">${errorText}</div>`);
+        }
+    });
+}
+
+
+$(document).on('click', '.slot-btn:not(.disabled)', function () {
     $('.slot-btn').removeClass('active');
-    $(el).addClass('active');
-    bookingPayload.slotId = id;
-    $('#hiddenSlotId').val(id);
-    $('#btnSubmit').removeClass('disabled btn-secondary').addClass('btn-warning text-dark shadow');
+    $(this).addClass('active');
+    $('#startSlotId').val($(this).data('id'));
+});
+
+// Coupon Logic
+$('#btnApplyCoupon').click(function () {
+    let code = $('#couponCode').val();
+
+    let orderAmount = 0;
+    selectedServices.forEach(s => {
+        orderAmount += s.price;
+    });
+
+    if (orderAmount === 0) {
+        showCouponMessage("Vui lòng chọn dịch vụ trước khi áp mã", false);
+        return;
+    }
+
+    if (!code) return;
+
+    $.post('/Coupon/ValidateCouponAjax', {
+        code: code,
+        orderAmount: orderAmount
+    }, function (res) {
+        if (!res.succeeded) {
+            showCouponMessage(res.errors[0], false);
+            $('#couponDiscountValue').val(0);
+        } else {
+            $('#couponDiscountValue').val(res.discount);
+            showCouponMessage("Áp dụng mã thành công!", true);
+        }
+        renderInvoice();
+    });
+});
+
+function resetCouponDisplay() {
+    $('#couponDiscountValue').val(0);
+    $('#couponMessage').text('');
 }
 
-function resetFrom(step) {
-    for (let i = step; i <= 3; i++) {
-        $(`#step-${i}`).addClass('opacity-50 pe-none');
-        $(`#step-${i}`).find('.badge').removeClass('bg-warning text-dark').addClass('bg-secondary');
-    }
-
-    if (step <= 2) {
-        selectedServices = [];
-        $('#selectedServicesList').empty();
-        $('#totalPriceDisplay').empty();
-        $('#modalCount').text(`Đã chọn 0 dịch vụ`);
-        $('#modalTotal').text(`0 VNĐ`);
-        $('.service-checkbox').prop('checked', false);
-        $('.service-item').removeClass('selected');
-    }
-
-    if (step <= 3) {
-        bookingPayload.stylistId = null;
-        bookingPayload.slotId = null;
-        $('#stylistSlider').empty();
-        $('#timeSlotContainer').addClass('d-none');
-        $('#btnSubmit').addClass('disabled btn-secondary').removeClass('btn-warning text-dark shadow');
-    }
-
-
-    $('#btnSubmit').removeClass('disabled btn-secondary').addClass('btn-warning text-dark shadow');
+function showCouponMessage(message, isSuccess) {
+    const el = $('#couponMessage');
+    el.text(message).removeClass('text-danger text-success').addClass(isSuccess ? 'text-success' : 'text-danger');
 }
+
+// Scroll Logic
+function scrollStaff(containerId, direction) {
+    document.getElementById(containerId).scrollBy({ left: 200 * direction, behavior: 'smooth' });
+}
+
+function scrollSlot(direction) {
+    document.getElementById('timeSlotsArea').scrollBy({ left: 200 * direction, behavior: 'smooth' });
+}
+
+function checkSliderButtons(containerId) {
+    const container = document.querySelector(containerId);
+    if (!container) return;
+    const wrapper = container.parentElement;
+    const btns = $(wrapper).find('.slider-btn');
+    container.scrollWidth <= container.clientWidth ? btns.hide() : btns.show();
+}
+
+function checkSlotSlider() {
+    const container = document.getElementById('timeSlotsArea');
+    const btns = $('#slotWrapper .slider-btn');
+    container.scrollWidth <= container.clientWidth ? btns.hide() : btns.show();
+}
+
+// Form Validation
+$('#formBooking').submit(function (e) {
+    if (selectedServices.length === 0) { alert("Vui lòng chọn dịch vụ"); e.preventDefault(); return; }
+    if (!$('#branchId').val()) { alert("Vui lòng chọn chi nhánh"); e.preventDefault(); return; }
+    if (!$('#stylistId').val()) { alert("Vui lòng chọn stylist"); e.preventDefault(); return; }
+    if (!$('#bookingDate').val()) { alert("Vui lòng chọn ngày"); e.preventDefault(); return; }
+    if (!$('#startSlotId').val()) { alert("Vui lòng chọn khung giờ"); e.preventDefault(); return; }
+
+    $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Đang đặt lịch...');
+});

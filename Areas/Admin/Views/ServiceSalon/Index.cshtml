@@ -1,6 +1,6 @@
 ﻿@using BookingSalon.Models.Entities
 @using BookingSalon.Data.Repository
-@model PaginatedList<Service>
+@model PaginatedList<ServiceModel>
 
 @{
     ViewData["title"] = "Danh dách dịch vụ";
@@ -8,46 +8,40 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 } 
 
-<style>
-    .image-warp {
-        width: 100px;
-        height: 100px;
-        overflow: hidden;
-        border-radius: 8px;
-    }
-    .image-warp img {
-        object-fit: cover;
-        }
-
-    
-</style>
-
-
 <div class="container-fluid py-2 px-md-5">
     <div class="card main-card p-2 p-lg-4">
         <div class="row align-items-center mb-5">
-                <div class="col-xl-6 col-lg-5">
-                    <h2 class="title-main mb-lg-0 mb-3">Quản lý dịch vụ</h2>
-                </div>
-                <div class="col-xl-6 col-lg-7">
-                    <div class="row g-3 justify-content-lg-end">
-                        <div class="col-sm-7 col-12">
-                            <form asp-action="Index" method="get">
-                                <div class="input-group search-group">
-                                    <input type="text" value="@ViewBag.SearchTerm" name="term" class="form-control" placeholder="Tìm kiếm theo tên dịch vụ">
-                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
-                                </div>
-                            </form>
-                           
-                        </div>
-                        <div class="col-sm-5 col-12 d-grid">
-                            <a class="btn btn-primary shadow-sm" asp-action="Create">
-                                <i class="bi bi-plus-lg me-2"></i> Thêm dịch vụ
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý dịch vụ</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm tên dịch vụ..."
+                                       style="box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    @if(User.IsInRole("Admin"))
+                    {
+                        <div class="col-sm-4 col-12">
+                            <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                               asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                                <i class="bi bi-plus-lg me-2"></i> Thêm mới
                             </a>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
+        </div>
 
             <div class="table-responsive">
                 <table class="table align-middle">
@@ -57,15 +51,11 @@
                             <th>Tên dịch vụ</th>
                             <th>Loại dịch vụ</th>
                             <th>Giá dịch vụ</th>
-                            <th>Thời gian thực hiện</th>
                             <th>Ảnh dịch vụ</th>
-                            <th>Miêu tả</th>
+                            <th>Giá khuyến mãi</th>
+                            <th>thời gian còn lại</th>
                             <th>Trạng thái</th>
                             <th class="text-center">Hành động</th>
-                            @* <th class="text-center"></th>
-                            <th class="text-end pe-4"></th>
-                            <th class="text-end pe-4"></th> *@
-                            
                         </tr>
                     </thead>
                     <tbody id="userTableBody">
@@ -73,10 +63,9 @@
                         {
                             <tr>
                                 <td class="fw-bold text-dark">@item.ServiceId</td>
-                            <td class="fw-bold text-dark">@item.Service_Name</td>
-                            <td class="text-muted">@item.TypeOfService.Type_Service_Name</td>
-                            <td class="text-muted">@item.Price <trong > Vnd</trong></td>
-                            <td class="text-muted">@item.DurationInMinutes phút</td>
+                                <td class="text-muted">@item.Service_Name</td>
+                                <td class="text-muted">@item.TypeOfService.Type_Service_Name</td>
+                                <td class="text-muted">@(item.Base_Price.ToString("#,##0") ?? "0") đ</td>
                                 <td class ="text-muted">
                                     <div class="d-flex align-content-center justify-content-center image-warp" >
                                         <img src="@(string.IsNullOrEmpty(item.ImageName)
@@ -85,17 +74,40 @@
                                     </div>
                                      
                                 </td>
-                            <td class="text-muted">@item.description</td>
-                            <td class="text-muted"> @(item.Status ? "Đang hoạt động" : "Không hoạt động")</td>
-                                <td class="text-center pe-4">
-                                <a asp-action="Update" asp-route-id="@item.ServiceId"><i class=" bi bi-pencil-square action-btn edit-icon"></i> </a>
+                                <td class="text-muted">@(item.Promotion_Price?.ToString("#,##0") ?? "0") đ</td>
+                                <td class="text-muted">
+                                   @{
+                                        var remaining = item.Promotion_End - DateTime.Now;
+                                    }
 
-                                <form id="delete-form-@item.ServiceId" asp-action="SoftDelete" asp-route-id="@item.ServiceId" method="post" style="display:inline;">
-                                    <button type="button" class="btn-clean" onclick="confirmDelete('@Url.Action("SoftDelete", "ServiceSalon", new { id = item.ServiceId })', 'dịch vu @item.Service_Name')">
-                                            <i class="bi bi-trash-fill text-danger action-btn"></i>
-                                        </button>
-                                    </form>
+                                    @if (remaining.HasValue && remaining.Value.TotalSeconds > 0)
+                                    {
+                                        <span>@(remaining.Value.Days) ngày @(remaining.Value.Hours)h:@(remaining.Value.Minutes) phút</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">không có khuyến mãi</span>
+                                    }
                                 </td>
+                                <td class="text-muted"> @(item.Status ? "Đang hoạt động" : "Không hoạt động")</td>
+                                    <td class="text-center pe-4">
+                                        <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if (User.IsInRole("Admin"))
+                                        {
+
+                                            <a asp-action="Update" asp-route-id="@item.ServiceId" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete('@Url.Action("SoftDelete", "ServiceSalon", new { id = item.ServiceId })', 'dịch vụ @item.Service_Name')">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        }
+                            </td>
                             </tr>
                         }
                         
@@ -152,4 +164,17 @@
 
 @section Styles {
         <link rel="stylesheet" href="~/css/Paginated.css" />
+
+        <style>
+            .image-warp {
+                width: 100px;
+                height: 100px;
+                overflow: hidden;
+                border-radius: 8px;
+            }
+
+                .image-warp img {
+                    object-fit: cover;
+                }
+        </style>
 }

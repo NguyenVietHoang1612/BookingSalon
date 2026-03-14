@@ -1,0 +1,174 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@model PaginatedList<StaffPortfolioModel>
+
+@{
+    ViewData["title"] = "Quản lý Portfolio";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý ảnh nổi bật</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="AdminIndex" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm theo tiêu đề ảnh hoặc tên nhân viên..."
+                                       style="box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Hình ảnh</th>
+                        <th>Tiêu đề</th>
+                        <th>Danh mục</th>
+                        <th>Nhân viên</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="portfolioTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@item.ImageId</td>
+                            <td>
+                                <div class="d-flex align-content-center image-warp">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl)
+                                                                                 ? Url.Content("~/media/logo/BranchLogo.jpg") : Url.Content("~/media/portfolios/" + item.ImageUrl))"
+                                     alt="@item.Title" />
+                            </div>
+                        </td>
+                        <td class="fw-bold">@item.Title</td>
+                        <td>
+                            <span class="badge bg-light text-dark border">@(item.Category == PortfolioCategory.Hair ? "Kiểu tóc" : "Làm đẹp")</span>
+                        </td>
+                        <td class="fw-bold">@item.StaffProfile.Staff.FullName</td>
+                        <td class="text-center pe-4">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Thao tác
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form asp-action="UpdateIsFeatured" method="post">
+                                            <input type="hidden" name="id" value="@item.ImageId" />
+                                            @if (!item.IsFeatured)
+                                                {
+                                                    <input type="hidden" name="isFeatured" value="true" />
+                                                    <button type="submit" class="dropdown-item text-success">
+                                                        <i class="bi bi-check-circle-fill me-2"></i> Duyệt ảnh
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <input type="hidden" name="isFeatured" value="false" />
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-x-circle-fill me-2"></i> Hủy duyệt
+                                                    </button>
+                                                }
+                                            </form>
+                                        </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                                        }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
+            </div>
+            <div class="col-sm-6">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="AdminIndex" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="AdminIndex" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="AdminIndex" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="AdminIndex" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="AdminIndex" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+    <style>
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        .dropdown-menu {
+            z-index: 9999;
+        }
+
+        .image-warp {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+
+            .image-warp img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 12px;
+                border: 1px solid #eee;
+            }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

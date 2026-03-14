@@ -1,0 +1,169 @@
+﻿@using BookingSalon.Models.Entities
+@using BookingSalon.Data.Repository
+@using Microsoft.AspNetCore.Identity
+@model PaginatedList<StaffProfileModel>
+
+@inject RoleManager<IdentityRole> RoleManager
+
+@{
+    ViewData["title"] = "Quản lý nhân viên";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý nhân viên</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm kiếm theo email, tên nhân viên..."
+                                       style="focus: none; box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-4 col-12">
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Avatar</th>
+                        <th class="text-start">Họ Tên</th>
+                        <th class="text-start">Sđt</th>
+                        <th class="text-start">Địa chỉ</th>
+                        <th class="text-start">Chi Nhánh</th>
+                        <th class="text-start">Vai trò</th>
+                        <th class="text-start">Giờ Làm Việc</th>
+                        <th class="text-start">Trạng Thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="~/media/users/@item.Staff?.Avatar_Name"
+                                     onerror="this.src='/media/logo/BranchLogo.jpg'"
+                                     class="rounded-circle" width="45" height="45" style="object-fit: cover;" />
+                            </td>
+                            <td>
+                                <div class="fw-bold">@item.Staff?.FullName</div>
+                                <small class="text-muted">@item.Staff?.Email</small>
+                            </td>
+                           
+                            <td><span>@item.Staff.PhoneNumber</span></td>
+
+                            <td>
+                                @item.Staff.Address @if (item.Staff.Ward != null && item.Staff.Ward.District != null && item.Staff.Ward.District.Province != null)
+                                {
+                                    <span>@item.Staff.Ward.Name, @item.Staff.Ward.District.Name, @item.Staff.Ward.District.Province.Name</span>
+                                }
+                                
+                            </td>
+                            <td><span class="badge bg-info text-dark">@item.Branch?.Branch_Name</span></td>
+                            
+                            
+                            <td>
+                                @if (item.Staff != null)
+                                {
+                                    var role = await RoleManager.FindByIdAsync(item.Staff.RoleId);
+                                    var roleName = role?.Name ?? "N/A";
+
+                                    <span class= "badge text-dark" > @roleName </span>
+                                }
+
+                            <td>
+                                <small>@item.Start_Work_Time.ToString(@"hh\:mm") - @item.End_Work_Time.ToString(@"hh\:mm")</small>
+                            </td>
+                            <td>
+                                @if (item.Staff?.Status == true)
+                                {
+                                    <span class="badge bg-success">Làm việc</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Đang khóa</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Update" asp-route-id="@item.StaffId" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDelete('@Url.Action("Delete", "StaffProfile", new { id = item.StaffId })', 'Profile: @item.Staff.FullName')">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="row align-items-center mt-3">
+            <div class="col-sm-6 text-muted">
+                Trang <b>@Model.PageIndex</b> / <b>@Model.TotalPages</b>
+            </div>
+            <div class="col-sm-6">
+                <nav>
+                    <ul class="pagination justify-content-end mb-0">
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                </li>
+                            }
+                        }
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+}

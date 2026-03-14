@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\media\combos\**" />
+    <Content Remove="wwwroot\media\combos\**" />
+    <EmbeddedResource Remove="wwwroot\media\combos\**" />
+    <None Remove="wwwroot\media\combos\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.11" />
@@ -22,11 +30,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="QuestPDF" Version="2025.12.1" />
+    <PackageReference Include="Twilio" Version="7.14.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\media\combos\" />
-    <Folder Include="wwwroot\media\stylist\" />
+    <Folder Include="wwwroot\media\branches\" />
+    <Folder Include="wwwroot\media\bookingresult\" />
+    <Folder Include="wwwroot\media\payments\" />
+    <Folder Include="wwwroot\media\portfolios\" />
+    <Folder Include="wwwroot\media\news\" />
     <Folder Include="wwwroot\media\services\" />
     <Folder Include="wwwroot\media\users\" />
   </ItemGroup>

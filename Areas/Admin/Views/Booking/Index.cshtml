@@ -1,174 +1,273 @@
-﻿@using BookingSalon.Models.ViewModel.BookingSalonViewModel
-@using System.Globalization
-@using BookingSalon.Data.Repository
-@model PaginatedList<BookingProfileDetailsViewModel>
+﻿@using System.Globalization;
+@using BookingSalon.Data.Repository;
+@using BookingSalon.Data.Validation;
+@using BookingSalon.Areas.Admin.Models.ViewModel.Filter
+@using BookingSalon.Models.Entities
+@model BookingListFilterViewModel
 
 @{
     ViewData["title"] = "Danh dách Booking";
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    var prevDisabled = !Model.Bookings.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Bookings.HasNextPage ? "disabled" : "";
 }
 
 <div class="container-fluid py-2 px-md-5">
     <div class="card main-card p-2 p-lg-4">
-        <div class="row align-items-center mb-5">
-                <div class="col-xl-6 col-lg-5">
-                    <h2 class="title-main mb-lg-0 mb-3">Quản lý Booking</h2>
-                </div>
-                <div class="col-xl-6 col-lg-7">
-                    <div class="row g-3 justify-content-lg-end">
-                        <div class="col-sm-7 col-12">
-                            <form asp-action="Index" method="get">
-                                <div class="input-group search-group">
-                                    <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm theo tên...">
-                                    <button type="submit" class="btn border"><i class="bi bi-search"></i></button>
-                                </div>
-                            </form>
 
-                        </div>
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-4 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý lịch đặt</h2>
+            </div>
+            <div class="col-xl-8 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get" class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text"
+                                       name="term"
+                                       value="@Model.SearchTerm"
+                                       class="form-control"
+                                       placeholder="Tìm tên, SĐT khách hàng" />
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-control">
+                                    <option value="">-- Tất cả trạng thái --</option>
+
+                                    @foreach (BookingStatus s in Enum.GetValues(typeof(BookingStatus)))
+                                    {
+                                        <option value="@((int)s)"
+                                                selected="@(Model.Status == s)">
+                                            @s.GetDisplayName()
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <select name="branchId" class="form-control">
+                                    <option value="">-- Tất cả chi nhánh --</option>
+
+                                    @foreach (var branch in Model.Branches)
+                                    {
+                                        <option value="@branch.BranchId"
+                                                selected="@(Model.BranchId == branch.BranchId)">
+                                            @branch.Branch_Name
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100" style="padding: 0.6rem 1.5rem;">
+                                    Lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-3 col-12">
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Đặt lịch
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Khách hàng</th>
+                        <th>Số điện thoại khách hàng</th>
+                        <th>Stylist</th>
+                        <th>Ảnh Stylist</th>
+                        <th>Skinner</th>
+                        <th>Ảnh Skinner</th>
+                        <th>Tại chi nhánh</th>
+                        <th>Ngày đặt</th>
+                        <th>Giá</th>
+                        <th>Trạng thái</th>
+                        <th>Cập nhật lần cuối</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    @foreach (var item in Model.Bookings)
+                    {
                         <tr>
-                            <th>Id</th>
-                            <th>Khách hàng</th>
-                            <th>Số điện thoại</th>
-                            <th>Email</th>
-                            <th>Địa chỉ</th>
-                            <th>Id_Stylist</th>
-                            <th>Stylist</th>
-                            <th>Tại chi nhánh</th>
-                            <th>Giờ đặt</th>
-                            <th>Ngày đặt</th>
-                            <th>Giá</th>
-                            <th>Trạng thái</th>
-                            <th class="text-center">Hành động</th>
+                            <td class="text-muted">@item.BookingId</td>
+                            <td class="text-muted">@item.Customer_Name</td>
+                            <td class="text-muted">@item.Customer_Phone</td>
+                            <td class="text-muted">@item.Stylist_Name</td>
+                            <td class="text-muted">
+                                <div class="d-flex align-content-center justify-content-center image-warp">
+                                    <img src="@(string.IsNullOrEmpty(item.Stylist_Image)
+                                                                                 ? Url.Content("~/media/logo/BranchLogo.jpg") : Url.Content("~/media/users/" + item.Stylist_Image))" class="w-100 h-100" />
+                            </div>
 
-                            @* <th class="text-center"></th>
-                            <th class="text-end pe-4"></th>
-                            <th class="text-end pe-4"></th> *@
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="text-muted">@item.BookingId</td>
-                                <td class="text-muted">@item.Customer_Name</td>
-                                <td class="text-muted">@item.Customer_Phone</td>
-                                <td class="text-muted">@item.Customer_Email</td>
-                                <td class="text-muted">@item.Customer_Address</td>
-                                <td class="text-muted">@item.Id_Stylist</td>
-                                <td class="text-muted">@item.Stylist_Name</td>
-                                <td class="text-muted">@item.Branch_Name</td>
-                                <td class="text-muted">@item.TimeSlot</td>
-                                <td class="text-muted">@item.Date_Booking</td>
-                                <td class="text-muted">
-                                    @(item.TotalPrice.HasValue? item.TotalPrice.Value.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) : "0") 
-                                </td>
-                                <td class="text-muted">
-                                    @if(item.Status == "pending")
-                                    {
-                                        <div class="d-flex justify-content-center align-items-center p-0 bg-warning rounded-2">Chưa xác nhận</div>
-                                    }
-                                    else if (item.Status == "comfirm")
-                                    {
-                                        <div class="d-flex justify-content-center align-items-center p-0 bg-success rounded-2">Đã xác nhận</div>
-                                    }
-                                    else
-                                    {
-                                        <div class="d-flex justify-content-center align-items-center p-0 bg-success rounded-2">Đã hoàn thành</div>
-                                    }
                             </td>
-                                <td class="text-center pe-4">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                            Thao tác
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            @if (item.Status == "confirm")
-                                            {
-                                                <li>
-                                                    <a class="dropdown-item" asp-action="BookingDetails" asp-route-id="@item.BookingId">
-                                                        <i class="bi bi-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </li>
-                                            }
-                                            else
-                                            {
-                                                <li>
-                                                    <a class="dropdown-item" asp-action="BookingDetails" asp-route-id="@item.BookingId">
-                                                        <i class="bi bi-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </li>
+                            <td class="text-muted">@item.Skinner_Name</td>
+                            <td class="text-muted">
+                                <div class="d-flex align-content-center justify-content-center image-warp">
+                                    <img src="@(string.IsNullOrEmpty(item.Skinner_Image)
+                                                                                 ? Url.Content("~/media/logo/BranchLogo.jpg") : Url.Content("~/media/users/" + item.Skinner_Image))" class="w-100 h-100" />
+                            </div>
+                        </td>
+                        <td class="text-muted">@item.Branch_Name</td>
+                        <td class="text-muted">@item.Date_Booking.ToString("dd/MM/yyyy")</td>
+                        <td class="text-muted text-nowrap">
+                            @(item.FinalPrice?.ToString("#,##0") ?? "0") đ
+                        </td>
 
-                                                <li><hr class="dropdown-divider"></li>
+                            <td class="text-muted">
+                            @switch (item.Status)
+                                {
+                                    case BookingStatus.PendingConfirmation:
+                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        break;
+                                    case BookingStatus.Confirmed:
+                                        <span class="badge bg-info text-white">Đã xác nhận</span>
+                                        break;
+                                    case BookingStatus.InProgress:
+                                        <span class="badge bg-primary text-white">Đang phục vụ</span>
+                                        break;
+                                    case BookingStatus.Completed:
+                                        <span class="badge bg-secondary text-white">Hoàn thành</span>
+                                        break;
+                                    case BookingStatus.Paid:
+                                        <span class="badge bg-success text-white">Đã thanh toán</span>
+                                        break;
+                                    case BookingStatus.Canceled:
+                                        <span class="badge bg-danger text-white">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-light text-dark">Không xác định</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-muted">
+                                @item.UpdateByName
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Thao tác
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-action="BookingDetails" asp-route-id="@item.BookingId">
+                                                <i class="bi bi-eye text-primary"></i> Xem chi tiết
+                                            </a>
+                                        </li>
 
-                                                <li>
-                                                    <button type="button" class="dropdown-item text-success"
-                                                            onclick="updateBookingStatus('@item.BookingId', 'confirm')">
-                                                        <i class="bi bi-check-circle"></i> Xác nhận
-                                                    </button>
-                                                </li>
+                                        @if (item.Status == BookingStatus.PendingConfirmation)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-success"
+                                                        onclick="updateBookingStatus('@item.BookingId', 1)">
+                                                    <i class="bi bi-check-circle"></i> Xác nhận đơn
+                                                </button>
+                                            </li>
+                                        }
+                                        else if (item.Status == BookingStatus.Confirmed)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-info"
+                                                        onclick="updateBookingStatus('@item.BookingId', 2)">
+                                                    <i class="bi bi-play-circle"></i> Bắt đầu phục vụ
+                                                </button>
+                                            </li>
+                                        }
+                                        else if (item.Status == BookingStatus.InProgress)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-primary fw-bold"
+                                                        onclick="openUploadModal('@item.BookingId')">
+                                                    <i class="bi bi-camera"></i> Tải ảnh & Hoàn thành
+                                                </button>
+                                            </li>                                           
+                                        }
+                                        else if (item.Status == BookingStatus.Completed)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-primary fw-bold"
+                                                   asp-action="PaymentDetails"
+                                                   asp-route-id="@item.BookingId">
+                                                    <i class="bi bi-cash-coin"></i> Thanh toán
+                                                </a>
+                                            </li>
+                                        }
+                                       
+                                        @if (item.Status == BookingStatus.PendingConfirmation || item.Status == BookingStatus.Confirmed)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-danger"
+                                                        onclick="updateBookingStatus('@item.BookingId', 5)">
+                                                    <i class="bi bi-x-circle"></i> Hủy đơn
+                                                </button>
+                                            </li>
 
-                                                <li>
-                                                    <button type="button" class="dropdown-item text-danger"
-                                                            onclick="updateBookingStatus('@item.BookingId', 'cancel')">
-                                                        <i class="bi bi-x-circle"></i> Hủy đơn
-                                                    </button>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+
+                                        }
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
         <div class="row align-items-center mt-3">
             <div class="col-sm-6 text-muted">
-                Hiển thị trang <b>@Model.PageIndex</b> / Trong tổng số <b>@Model.TotalPages</b> trang
+                Hiển thị trang <b>@Model.Bookings.PageIndex</b> / Trong tổng số <b>@Model.Bookings.TotalPages</b> trang
             </div>
             <div class="col-sm-6">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-end mb-0">
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm"
+                               asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm"
+                               asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
 
-                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        @for (int i = 1; i <= Model.Bookings.TotalPages; i++)
                         {
                             // Logic để chỉ hiển thị một vài số trang nếu tổng số quá lớn
-                            if (i >= Model.PageIndex - 2 && i <= Model.PageIndex + 2)
+                            if (i >= Model.Bookings.PageIndex - 2 && i <= Model.Bookings.PageIndex + 2)
                             {
-                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm">@i</a>
+                                <li class="page-item @(i == Model.Bookings.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm"
+                                       asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">@i</a>
                                 </li>
                             }
                         }
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm"
+                               asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-term="@ViewBag.SearchTerm">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.Bookings.TotalPages" asp-route-term="@ViewBag.SearchTerm"
+                               asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-right"></i>
                             </a>
                         </li>
@@ -177,11 +276,153 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-uppercase">Xác nhận thanh toán</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-4">
+                <div class="order-summary p-3 mb-4 rounded-3" style="background-color: #f8f9fa; border: 1px dashed #dee2e6;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Mã đơn hàng:</span>
+                        <span class="fw-bold text-dark" id="displayBookingId">#0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Khách hàng:</span>
+                        <span class="fw-bold text-dark" id="displayCustomerName">N/A</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Số điện thoại:</span>
+                        <span class="fw-bold text-dark" id="displayCustomerPhone">N/A</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Tổng thanh toán:</span>
+                        <span class="fs-4 fw-bold text-danger" id="displayAmount">0 đ</span>
+                    </div>
+                </div>
+
+                <p class="text-center text-muted small mb-4">Vui lòng chọn phương thức thanh toán để hoàn tất đơn hàng.</p>
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-success w-100 py-3 shadow-sm fw-bold" onclick="payWithCash()">
+                            <i class="bi bi-cash-stack fs-2 d-block mb-2"></i>
+                            TIỀN MẶT
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-primary w-100 py-3 shadow-sm fw-bold" onclick="payWithVNPay()">
+                            <i class="bi bi-credit-card fs-2 d-block mb-2"></i>
+                            VNPAY / THẺ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Tải ảnh & Hoàn thành -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-camera me-2"></i>HOÀN TẤT & TẢI ẢNH DỊCH VỤ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="UpdateImage" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="uploadBookingId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Chọn ảnh kết quả dịch vụ (Nhiều ảnh)</label>
+                        <input type="file" name="imageFiles" id="imageInput" class="form-control" 
+                               accept="image/*" multiple required />
+                        <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-3">
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Trạng thái đơn hàng sẽ tự động chuyển sang <b>Hoàn thành</b> sau khi tải ảnh.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-cloud-upload me-2"></i>Xác nhận hoàn tất
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Styles {
-        <link rel="stylesheet" href="~/css/Paginated.css" />
+    <link rel="stylesheet" href="~/css/Paginated.css" />
+    <style>
+        .image-warp {
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+            .image-warp img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 12px;
+            }
+
+        .text-truncate {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #imagePreviewContainer img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function openUploadModal(bookingId) {
+            $('#uploadBookingId').val(bookingId);
+            $('#imagePreviewContainer').empty();
+            $('#imageInput').val(''); 
+            var myModal = new bootstrap.Modal(document.getElementById('uploadImageModal'));
+            myModal.show();
+        }
+
+        document.getElementById('imageInput').addEventListener('change', function (event) {
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = ''; 
+
+            const files = event.target.files;
+            if (files) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        container.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    </script>
 }

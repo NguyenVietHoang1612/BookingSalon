@@ -1,24 +1,99 @@
-﻿using BookingSalon.Models.Entities;
+﻿using BookingSalon.Areas.Admin.Models.ViewModel;
+using BookingSalon.Models.Entities;
 using BookingSalon.Models.ViewModel;
+using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Twilio.TwiML.Messaging;
 
 namespace BookingSalon.Controllers
 {
 
     public class AccountController : Controller
     {
-        private readonly SignInManager<Users> signInManager;
-        private readonly UserManager<Users> _userManager;
+        private readonly SignInManager<UsersModel> signInManager;
+        private readonly UserManager<UsersModel> _userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IUsersService _userService;
+        private readonly ISmsSender _smsSender;
 
-        public AccountController(SignInManager<Users> signInManager, UserManager<Users> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<UsersModel> signInManager, UserManager<UsersModel> userManager, RoleManager<IdentityRole> roleManager, IUsersService usersService, ISmsSender smsSender)
         {
             this.signInManager = signInManager;
             this._userManager = userManager;
             this.roleManager = roleManager;
+            _userService = usersService;
+            _smsSender = smsSender;
+        }
+
+        public IActionResult LoginInternal()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginInternal(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userLogin = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userLogin == null)
+                {
+                    ModelState.AddModelError("", "Email hoặc mật khẩu không đúng.");
+                    return View(model);
+                }
+
+                if (await _userManager.IsInRoleAsync(userLogin, "Customer"))
+                {
+                    ModelState.AddModelError("", "Tài khoản khách hàng không thể đăng nhập tại đây.");
+                    return View(model);
+                }
+
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    if (!userLogin.Status)
+                    {
+                        await signInManager.SignOutAsync(); 
+                        ModelState.AddModelError("", "Tài khoản đã bị cấm.");
+                        return View(model);
+                    }
+
+                    if (await _userManager.IsInRoleAsync(userLogin, "Admin"))
+                    {
+                        return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                    }
+
+                    return RedirectToAction("StaffUpdate", "Profile", new { area = "Admin" });
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Email hoặc mật khẩu không đúng.");
+                }
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Home", "Home");
+        }
+
+        public async Task<IActionResult> LogoutInternal()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("LoginInternal", "Account");
+        }
+
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
         }
 
         public IActionResult Login()
@@ -27,173 +102,99 @@ namespace BookingSalon.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> SendOtp(AuthOtpViewModel model)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(model.PhoneNumber))
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-
-                if (result.Succeeded)
-                {
-                    var userLogin = await _userManager.FindByEmailAsync(model.Email);
-
-                    if (!userLogin.Status)
-                    {
-                        ModelState.AddModelError("", "Vui lòng xác minh Email đã được gửi trong Email.");
-                    }
-
-                    if (await _userManager.IsInRoleAsync(userLogin, "Customer"))
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else if (await _userManager.IsInRoleAsync(userLogin, "Admin"))
-                    {
-                        return RedirectToAction("Index", "Users", new { area = "Admin" });
-                    }
-
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Email hoặc mật khẩu không đúng.");
-                    return View(model);
-                }
-            }
-            return View(model);
-        }
-
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var role = await roleManager.FindByNameAsync("Customer");
-
-                if (role == null)
-                {
-                    ModelState.AddModelError("", " Không tìm thấy vai trò.");
-                    return View(model);
-                }
-
-                Users users = new Users
-                {
-                    FullName = model.FullName,
-                    Email = model.Email,
-                    UserName = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    RoleId = role.Id,
-                    Status = true,
-                    Create_At = DateTime.Now,
-                    Update_At = DateTime.Now
-                };
-
-                var result = await _userManager.CreateAsync(users, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(users, "Customer");
-
-                    return RedirectToAction("Login", "Account");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-
-                    return View(model);
-                }
-            }
-            return View(model);
-        }
-
-        public IActionResult VerifyEmail()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByNameAsync(model.Email);
-                if (user == null)
-                {
-                    ModelState.AddModelError("", "Email chưa được đăng ký!");
-                    return View(model);
-                }
-                else
-                {
-                    return RedirectToAction("ChangePassword", "Account", new { username = user.UserName });
-                }
+                ModelState.AddModelError("", "Vui lòng nhập số điện thoại.");
+                return View("Login", model);
             }
 
-            return View(model);
-        }
-
-        public IActionResult ChangePassword(string username)
-        {
-            if (string.IsNullOrEmpty(username))
-            {
-                return RedirectToAction("VerifyEmail", "Account");
-            }
-            return View(new ChangePasswordViewModel { Email = username });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Lỗi có trường không chưa được thêm.");
-                return View(model);
-            }
-
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.PhoneNumber);
             if (user != null)
             {
-                var result = await _userManager.RemovePasswordAsync(user);
-                if (result.Succeeded)
+                if (!await _userManager.IsInRoleAsync(user, "Customer"))
                 {
-                    result = await _userManager.AddPasswordAsync(user, model.NewPassword);
-                    return RedirectToAction("Login", "Account");
-                }
-                else
-                {
-
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-
-                    return View(model);
+                    ModelState.AddModelError("", "Số điện thoại này thuộc về nhân viên. Vui lòng đăng nhập trang nội bộ.");
+                    return View("Login", model);
                 }
             }
             else
             {
-                ModelState.AddModelError("", "Không tìm thấy email!");
-                return View(model);
+                var role = await roleManager.FindByNameAsync("Customer");
+                var userVM = new UserCreateViewModel
+                {
+                    User = new UsersModel
+                    {
+                        UserName = model.PhoneNumber,
+                        PhoneNumber = model.PhoneNumber,
+                        FullName = "Khách hàng " + model.PhoneNumber,
+                        RoleId = role?.Id ?? "",
+                        Email = model.PhoneNumber + "@temp.com", 
+                        Status = true
+                    },
+                    CustomerRank = new CustomerRankModel
+                    {
+                        CurrentPoints = 0,
+                        LifetimePoints = 0,
+                        Is_Active = true
+                    }
+                };
+
+                var createResult = await _userService.CreateUserCustomerAsync(userVM);
+
+                if (!createResult.Succeeded)
+                {
+                    foreach (var error in createResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View("Login", model);
+                }
+                TempData["IsNewUser"] = true;
+                user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.PhoneNumber);
             }
 
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Phone");
+            //string message = $"Ma OTP cua ban la: {code}. Vui long khong chia se cho bat ky ai.";
+            //await _smsSender.SendSmsAsync(model.PhoneNumber, message);
+
+            TempData["OtpSent"] = "Mã OTP đã được gửi đến số điện thoại: ";
+            System.Diagnostics.Debug.WriteLine($"SĐT: {model.PhoneNumber} - MÃ OTP LÀ: {code}");
+
+            
+
+            return View("VerifyOtp", new AuthOtpViewModel { PhoneNumber = model.PhoneNumber });
         }
 
-        public async Task<IActionResult> Logout()
+        [HttpPost]
+        public async Task<IActionResult> VerifyOtp(AuthOtpViewModel model)
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.PhoneNumber);
+            if (user == null) return RedirectToAction("Login");
 
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, "Phone", model.OtpCode);
 
-        public async Task<IActionResult> AccessDenied()
-        {
-            return View();
+            if (isValid)
+            {
+                user.PhoneNumberConfirmed = true;
+                await _userManager.UpdateAsync(user);
+
+                await signInManager.SignInAsync(user, isPersistent: true);
+
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+
+                if (TempData["IsNewUser"] != null && (bool)TempData["IsNewUser"])
+                {
+                    return RedirectToAction("Index", "Profile");
+                }
+
+                return RedirectToAction("Home", "Home");
+            }
+
+            ModelState.AddModelError("", "Mã OTP không chính xác hoặc đã hết hạn.");
+            return View(model);
         }
     }
 }

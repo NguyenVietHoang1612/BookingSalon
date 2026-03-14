@@ -1,0 +1,99 @@
+﻿@using BookingSalon.Areas.Admin.Models.ViewModel
+@model NewsVM
+@{
+    ViewData["title"] = "Thêm tin tức salon";
+}
+
+<div class="container-fluid py-5 px-md-5">
+    <div class="card main-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">Quản lý tin tức</h2>
+        </div>
+
+        <div class="form-section">
+            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-newspaper me-2"></i>Đăng bài viết mới</h5>
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-8">
+                        <label class="form-label fw-semibold">Tiêu đề tin tức</label>
+                        <input asp-for="News.Title" class="form-control" placeholder="Nhập tiêu đề bài viết..." />
+                        <span asp-validation-for="News.Title" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select asp-for="News.IsActive" class="form-control">
+                            <option value="true">Hiển thị ngay</option>
+                            <option value="false">Lưu tạm (Ẩn)</option>
+                        </select>
+                        <span asp-validation-for="News.IsActive" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Ảnh bìa (Thumbnail)</label>
+                        <input type="file" asp-for="ImageUpload" class="form-control" accept="image/*" />
+                        <span asp-validation-for="ImageUpload" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Tóm tắt ngắn</label>
+                        <textarea asp-for="News.Summary" class="form-control" rows="1" placeholder="Mô tả ngắn gọn về bài viết"></textarea>
+                        <span asp-validation-for="News.Summary" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nội dung chi tiết</label>
+                        <textarea asp-for="News.Content" id="editor" class="form-control"></textarea>
+                        <span asp-validation-for="News.Content" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary fw-bold px-4">
+                            <i class="bi bi-save me-2"></i> Đăng bài viết
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                            <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    ckfinder: {
+                        uploadUrl: '@Url.Action("UploadImage", "News", new { area = "Admin" })'
+                    },
+                    toolbar: [
+                        'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList',
+                        'blockQuote', 'insertTable', 'mediaEmbed', 'uploadImage', '|', 'undo', 'redo'
+                    ],
+                    image: {
+                        toolbar: [
+                            'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight',
+                            '|',
+                            'imageTextAlternative'
+                        ],
+                        styles: [
+                            'alignLeft', 'alignCenter', 'alignRight'
+                        ]
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>       
+}

@@ -11,6 +11,7 @@
             placeholder: true,
             placeholderValue: customPlaceholder,
             searchPlaceholderValue: 'Gõ để tìm...',
+            allowHTML: true,
         });
     }
 }

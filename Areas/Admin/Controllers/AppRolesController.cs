@@ -1,11 +1,8 @@
-﻿using BookingSalon.Models.Entities;
-using BookingSalon.Services;
-using BookingSalon.Services.Interface;
+﻿using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace BookingSalon.Areas.Admin.Controllers
 {
