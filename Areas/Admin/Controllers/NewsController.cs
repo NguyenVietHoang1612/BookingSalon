@@ -84,6 +84,10 @@ namespace BookingSalon.Areas.Admin.Controllers
             }
             TempData["Success"] = "Thêm tin tức thành công!";
 
+            if (User.IsInRole("Reception"))
+            {
+                return RedirectToAction(nameof(ReceptionIndex));
+            }
             return RedirectToAction(nameof(Index));
         }
 
@@ -154,6 +158,11 @@ namespace BookingSalon.Areas.Admin.Controllers
             }
             TempData["Success"] = "Cập nhật tin tức thành công!";
 
+
+            if (User.IsInRole("Reception"))
+            {
+                return RedirectToAction(nameof(ReceptionIndex));
+            }
             return RedirectToAction(nameof(Index));
         }
 

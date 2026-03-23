@@ -2,7 +2,10 @@
 using BookingSalon.Services;
 using BookingSalon.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingSalon.Areas.Admin.Controllers
 {
@@ -11,10 +14,12 @@ namespace BookingSalon.Areas.Admin.Controllers
     public class TypeOfServiceController : Controller
     {
         private readonly ITypeOfServiceService _typeOfServiceService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public TypeOfServiceController(ITypeOfServiceService typeOfServiceService)
+        public TypeOfServiceController(ITypeOfServiceService typeOfServiceService, RoleManager<IdentityRole> roleManager)
         {
             _typeOfServiceService = typeOfServiceService;
+            _roleManager = roleManager;
         }
 
         public async Task<IActionResult> Index(int? pageNumber, string term)
@@ -32,8 +37,13 @@ namespace BookingSalon.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var roles = await _roleManager.Roles
+                .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                .ToListAsync();
+
+            ViewBag.Roles = new SelectList(roles, "Id", "Name");
             return View();
         }
 
@@ -53,6 +63,12 @@ namespace BookingSalon.Areas.Admin.Controllers
                     }
                 }
 
+                var roles = await _roleManager.Roles
+                    .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                    .ToListAsync();
+
+                ViewBag.Roles = new SelectList(roles, "Id", "Name");
+
                 string errorMessage = string.Join("; ", errors);
 
                 return BadRequest(errorMessage);
@@ -63,6 +79,12 @@ namespace BookingSalon.Areas.Admin.Controllers
             if (!result.Succeeded)
             {
                 TempData["Error"] = "Thêm loại dịch vụ thất bại: " + result.Errors;
+
+                var roles = await _roleManager.Roles
+                    .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                    .ToListAsync();
+
+                ViewBag.Roles = new SelectList(roles, "Id", "Name");
 
                 TempData["ErrorMessage"] = result.Errors;
                 foreach (var error in result.Errors)
@@ -77,6 +99,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
@@ -86,8 +109,16 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             TypeOfServiceModel tOS = new TypeOfServiceModel
             {
-                Type_Service_Name = typeOfService.Data.Type_Service_Name
+                Type_Service_Name = typeOfService.Data.Type_Service_Name,
+                AppliedStaffRoleId = typeOfService.Data.AppliedStaffRoleId,
+
             };
+
+            var roles = await _roleManager.Roles
+                .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                .ToListAsync();
+
+            ViewBag.Roles = new SelectList(roles, "Id", "Name", tOS.AppliedStaffRoleId);
 
             return View(tOS);
         }
@@ -109,6 +140,12 @@ namespace BookingSalon.Areas.Admin.Controllers
                     }
                 }
 
+                var roles = await _roleManager.Roles
+                    .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                    .ToListAsync();
+
+                ViewBag.Roles = new SelectList(roles, "Id", "Name");
+
                 string errorMessage = string.Join("; ", errors);
 
                 return BadRequest(errorMessage);
@@ -125,9 +162,16 @@ namespace BookingSalon.Areas.Admin.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                return View(typeOfService);
+                var roles = await _roleManager.Roles
+                .Where(r => r.Name == "Skinner" || r.Name == "Stylist")
+                .ToListAsync();
 
+                ViewBag.Roles = new SelectList(roles, "Id", "Name");
+
+                return View(typeOfService);
             }
+
+
             TempData["Success"] = $"Cập nhật loại dịch vụ {typeOfService.Type_Service_Name} thành công!";
 
             return RedirectToAction(nameof(Index));

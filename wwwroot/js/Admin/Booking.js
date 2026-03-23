@@ -65,7 +65,6 @@ $(document).ready(function () {
 function initEvents() {
     $('#branchId').on('change', function () {
         const bId = $(this).val();
-        selectedServices = [];
         renderInvoice();
 
         if (!bId) {

@@ -69,7 +69,8 @@ namespace BookingSalon.Services
             var imageStylist = _unitOfWork.Repository<StaffPortfolioModel>()
                 .Query()
                 .Include(s => s.StaffProfile).ThenInclude(s => s.Staff)
-                .Where(p => p.IsFeatured == true);
+                .Where(p => p.IsFeatured == true)
+                .ToList();
 
             var images = imageStylist.Select(i => new StylistImageHome
             {

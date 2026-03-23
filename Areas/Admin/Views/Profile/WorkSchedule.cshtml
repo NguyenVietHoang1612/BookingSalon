@@ -274,6 +274,7 @@
                             const titleParts = event.title.split('|');
                             const customerName = titleParts[0] || 'Khách hàng';
                             const services = titleParts[1] || 'Chưa xác định';
+                            const note = titleParts[2] || "Không có ghi chú";
 
                             const content = `
                                 <div class="mb-3">
@@ -283,6 +284,10 @@
                                 <div class="mb-3">
                                     <div class="detail-label">Dịch vụ</div>
                                     <div class="detail-value">${services}</div>
+                                </div>
+                                 <div class="mb-3">
+                                    <div class="detail-label">Ghi chú</div>
+                                    <div class="detail-value">${note}</div>
                                 </div>
                                 <div class="row bg-light p-3 rounded-4">
                                     <div class="col-6">

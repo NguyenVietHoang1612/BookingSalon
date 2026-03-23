@@ -22,7 +22,15 @@
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Tên loại dịch vụ</label>
                         <input asp-for="Type_Service_Name" class="form-control" placeholder="Nhập tên loại dịch vụ" />
-                    <span asp-validation-for="Type_Service_Name" class="text-danger small mt-1 d-block"></span>
+                        <span asp-validation-for="Type_Service_Name" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold">Vai trò làm loại dịch vụ</label>
+                        <select class="form-control" asp-for="AppliedStaffRoleId" asp-items="ViewBag.Roles">
+                            <option>Chọn vai trò</option>
+                        </select>
+                        <span asp-validation-for="Type_Service_Name" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 d-flex gap-2 mt-5">

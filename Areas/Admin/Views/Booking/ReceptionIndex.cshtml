@@ -21,15 +21,15 @@
             <div class="col-xl-8 col-lg-7">
                 <div class="row g-2 justify-content-lg-end">
                     <div class="col-sm-8 col-12">
-                        <form asp-action="Index" method="get" class="row g-2">
-                            <div class="col-md-4">
+                        <form asp-action="ReceptionIndex" method="get" class="row g-2">
+                            <div class="col-md-5">
                                 <input type="text"
                                        name="term"
                                        value="@Model.SearchTerm"
                                        class="form-control"
                                        placeholder="Tìm tên, SĐT khách hàng" />
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <select name="status" class="form-control">
                                     <option value="">-- Tất cả trạng thái --</option>
 
@@ -42,22 +42,7 @@
                                     }
                                 </select>
                             </div>
-
                             <div class="col-md-3">
-                                <select name="branchId" class="form-control">
-                                    <option value="">-- Tất cả chi nhánh --</option>
-
-                                    @foreach (var branch in Model.Branches)
-                                    {
-                                        <option value="@branch.BranchId"
-                                                selected="@(Model.BranchId == branch.BranchId)">
-                                            @branch.Branch_Name
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary w-100" style="padding: 0.6rem 1.5rem;">
                                     Lọc
                                 </button>
@@ -186,8 +171,12 @@
                                         {
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
+                                                @* <button type="button" class="dropdown-item text-primary fw-bold"
+                                                        onclick="openUploadModal('@item.BookingId')" data-bs-toggle="modal">
+                                                    <i class="bi bi-camera"></i> Tải ảnh & Hoàn thành
+                                                </button> *@
                                                 <button type="button" class="dropdown-item text-primary fw-bold"
-                                                        onclick="openUploadModal('@item.BookingId')">
+                                                        data-bs-toggle="modal" data-bs-target="#uploadImageModal">
                                                     <i class="bi bi-camera"></i> Tải ảnh & Hoàn thành
                                                 </button>
                                             </li>
@@ -233,14 +222,15 @@
                     <ul class="pagination justify-content-end mb-0">
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm"
+                            
+                            <a class="page-link" asp-action="ReceptionIndex" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="ReceptionIndex" asp-route-pageNumber="@(Model.Bookings.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
@@ -252,21 +242,21 @@
                             if (i >= Model.Bookings.PageIndex - 2 && i <= Model.Bookings.PageIndex + 2)
                             {
                                 <li class="page-item @(i == Model.Bookings.PageIndex ? "active" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm"
+                                    <a class="page-link" asp-action="ReceptionIndex" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm"
                                        asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">@i</a>
                                 </li>
                             }
                         }
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="ReceptionIndex" asp-route-pageNumber="@(Model.Bookings.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.Bookings.TotalPages" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="ReceptionIndex" asp-route-pageNumber="@Model.Bookings.TotalPages" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-right"></i>
                             </a>

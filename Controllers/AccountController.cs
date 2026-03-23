@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Twilio.TwiML.Messaging;
+using Twilio.Types;
 
 namespace BookingSalon.Controllers
 {
@@ -28,7 +29,7 @@ namespace BookingSalon.Controllers
             _userService = usersService;
             _smsSender = smsSender;
         }
-
+        ////Đăng nhập Internal cho nhân viên
         public IActionResult LoginInternal()
         {
             return View();
@@ -96,6 +97,8 @@ namespace BookingSalon.Controllers
             return View();
         }
 
+        //Đăng nhập, đăng ký khách hàng
+
         public IActionResult Login()
         {
             return View();
@@ -111,8 +114,15 @@ namespace BookingSalon.Controllers
             }
 
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.PhoneNumber);
+
             if (user != null)
             {
+                if (user.Status == false) 
+                {
+                    ModelState.AddModelError("", "Tài khoản này đã bị cấm. Vui lòng liên hệ quản trị viên.");
+                    return View("Login", model);
+                }
+
                 if (!await _userManager.IsInRoleAsync(user, "Customer"))
                 {
                     ModelState.AddModelError("", "Số điện thoại này thuộc về nhân viên. Vui lòng đăng nhập trang nội bộ.");

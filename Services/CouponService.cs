@@ -126,17 +126,6 @@ namespace BookingSalon.Services
                     return ServiceResult<CouponModel>.Failed("Mã coupon đã tồn tại");
                 }
 
-                var oldUsages = await usageRepo.Query()
-                    .Where(u => u.CouponId == id)
-                    .ToListAsync();
-
-                if (oldUsages.Any())
-                {
-                    foreach (var usage in oldUsages)
-                    {
-                        usageRepo.Delete(usage);
-                    }
-                }
                 existing.Code = model.Code;
                 existing.Discount_Type = model.Discount_Type;
                 existing.Discount_value = model.Discount_value;

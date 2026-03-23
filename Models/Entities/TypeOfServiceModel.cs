@@ -12,6 +12,8 @@ namespace BookingSalon.Models.Entities
 
         public DateTime Created_At { get; set; }
         public DateTime Update_At { get; set; }
+        [Required(ErrorMessage = "Vai trò người làm dịch vụ không được để trống")]
+        public string? AppliedStaffRoleId { get; set; }
 
         public ICollection<ServiceModel>? Services { get; set; }
     }

@@ -81,7 +81,6 @@ function renderInvoice() {
 $('#branchId').change(function () {
     const bId = $(this).val();
 
-    selectedServices = [];
     $('#stylistId').val('');
     $('#skinnerId').val('');
     $('#startSlotId').val('');
@@ -100,45 +99,35 @@ $('#branchId').change(function () {
     $('#slotWrapper').addClass('d-none');
     renderInvoice();
 });
-
-
-// Load Nhân viên
 function loadStaffCards(url, containerId, type) {
     const wrapperId = (type === 'stylist') ? '#stylistWrapper' : '#skinnerWrapper';
     $(containerId).html('<div class="spinner-border text-warning spinner-border-sm"></div>');
 
     $.getJSON(url, function (data) {
-        if (!data || data.length === 0) {
-            $(wrapperId).addClass('d-none');
-            return;
-        }
+        if (!data) return;
 
-        let html = '';
-        if (type === 'stylist') {
-            data.forEach(staff => {
-                const ratingHtml = `
-            <div class="staff-rating" style="font-size: 0.8rem; color: #ffc107;">
-                <i class="fas fa-star"></i> ${staff.rating}
+        let html = `
+            <div class="staff-card" data-id="RANDOM" onclick="selectStaff(this, '${type}')">
+                <div class="staff-img-wrapper" style="display:flex; align-items:center; justify-content:center; background:#333; height:80px; width:80px; border-radius:50%; margin: 0 auto;">
+                    <i class="fas fa-magic text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <div class="fw-bold text-primary mt-1">Hệ thống chọn</div>
+                <div class="staff-rating" style="font-size: 0.7rem; color: #aaa;">(Ngẫu nhiên)</div>
             </div>`;
 
-                html += `
-            <div class="staff-card" data-id="${staff.id}" onclick="selectStaff(this, '${type}')">
-                <img src="/media/users/${staff.img || 'default.jpg'}" class="staff-img" onerror="this.src='/media/logo/BranchLogo.jpg'">
-                <div class="fw-bold text-white mt-1">${staff.name}</div>
-                ${ratingHtml}
-            </div>`;
-            });
-        }
-        else {
-            data.forEach(staff => {
-                html += `
-            <div class="staff-card" data-id="${staff.id}" onclick="selectStaff(this, '${type}')">
-                <img src="/media/users/${staff.img || 'default.jpg'}" class="staff-img" onerror="this.src='/media/logo/BranchLogo.jpg'">
-                <div class="fw-bold text-white mt-1">${staff.name}</div>
-            </div>`;
-            });
-        }
-        
+        data.forEach(staff => {
+            const ratingHtml = type === 'stylist' ? `
+                <div class="staff-rating" style="font-size: 0.8rem; color: #ffc107;">
+                    <i class="fas fa-star"></i> ${staff.rating}
+                </div>` : '';
+
+            html += `
+                <div class="staff-card" data-id="${staff.id}" onclick="selectStaff(this, '${type}')">
+                    <img src="/media/users/${staff.img || 'default.jpg'}" class="staff-img" onerror="this.src='/media/logo/default-user.jpg'">
+                    <div class="fw-bold text-white mt-1">${staff.name}</div>
+                    ${ratingHtml}
+                </div>`;
+        });
 
         $(containerId).html(html);
         $(wrapperId).removeClass('d-none');
@@ -147,17 +136,25 @@ function loadStaffCards(url, containerId, type) {
 }
 
 function selectStaff(element, type) {
+    const id = $(element).data('id').toString();
+    const otherType = (type === 'stylist') ? 'skinner' : 'stylist';
+    const otherId = (type === 'stylist') ? $('#skinnerId').val() : $('#stylistId').val();
+
+    if (id !== 'RANDOM' && otherId && otherId !== 'RANDOM' && id === otherId) {
+        alert("Stylist và Skinner đích danh không được là cùng một người!");
+        return;
+    }
+
     const container = $(element).parent();
     container.find('.staff-card').removeClass('selected');
     $(element).addClass('selected');
-
-    const id = $(element).data('id');
 
     if (type === 'stylist') {
         $('#stylistId').val(id);
     } else {
         $('#skinnerId').val(id);
     }
+
     $('#startSlotId').val('');
     loadSlotsIfReady();
 }
@@ -168,25 +165,29 @@ $('#bookingDate').change(function () {
     loadSlotsIfReady();
 });
 
+// Cũ
 function loadSlotsIfReady() {
     const date = $('#bookingDate').val();
     const stylistId = $('#stylistId').val();
     const duration = $('#totalDuration').val();
-    const skinnerId = $('#skinnerId').val() || "";
+    const skinnerId = $('#skinnerId').val();
+    const branchId = $('#branchId').val();
 
-    if (!date || !stylistId) return;
+    if (!date || !branchId || duration <= 0) return;
+
+    if (stylistId && skinnerId && stylistId !== 'RANDOM' && skinnerId !== 'RANDOM' && stylistId === skinnerId) {
+        $('#timeSlotsArea').html('<div class="alert alert-warning py-1 small">Stylist và Skinner không được trùng nhau!</div>');
+        return;
+    }
 
     $('#timeSlotsArea').html('<div class="spinner-border text-warning spinner-border-sm"></div> Đang tìm lịch...');
     $('#slotWrapper').removeClass('d-none');
 
     $.ajax({
-        url: `/Booking/GetAvailableSlots`,
+        url: `/Booking/GetSlotsAvailableForBranch`,
         type: 'GET',
         data: {
-            stylistId: stylistId,
-            skinnerId: skinnerId,
-            date: date,
-            durationMinus: duration
+            branchId, stylistId, skinnerId, date, duration
         },
         success: function (res) {
             let html = '';
@@ -246,6 +247,7 @@ function loadSlotsIfReady() {
         }
     });
 }
+
 
 
 $(document).on('click', '.slot-btn:not(.disabled)', function () {
@@ -320,6 +322,7 @@ function checkSlotSlider() {
 
 // Form Validation
 $('#formBooking').submit(function (e) {
+    console.log("Slot ID hiện tại:", $('#startSlotId').val());
     if (selectedServices.length === 0) { alert("Vui lòng chọn dịch vụ"); e.preventDefault(); return; }
     if (!$('#branchId').val()) { alert("Vui lòng chọn chi nhánh"); e.preventDefault(); return; }
     if (!$('#stylistId').val()) { alert("Vui lòng chọn stylist"); e.preventDefault(); return; }

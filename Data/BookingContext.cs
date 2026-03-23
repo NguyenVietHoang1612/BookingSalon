@@ -70,6 +70,10 @@ namespace BookingSalon.Data
                 entity.Property(u => u.DateOfBirth)
                     .HasColumnType("date");
 
+                entity.Property(u => u.RoleId)
+                    .HasMaxLength(450)
+                    .IsRequired(false);
+
                 entity.Property(x => x.Address)
                       .HasMaxLength(150);
 
@@ -262,10 +266,10 @@ namespace BookingSalon.Data
                      .HasMaxLength(100);
 
                 entity.Property(s => s.Base_Price)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(s => s.Promotion_Price)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(s => s.description)
                      .HasMaxLength(2000);
@@ -306,6 +310,9 @@ namespace BookingSalon.Data
                       .HasMaxLength(50)
                       .IsRequired();
 
+                entity.Property(ts => ts.AppliedStaffRoleId)
+                      .HasMaxLength(450);
+
                 entity.Property(s => s.Created_At)
                       .HasDefaultValueSql("GETDATE()");
 
@@ -334,18 +341,18 @@ namespace BookingSalon.Data
                      .HasMaxLength(15);
 
                 entity.Property(b => b.DiscountValueSnapshot)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 
 
                 entity.Property(b => b.TotalPrice)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(b => b.DiscountAmount)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(b => b.FinalPrice)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(b => b.Note)
                       .HasMaxLength(250);
@@ -576,10 +583,10 @@ namespace BookingSalon.Data
                       .HasMaxLength(15);
 
                 entity.Property(s => s.Discount_value)
-                     .HasColumnType("decimal(18,2)");
+                     .HasColumnType("decimal(12,2)");
 
                 entity.Property(s => s.Min_Order_Amount)
-                      .HasColumnType("decimal(18,2)");
+                      .HasColumnType("decimal(12,2)");
 
                 entity.Property(x => x.Created_At)
                       .HasDefaultValueSql("GETDATE()");
@@ -628,7 +635,7 @@ namespace BookingSalon.Data
                 entity.HasKey(x => x.PaymentId);
 
                 entity.Property(x => x.Amount)
-                      .HasColumnType("decimal(18,2)")
+                      .HasColumnType("decimal(12,2)")
                       .IsRequired();
 
                 entity.Property(x => x.PaymentMethod)

@@ -67,41 +67,67 @@ namespace BookingSalon.Controllers
         public async Task<IActionResult> Booking(BookingViewModel bookingVM)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId == null) return Unauthorized();
+            if (userId == null) return Unauthorized();
+
+            // Gán ID khách hàng từ User hiện tại
+            bookingVM.NewBooking.Customer_Id = userId;
 
             if (!ModelState.IsValid)
             {
                 await PopulatedBookingLists(bookingVM);
-                List<string> errors = new List<string>();
-                foreach (var value in ModelState.Values)
-                {
-                    foreach (var error in value.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                string errorMessage = string.Join("; ", errors); ;
-                TempData["Warning"] = $"Lỗi Bind dữ liệu booking: " + errorMessage;
                 return View(bookingVM);
+            }
+
+            DateTime bookingDate = bookingVM.NewBooking.Booking_Date;
+
+            if (bookingVM.NewBooking.Stylist_Id == "RANDOM")
+            {
+                var resultS = await _bookingService.GetAvailableStylistIdAsync(
+                    bookingVM.NewBooking.Branch_Id,
+                    bookingDate,
+                    bookingVM.NewBooking.Start_Slot_Id,
+                    bookingVM.NewBooking.TotalDuration);
+
+                if (resultS.Succeeded)
+                    bookingVM.NewBooking.Stylist_Id = resultS.Data;
+                else
+                {
+                    TempData["Error"] = "Không tìm thấy Stylist trống: " + resultS.Errors.First();
+                    await PopulatedBookingLists(bookingVM);
+                    return View(bookingVM);
+                }
+            }
+
+            if (bookingVM.NewBooking.Skinner_Id == "RANDOM")
+            {
+                var resultK = await _bookingService.GetAvailableSkinnerIdAsync(
+                    bookingVM.NewBooking.Branch_Id,
+                    bookingDate,
+                    bookingVM.NewBooking.Start_Slot_Id,
+                    bookingVM.NewBooking.TotalDuration,
+                    excludeStaffId: bookingVM.NewBooking.Stylist_Id);
+
+                if (resultK.Succeeded)
+                    bookingVM.NewBooking.Skinner_Id = resultK.Data;
+                else
+                {
+                    TempData["Error"] = "Không tìm thấy Skinner trống: " + resultK.Errors.First();
+                    await PopulatedBookingLists(bookingVM);
+                    return View(bookingVM);
+                }
             }
 
             var result = await _bookingService.BookingAsync(bookingVM);
 
             if (!result.Succeeded)
             {
-                bookingVM.Branches = await _branchService.GetAllBranchActiveAsync();
-                bookingVM.Services = await _servicesSalonService.GetAllServiceActiveAsync();
                 await PopulatedBookingLists(bookingVM);
-                TempData["Error"] = $"Lỗi dữ liệu khi đặt lịch: " + result.Errors;
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
+                TempData["Error"] = "Lỗi khi đặt lịch: " + string.Join(", ", result.Errors);
                 return View(bookingVM);
             }
-            TempData["Success"] = "Đặt lịch thành công ";
 
-            return Redirect($"/Booking/Details/{bookingVM.NewBooking.Booking_Id}");
+            TempData["Success"] = "Đặt lịch thành công!";
+            return RedirectToAction("Details", new { id = bookingVM.NewBooking.Booking_Id });
         }
 
         [HttpGet]
@@ -128,18 +154,29 @@ namespace BookingSalon.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSlotsAvailableForBranch(int branchId, string date, int duration)
+        public async Task<IActionResult> GetSlotsAvailableForBranch(int branchId, string? stylistId, string? skinnerId, string date, int duration)
         {
-            if (!DateOnly.TryParse(date, out var dateOnly))
-            {
+            if (branchId <= 0 || string.IsNullOrEmpty(date) || duration <= 0)
+                return Json(new List<object>());
+
+            if (!DateOnly.TryParse(date, out var bookingDate))
                 return BadRequest("Ngày không hợp lệ.");
+
+            var result = await _bookingService.GetSlotsAvailableForBranchRandom(branchId, stylistId, skinnerId, bookingDate, duration);
+
+            if (result.Succeeded)
+            {
+                var data = result.Data.Select(x => new
+                {
+                    slotId = x.SlotId,
+                    timeRange = x.TimeRange.ToString().Substring(0, 5),
+                    isAvailable = x.IsAvailable
+                }).ToList();
+
+                return Json(data);
             }
 
-            var result = await _bookingService.GetSlotsAvailableForBranch(branchId, dateOnly, duration);
-
-            if (!result.Succeeded) return BadRequest(result.Errors);
-
-            return Json(result.Data);
+            return Json(new { succeeded = false, message = result.Errors });
         }
 
         [HttpGet]
@@ -220,11 +257,10 @@ namespace BookingSalon.Controllers
 
             var allBookings = await _bookingService.GetAllAsync();
 
-      
+    
             var myBookings = allBookings
                 .Where(mb=>mb.Customer_Id == userId)
-                .OrderByDescending(b => b.Date_Booking)
-                .ThenByDescending(b => b.TimeSlot)
+                .OrderByDescending(b => b.CreateAt)
                 .ToList();
 
             return View(myBookings);

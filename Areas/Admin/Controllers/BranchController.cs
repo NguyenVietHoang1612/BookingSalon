@@ -69,6 +69,7 @@ namespace BookingSalon.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var result = await _branchService.GetByIdAsync(id);

@@ -25,7 +25,6 @@ namespace BookingSalon.Models.ViewModel.BookingSalonViewModel
         public BookingStatus Status { get; set; }
         public decimal? FinalPrice { get; set; }
         public DateTime CreateAt { get; set; }
-
         public IEnumerable<BookingImageModel>? BookingImages { get; set; }
 
         public bool IsReview { get; set; }

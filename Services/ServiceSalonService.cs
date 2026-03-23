@@ -178,7 +178,7 @@ namespace BookingSalon.Services
                 query = query.Where(s => s.Service_Name.ToLower().Contains(searchTerm));
             }
 
-            query = query.Include(s => s.TypeOfService).OrderBy(s => s.ServiceId);
+            query = query.Include(s => s.TypeOfService).OrderByDescending(s => s.Create_At);
 
             return await PaginatedList<ServiceModel>.CreateAsync(query, pageNumber, pageSize);
         }

@@ -32,13 +32,13 @@
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Giá cơ bản dịch vụ</label>
-                        <input asp-for="Base_Price" class="form-control" placeholder="Nhập giá dịch vụ" />
+                        <input asp-for="Base_Price" type="number" class="form-control" placeholder="Nhập giá dịch vụ"/>
                         <span asp-validation-for="Base_Price" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Giá khuyến mãi</label>
-                        <input asp-for="Promotion_Price" class="form-control" placeholder="Nhập giá khuyến mãi" />
+                        <input asp-for="Promotion_Price" type="number" class="form-control" placeholder="Nhập giá khuyến mãi" />
                         <span asp-validation-for="Promotion_Price" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -56,7 +56,7 @@
 
                     <div class="col-12 col-md-6 col-lg-3">
                         <label class="form-label fw-semibold">Thời gian làm dịch vụ</label>
-                        <input asp-for="DurationInMinutes" class="form-control" placeholder="Nhập thời gian làm dịch vụ" />
+                        <input asp-for="DurationInMinutes" class="form-control" placeholder="Nhập thời gian làm dịch vụ bằng số phút" />
                         <span asp-validation-for="DurationInMinutes" class="text-danger small mt-1 d-block"></span>
                     </div>
 

@@ -31,6 +31,12 @@ namespace BookingSalon.Services
                 //var emailParts = model.User.Email.Split('@');
                 //string prefix = emailParts[0];
                 //string domain = emailParts.Count() > 1 ? emailParts[1] : "StayHere.com";
+                var existEmail = await _userManager.FindByEmailAsync(model.User.Email);
+                if (existEmail != null) return ServiceResult<StaffCombinedCreateVM>.Failed("Lỗi Email đã tồn tại trong hệ thống");
+
+                var existPhoneNumber = await _unitOfWork.Repository<UsersModel>().ExistsAsync(s => s.PhoneNumber == model.User.PhoneNumber);
+                if (existPhoneNumber == true) return ServiceResult<StaffCombinedCreateVM>.Failed("Lỗi Số điện thoại đã tồn tại trong hệ thống");
+
                 model.User.UserName = model.User.Email;
                 model.User.Create_At = DateTime.Now;
                 model.User.Status = true;
@@ -38,15 +44,15 @@ namespace BookingSalon.Services
                 if (model.User.Avatar_Image_Upload != null)
                     model.User.Avatar_Name = await _fileService.UploadFileAsync(model.User.Avatar_Image_Upload, "users");
 
+                var role = await _roleManager.FindByIdAsync(model.User.RoleId);
+
+                if(role == null) return ServiceResult<StaffCombinedCreateVM>.Failed("Lỗi Role chưa được chọn hoặc role không tồn tại");
+
                 var result = await _userManager.CreateAsync(model.User, model.Password);
 
                 if (!result.Succeeded) return ServiceResult<StaffCombinedCreateVM>.Failed("Lỗi tạo tài khoản nhân viên");
 
-                var role = await _roleManager.FindByIdAsync(model.User.RoleId);
                 await _userManager.AddToRoleAsync(model.User, role.Name);
-
-                
-
 
                 var profile = model.ProfileInfo;
                 profile.StaffId = model.User.Id; 

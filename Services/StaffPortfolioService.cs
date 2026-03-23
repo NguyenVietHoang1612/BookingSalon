@@ -111,6 +111,10 @@ namespace BookingSalon.Services
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(model.Title))
+                {
+                    return ServiceResult<StaffPortfolioModel>.Failed("Tên kiểu tóc không được để trống");
+                }
                 var repo = _unitOfWork.Repository<StaffPortfolioModel>();
                 var existingItem = await repo.GetByIdAsync(id);
 
@@ -185,6 +189,11 @@ namespace BookingSalon.Services
                 var repo = _unitOfWork.Repository<StaffPortfolioModel>();
                 var item = await repo.GetByIdAsync(id);
                 if (item == null) return ServiceResult<StaffPortfolioModel>.Failed("Không tìm thấy portfolio");
+
+                if (item.IsFeatured)
+                {
+                    return ServiceResult<StaffPortfolioModel>.Failed("Kiểu tóc này đang được hiển thị trang chủ, không thể xóa");
+                }
 
                 string imageName = item.ImageUrl;
 

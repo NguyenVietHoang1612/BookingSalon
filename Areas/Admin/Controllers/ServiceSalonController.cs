@@ -59,7 +59,8 @@ namespace BookingSalon.Areas.Admin.Controllers
                         errors.Add(error.ErrorMessage);
                     }
                 }
-
+                var listService = await _typeOfServiceService.GetAllTypeServiceAsync();
+                ViewBag.TypeOfServiceList = new SelectList(listService, "TypeOfServiceId", "Type_Service_Name");
                 string errorMessage = string.Join("; ", errors);
 
                 return BadRequest(errorMessage);
@@ -74,6 +75,8 @@ namespace BookingSalon.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", error);
                 }
+                var listService = await _typeOfServiceService.GetAllTypeServiceAsync();
+                ViewBag.TypeOfServiceList = new SelectList(listService, "TypeOfServiceId", "Type_Service_Name");
                 return View(service);
 
             }
@@ -124,7 +127,9 @@ namespace BookingSalon.Areas.Admin.Controllers
                         errors.Add(error.ErrorMessage);
                     }
                 }
+                var typeOfService = await _typeOfServiceService.GetAllTypeServiceAsync();
 
+                ViewBag.TypeOfServiceList = new SelectList(typeOfService, "TypeOfServiceId", "Type_Service_Name");
                 string errorMessage = string.Join("; ", errors);
 
                 return BadRequest(errorMessage);
@@ -140,7 +145,9 @@ namespace BookingSalon.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", error);
                 }
+                var typeOfService = await _typeOfServiceService.GetAllTypeServiceAsync();
 
+                ViewBag.TypeOfServiceList = new SelectList(typeOfService, "TypeOfServiceId", "Type_Service_Name");
                 return View(service);
 
             }

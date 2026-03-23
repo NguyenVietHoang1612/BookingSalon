@@ -192,6 +192,7 @@ namespace BookingSalon.Services
         {
             var ward = await _unitOfWork.Repository<WardModel>().Query()
                     .Include(w => w.District)
+                        .ThenInclude(d => d.Province)
                     .FirstOrDefaultAsync(w => w.Id == branch.WardId);
 
             return ward;

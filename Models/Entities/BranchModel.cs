@@ -21,6 +21,7 @@ namespace BookingSalon.Models.Entities
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
         [RegularExpression(@"^(0|\+84)[0-9]{9}$", ErrorMessage = "Số điện thoại không hợp lệ")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Số điện thoại phải đúng 10 chữ số")]
         public string PhoneNumber { get; set; }
         public string? Branch_Image { get; set; }
         public bool? Is_Main_Branch { get; set; }

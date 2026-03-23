@@ -48,7 +48,7 @@ namespace BookingSalon.Services
                     return new CalendarEventViewModel
                     {
                         Id = firstSlot.ScheduleId, 
-                        Title = $"{booking?.Customer?.FullName} | {serviceNames}",
+                        Title = $"{booking?.Customer?.FullName} | {serviceNames} | Ghi chú: {booking?.Note ?? "Không có ghi chú"}",
                         Start = startDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
                         End = startDateTime.AddMinutes(booking?.TotalDuration ?? 30).ToString("yyyy-MM-ddTHH:mm:ss"),
                         Color = "#dc3545",

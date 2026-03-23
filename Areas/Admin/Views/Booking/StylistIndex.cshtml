@@ -171,14 +171,14 @@
                     <ul class="pagination justify-content-end mb-0">
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="StylistIndex" asp-route-pageNumber="1" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
                         <li class="page-item @prevDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="StylistIndex" asp-route-pageNumber="@(Model.Bookings.PageIndex - 1)" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
@@ -190,21 +190,21 @@
                             if (i >= Model.Bookings.PageIndex - 2 && i <= Model.Bookings.PageIndex + 2)
                             {
                                 <li class="page-item @(i == Model.Bookings.PageIndex ? "active" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm"
+                                    <a class="page-link" asp-action="StylistIndex" asp-route-pageNumber="@i" asp-route-term="@ViewBag.SearchTerm"
                                        asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">@i</a>
                                 </li>
                             }
                         }
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.Bookings.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="StylistIndex" asp-route-pageNumber="@(Model.Bookings.PageIndex + 1)" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
 
                         <li class="page-item @nextDisabled">
-                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@Model.Bookings.TotalPages" asp-route-term="@ViewBag.SearchTerm"
+                            <a class="page-link" asp-action="StylistIndex" asp-route-pageNumber="@Model.Bookings.TotalPages" asp-route-term="@ViewBag.SearchTerm"
                                asp-route-status="@ViewBag.Status" asp-route-branchId="@Model.BranchId">
                                 <i class="bi bi-chevron-double-right"></i>
                             </a>

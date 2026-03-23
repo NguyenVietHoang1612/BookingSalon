@@ -189,6 +189,12 @@ namespace BookingSalon.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
+                var phoneRegex = @"^(0|\+84)[0-9]{9}$";
+                if (!string.IsNullOrEmpty(model.PhoneNumber) &&
+                    !System.Text.RegularExpressions.Regex.IsMatch(model.PhoneNumber, phoneRegex))
+                {
+                    return IdentityResult.Failed(new IdentityError { Description = "Số điện thoại không hợp lệ" });
+                }
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
@@ -296,33 +302,38 @@ namespace BookingSalon.Services
 
         public async Task<ServiceResult<UsersModel>> Delete(string id)
         {
+            await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var user = await _userManager.FindByIdAsync(id);
-
-                if (user != null)
+                if (user == null)
                 {
-                    _customerRankService.DeleteAsync(user.Id);
-                    await _unitOfWork.SaveChangesAsync();
+                    return ServiceResult<UsersModel>.Failed("Không tìm thấy người dùng");
                 }
 
-                if (user != null)
-                {
-                    if (!string.IsNullOrEmpty(user.Avatar_Name))
-                        await _fileService.DeleteFileAsync(user.Avatar_Name, "users");
+                var rankDeleteResult = await _customerRankService.DeleteAsync(user.Id);
 
-                    var result = await _userManager.DeleteAsync(user);
-                    if (!result.Succeeded)
-                    {
-                        return ServiceResult<UsersModel>.Failed("Lỗi khi xóa tài khoản");
-                    }
+                if (!string.IsNullOrEmpty(user.Avatar_Name))
+                {
+                    await _fileService.DeleteFileAsync(user.Avatar_Name, "users");
                 }
+
+                var result = await _userManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult<UsersModel>.Failed("Lỗi khi xóa tài khoản từ hệ thống Identity");
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
                 return ServiceResult<UsersModel>.Success(user);
             }
             catch (Exception ex)
             {
-                return ServiceResult<UsersModel>.Failed($"Lỗi: {ex.Message}");
+                await _unitOfWork.RollbackTransactionAsync();
+                return ServiceResult<UsersModel>.Failed($"Lỗi hệ thống: {ex.Message}");
             }
         }
 
@@ -348,7 +359,7 @@ namespace BookingSalon.Services
             {
                 "rank_desc" => query.OrderByDescending(cr => cr.LifetimePoints),
                 "rank_asc" => query.OrderBy(cr => cr.LifetimePoints),
-                _ => query.OrderByDescending(cr => cr.Customer_Id)
+                _ => query.OrderByDescending(cr => cr.Created_At)
             };
 
             var projection = query.Select(cr => new CustomerRankVM

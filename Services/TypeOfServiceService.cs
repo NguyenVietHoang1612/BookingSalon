@@ -97,6 +97,7 @@ namespace BookingSalon.Services
                     return ServiceResult<TypeOfServiceModel>.Failed("Loại dịch vụ không được tìm thấy");
 
                 existingTypeOfService.Type_Service_Name = fixedTime.Type_Service_Name;
+                existingTypeOfService.AppliedStaffRoleId = fixedTime.AppliedStaffRoleId;
                 existingTypeOfService.Update_At = DateTime.Now;
 
                 repo.Update(existingTypeOfService);

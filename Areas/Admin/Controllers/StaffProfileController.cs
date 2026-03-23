@@ -102,7 +102,15 @@ namespace BookingSalon.Areas.Admin.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                TempData["Error"] = "Thêm profile thất bại:";
+                TempData["Error"] = "Thêm profile thất bại";
+                var provinces = await _addressService.GetAllProvinceAsync();
+                ViewBag.Provinces = new SelectList(provinces, "Id", "Name");
+
+                var branches = await _branchService.GetAllBranchActiveAsync();
+                viewModel.BranchSelectList = new SelectList(branches, "BranchId", "Branch_Name");
+
+                var roles = await _staffProfileService.GetRoleStaff();
+                viewModel.RoleSelectList = new SelectList(roles, "Id", "Name");
                 await PopulateAddressDropdowns(viewModel.User);
                 return View(viewModel);
 
@@ -209,6 +217,8 @@ namespace BookingSalon.Areas.Admin.Controllers
 
         private async Task PopulateAddressDropdowns(UsersModel users)
         {
+            var branches = await _branchService.GetAllBranchActiveAsync();
+            var selectlistBranch = new SelectList(branches, "BranchId", "Branch_Name");
             var provinces = await _addressService.GetAllProvinceAsync();
             ViewBag.Provinces = new SelectList(provinces, "Id", "Name");
 

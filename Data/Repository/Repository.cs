@@ -29,33 +29,15 @@ namespace BookingSalon.Data.Repository
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<TEntity?> FindOneAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await _dbSet.FirstOrDefaultAsync(predicate);
-        }
-
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await _dbSet.Where(predicate).ToListAsync();
-        }
 
         public async Task AddAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
         }
 
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
-        {
-            await _dbSet.AddRangeAsync(entities);
-        }
-
         public void Update(TEntity entity)
         {
             _dbSet.Update(entity);
-        }
-        public void UpdateRange(IEnumerable<TEntity> entities)
-        {
-            _dbSet.UpdateRange(entities);
         }
 
         public void Delete(TEntity entity)
@@ -70,27 +52,6 @@ namespace BookingSalon.Data.Repository
         public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbSet.AnyAsync(predicate);
-        }
-
-        public async Task<PaginatedList<TEntity>> GetPagedAsync(
-            int pageIndex,
-            int pageSize,
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            return await PaginatedList<TEntity>.CreateAsync(query.AsNoTracking(), pageIndex, pageSize);
         }
     }
 }

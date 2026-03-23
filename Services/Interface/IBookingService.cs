@@ -20,7 +20,6 @@ namespace BookingSalon.Services.Interface
         Task<PaginatedList<BookingProfileDetailsViewModel>> GetPagedListStaffIdAsync(string StaffId, int pageNumber, int pageSize, string searchTerm, BookingStatus? status);
         Task<ServiceResult<string?>> GetAvailableStylistIdAsync(int branchId, DateTime date, int startSlotId, int durationMinutes);
         Task<ServiceResult<string?>> GetAvailableSkinnerIdAsync(int branchId, DateTime date, int startSlotId, int durationMinutes, string? excludeStaffId = null);
-        Task<ServiceResult<IEnumerable<SlotSelectionViewModel>>> GetSlotsAvailableForBranch(int branchId, DateOnly date, int durationMinutes);
         Task<ServiceResult<IEnumerable<SlotSelectionViewModel>>> GetSlotsAvailableForBranchRandom(int branchId, string? stylistId, string? skinnerId, DateOnly date, int durationMinutes);
     }
 }

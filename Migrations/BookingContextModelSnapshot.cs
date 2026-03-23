@@ -127,19 +127,19 @@ namespace BookingSalon.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<byte?>("DiscountTypeSnapshot")
                         .HasColumnType("tinyint");
 
                     b.Property<decimal?>("DiscountValueSnapshot")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<int?>("End_Slot_Id")
                         .HasColumnType("int");
 
                     b.Property<decimal>("FinalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<string>("Note")
                         .HasMaxLength(250)
@@ -165,7 +165,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("Update_At")
                         .ValueGeneratedOnAdd()
@@ -274,7 +274,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<decimal>("Discount_value")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("Expires_At")
                         .HasColumnType("datetime2");
@@ -286,7 +286,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Min_Order_Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("Updated_At")
                         .ValueGeneratedOnAdd()
@@ -488,7 +488,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
@@ -652,7 +652,7 @@ namespace BookingSalon.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
 
                     b.Property<decimal>("Base_Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("Create_At")
                         .ValueGeneratedOnAdd()
@@ -677,7 +677,7 @@ namespace BookingSalon.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<decimal?>("Promotion_Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime?>("Promotion_Start")
                         .ValueGeneratedOnAdd()
@@ -847,6 +847,10 @@ namespace BookingSalon.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeOfServiceId"));
 
+                    b.Property<string>("AppliedStaffRoleId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -926,6 +930,7 @@ namespace BookingSalon.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
@@ -933,8 +938,8 @@ namespace BookingSalon.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

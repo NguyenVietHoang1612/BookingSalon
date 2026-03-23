@@ -180,6 +180,17 @@ namespace BookingSalon.Services
         // Thống kê Doanh thu Nhân viên (Stylist/Skinner)
         public async Task<IEnumerable<StaffRevenueInfo>> GetStaffRevenueReportAsync(DateTime startDate, DateTime endDate, string role)
         {
+
+            //var targetRoleId = await _unitOfWork.Repository<IdentityRole>().Query()
+            //    .Where(r => r.Name == role)
+            //    .Select(r => r.Id)
+            //    .FirstOrDefaultAsync();
+            var targetRole = await _roleManager.FindByNameAsync(role);
+
+            var targetRoleId = targetRole.Id;
+
+            if (string.IsNullOrEmpty(targetRoleId)) return new List<StaffRevenueInfo>();
+
             var query = _unitOfWork.Repository<BookingModel>().Query()
                 .Where(b => b.Booking_Date >= startDate && b.Booking_Date <= endDate && b.Status == BookingStatus.Paid);
 
@@ -188,13 +199,20 @@ namespace BookingSalon.Services
                 return await query
                     .Include(b => b.StylistProfile.Staff)
                     .Include(b => b.Branch)
-                    .GroupBy(b => new
-                    {
-                        b.Stylist_Id,
-                        b.StylistProfile.Staff.FullName,
-                        b.StylistProfile.Staff.Email,
-                        BranchName = b.Branch.Branch_Name
-                    })
+                    .Include(b => b.BookingDetails)
+                        .ThenInclude(d => d.Service.TypeOfService)
+                    .SelectMany(b => b.BookingDetails
+
+                        .Where(d => d.Service.TypeOfService.AppliedStaffRoleId == targetRoleId)
+                        .Select(d => new
+                        {
+                            b.Stylist_Id,
+                            b.StylistProfile.Staff.FullName,
+                            b.StylistProfile.Staff.Email,
+                            BranchName = b.Branch.Branch_Name,
+                            ServicePrice = d.Price 
+                        }))
+                    .GroupBy(x => new { x.Stylist_Id, x.FullName, x.Email, x.BranchName })
                     .Select(g => new StaffRevenueInfo
                     {
                         Date = startDate,
@@ -204,9 +222,9 @@ namespace BookingSalon.Services
                         BranchName = g.Key.BranchName,
                         RoleName = role,
                         TotalBookings = g.Count(),
-                        TotalRevenue = g.Sum(b => b.FinalPrice)
+                        TotalRevenue = g.Sum(x => x.ServicePrice) 
                     })
-                    .OrderByDescending(x => x.TotalRevenue) 
+                    .OrderByDescending(x => x.TotalRevenue)
                     .ToListAsync();
             }
             else if (role == "Skinner")
@@ -215,13 +233,18 @@ namespace BookingSalon.Services
                     .Where(b => b.Skinner_Id != null)
                     .Include(b => b.SkinnerProfile.Staff)
                     .Include(b => b.Branch)
-                    .GroupBy(b => new
-                    {
-                        b.Skinner_Id,
-                        b.SkinnerProfile.Staff.FullName,
-                        b.SkinnerProfile.Staff.Email,
-                        BranchName = b.Branch.Branch_Name
-                    })
+                    .Include(b => b.BookingDetails).ThenInclude(d => d.Service.TypeOfService)
+                    .SelectMany(b => b.BookingDetails
+                        .Where(d => d.Service.TypeOfService.AppliedStaffRoleId == targetRoleId)
+                        .Select(d => new
+                        {
+                            b.Skinner_Id,
+                            b.SkinnerProfile.Staff.FullName,
+                            b.SkinnerProfile.Staff.Email,
+                            BranchName = b.Branch.Branch_Name,
+                            ServicePrice = d.Price
+                        }))
+                    .GroupBy(x => new { x.Skinner_Id, x.FullName, x.Email, x.BranchName })
                     .Select(g => new StaffRevenueInfo
                     {
                         Date = startDate,
@@ -231,7 +254,7 @@ namespace BookingSalon.Services
                         BranchName = g.Key.BranchName,
                         RoleName = role,
                         TotalBookings = g.Count(),
-                        TotalRevenue = g.Sum(b => b.FinalPrice)
+                        TotalRevenue = g.Sum(x => x.ServicePrice)
                     })
                     .OrderByDescending(x => x.TotalRevenue)
                     .ToListAsync();

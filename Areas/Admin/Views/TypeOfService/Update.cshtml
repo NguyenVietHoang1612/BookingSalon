@@ -25,14 +25,22 @@
                             <span asp-validation-for="Type_Service_Name" class="text-danger small mt-1 d-block"></span>
                         </div>
 
-                    <div class="col-12 d-flex gap-2 mt-5">
-                        <button type="submit" class="btn btn-primary fw-bold px-4">
-                            <i class="bi bi-save me-2"></i> Cập nhật thay đổi
-                        </button>
-                        <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
-                            <i class="bi bi-x-lg me-2"></i> Hủy bỏ
-                        </a>
-                    </div>
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <label class="form-label fw-semibold">Vai trò làm loại dịch vụ</label>
+                            <select class="form-control" asp-for="AppliedStaffRoleId" asp-items="ViewBag.Roles">
+                                <option>Chọn vai trò</option>
+                            </select>
+                            <span asp-validation-for="Type_Service_Name" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-12 d-flex gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary fw-bold px-4">
+                                <i class="bi bi-save me-2"></i> Cập nhật thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                                <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                            </a>
+                        </div>
                     </div>
                 </form>
             </div>

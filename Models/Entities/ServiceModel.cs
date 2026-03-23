@@ -14,6 +14,7 @@ namespace BookingSalon.Models.Entities
         public string Service_Name { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Giá dịch vụ không hợp lệ")]
+        [Required(ErrorMessage = "Giá dịch vụ không được để trống")]
         [DataType(DataType.Currency)]
         public decimal Base_Price { get; set; }
         public decimal? Promotion_Price { get; set; }

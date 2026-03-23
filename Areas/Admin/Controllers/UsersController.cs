@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -69,6 +70,7 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(UserCreateViewModel userVM)
         {
@@ -95,7 +97,9 @@ namespace BookingSalon.Areas.Admin.Controllers
 
             if (!result.Succeeded)
             {
-                TempData["Error"] = "Thêm người dùng thất bại: " + result.Errors;
+                var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                TempData["Error"] = "Thêm người dùng thất bại: " + errorMessages;
 
                 foreach (var error in result.Errors)
                 {
@@ -112,7 +116,6 @@ namespace BookingSalon.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
         [HttpGet]
         public async Task<IActionResult> Update(string id)
         {

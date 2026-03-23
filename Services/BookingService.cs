@@ -16,10 +16,11 @@ namespace BookingSalon.Services
         private readonly IFixedTimeSlotService _fixedTimeSlotService;
         private readonly ICouponService _couponService;
         private readonly IFileService _fileService;
+        private readonly IReviewService _reviewService;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public BookingService(IUnitOfWork unitOfWork, ICustomerRankService customerRankService, IFixedTimeSlotService fixedTimeSlotService,
-            ICouponService couponService, RoleManager<IdentityRole> roleManager, IFileService fileService)
+            ICouponService couponService, RoleManager<IdentityRole> roleManager, IFileService fileService, IReviewService reviewService)
         {
             _unitOfWork = unitOfWork;
             _customerRankService = customerRankService;
@@ -27,6 +28,7 @@ namespace BookingSalon.Services
             _couponService = couponService;
             _roleManager = roleManager;
             _fileService = fileService;
+            _reviewService = reviewService;
         }
 
         public async Task<IEnumerable<BookingProfileDetailsViewModel>> GetAllAsync()
@@ -55,7 +57,8 @@ namespace BookingSalon.Services
                 FinalPrice = b.TotalPrice,
                 Status = b.Status,
                 BookingImages = b.BookingImages,
-                IsReview = _unitOfWork.Repository<ReviewModel>().Query().Any(r => r.Booking_Id == b.Booking_Id)
+                IsReview = _unitOfWork.Repository<ReviewModel>().Query().Any(r => r.Booking_Id == b.Booking_Id),
+                CreateAt = b.Create_At
             })
             .ToListAsync();
 
@@ -117,6 +120,11 @@ namespace BookingSalon.Services
                         subTotal += actualPrice;
                         totalDuration += service.DurationInMinutes;
                     }
+                }
+
+                if (string.IsNullOrEmpty(bookingVM.NewBooking.Stylist_Id))
+                {
+                    return ServiceResult<BookingViewModel>.Failed("Vui lòng chọn Stylist bắt buộc.");
                 }
 
                 var isAvailableSlot = GetListSlotIdsInRange(bookingVM.NewBooking.Start_Slot_Id, totalDuration);
@@ -280,6 +288,11 @@ namespace BookingSalon.Services
                 var booking = responseBooking?.Data;
                 if (booking == null) return ServiceResult<BookingModel>.Failed("Không tìm thấy booking");
 
+                if (booking.Status == BookingStatus.Canceled)
+                {
+                    return ServiceResult<BookingModel>.Failed("Không thể thay đổi trạng thái của lịch đã hủy.");
+                }
+
                 booking.Status = (BookingStatus)statusValue;
                 booking.Update_At = DateTime.Now;
                 booking.UpdatedById = updateById;
@@ -380,7 +393,7 @@ namespace BookingSalon.Services
 
                 if (isExist)
                 {
-                    return ServiceResult<bool>.Failed("Rất tiếc, Tổng thời gian dự kiến trùng khung giờ 1 khung thời gian với khách . Vui lòng chọn khung giờ khác.");
+                    return ServiceResult<bool>.Failed("Rất tiếc, Tổng thời gian dự kiến trùng khung giờ 1 khung thời gian với khách khác. Vui lòng load lại trang và chọn khung giờ khác.");
                 }
 
                 var currentStylistSlots = _unitOfWork.Repository<StaffScheduleModel>().Query()
@@ -436,7 +449,7 @@ namespace BookingSalon.Services
 
                 if (isExist)
                 {
-                    return ServiceResult<bool>.Failed("Rất tiếc, Tổng thời gian dự kiến trùng khung giờ 1 khung thời gian với khách . Vui lòng chọn khung giờ khác.");
+                    return ServiceResult<bool>.Failed("Rất tiếc, Tổng thời gian dự kiến trùng khung giờ 1 khung thời gian với khách khác. Vui lòng chọn khung giờ khác.");
                 }
 
                 var currentSkinnerSlots = _unitOfWork.Repository<StaffScheduleModel>().Query()
@@ -475,6 +488,11 @@ namespace BookingSalon.Services
                 var response = await GetByIdAsync(bookingId);
                 var booking = response?.Data;
                 if (booking == null) return ServiceResult<bool>.Failed("Không tìm thấy booking");
+
+                if (booking.Status == BookingStatus.InProgress || booking.Status == BookingStatus.Completed || booking.Status == BookingStatus.Paid)
+                {
+                    return ServiceResult<bool>.Failed("Không thể hủy lịch hẹn đang thực hiện hoặc đã hoàn tất.");
+                }
 
                 booking.Status = BookingStatus.Canceled;
                 booking.Update_At = DateTime.Now;
@@ -799,6 +817,8 @@ namespace BookingSalon.Services
             var bookingDateOnly = DateOnly.FromDateTime(date);
             string roleStylist = _roleManager.FindByNameAsync("Stylist").Result.Id;
 
+            if (roleStylist == null) return ServiceResult<string?>.Failed("Không tìm thấy Role Stylist");
+
             var allStylists = await _unitOfWork.Repository<StaffProfileModel>().Query()
                 .Include(s => s.Staff)
                 .Where(s => s.Branch_Id == branchId && s.Staff.Status == true && s.Staff.RoleId == roleStylist)
@@ -822,8 +842,8 @@ namespace BookingSalon.Services
         {
             var neededSlots = GetListSlotIdsInRange(startSlotId, durationMinutes);
             var bookingDateOnly = DateOnly.FromDateTime(date);
-
             var role = await _roleManager.FindByNameAsync("Skinner");
+
             if (role == null) return ServiceResult<string?>.Failed("Không tìm thấy Role Skinner");
 
             var allSkinner = await _unitOfWork.Repository<StaffProfileModel>().Query()
@@ -842,62 +862,6 @@ namespace BookingSalon.Services
                 if (!isBusy) return ServiceResult<string?>.Success(skinner.StaffId);
             }
             return ServiceResult<string?>.Failed("Không còn Skinner nào rảnh.");
-        }
-
-        public async Task<ServiceResult<IEnumerable<SlotSelectionViewModel>>> GetSlotsAvailableForBranch(int branchId, DateOnly date, int durationMinutes)
-        {
-            var roleStylist = await _roleManager.FindByNameAsync("Stylist");
-            var roleSkinner = await _roleManager.FindByNameAsync("Skinner");
-
-            var staff = await _unitOfWork.Repository<StaffProfileModel>().Query()
-                .Include(s => s.Staff)
-                .Where(s => s.Branch_Id == branchId && s.Staff.Status == true && ((s.Staff.RoleId == roleStylist.Id) || (s.Staff.RoleId == roleSkinner.Id)))
-                .ToListAsync();
-
-            var allFixedSlots = await _unitOfWork.Repository<FixedTimeSlotModel>().Query()
-                .OrderBy(s => s.TimeLabel).ToListAsync();
-
-            var busySchedules = await _unitOfWork.Repository<StaffScheduleModel>().Query()
-                .Where(x => x.Work_Date == date)
-                .ToListAsync();
-
-            var viewModel = new List<SlotSelectionViewModel>();
-
-            foreach (var slot in allFixedSlots)
-            {
-                var neededSlotIds = GetListSlotIdsInRange(slot.SlotId, durationMinutes);
-
-                if (neededSlotIds.Count * 20 <= durationMinutes)
-                {
-                    viewModel.Add(new SlotSelectionViewModel { SlotId = slot.SlotId, TimeRange = slot.TimeLabel, IsAvailable = false });
-                    continue;
-                }
-
-
-                bool hasAvailableStaff = staff.Any(staffs =>
-                {
-                    bool withinWorkHours = slot.TimeLabel >= staffs.Start_Work_Time &&
-                                           slot.TimeLabel <= staffs.End_Work_Time;
-
-                    if (!withinWorkHours) return false;
-
-                    bool isBusy = busySchedules
-                        .Any(busy => busy.Staff_Id == staffs.StaffId && neededSlotIds.Contains(busy.Slot_Id));
-
-                    if (isBusy == true) return false;
-
-                    return true;
-                });
-
-                viewModel.Add(new SlotSelectionViewModel
-                {
-                    SlotId = slot.SlotId,
-                    TimeRange = slot.TimeLabel,
-                    IsAvailable = hasAvailableStaff
-                });
-            }
-
-            return ServiceResult<IEnumerable<SlotSelectionViewModel>>.Success(viewModel);
         }
 
         public async Task<ServiceResult<IEnumerable<SlotSelectionViewModel>>> GetSlotsAvailableForBranchRandom(int branchId, string? stylistId, string? skinnerId, DateOnly date, int durationMinutes)

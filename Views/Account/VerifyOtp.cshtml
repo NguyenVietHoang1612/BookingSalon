@@ -18,7 +18,6 @@
         <form asp-action="VerifyOtp" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
-            @* Hidden field để gửi kèm SĐT lên Controller mà không bắt user nhập lại *@
             <input type="hidden" asp-for="PhoneNumber" />
 
             <div class="mb-3">
