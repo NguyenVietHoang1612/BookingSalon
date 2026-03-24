@@ -31,6 +31,9 @@ namespace BookingSalon.Data
         public DbSet<CouponModel> Coupon { get; set; }
         public DbSet<CustomerRankModel> CustomerRank { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
+
+        public DbSet<ComboModel> Combos { get; set; }
+        public DbSet<ComboServiceModel> ComboServices { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -50,6 +53,7 @@ namespace BookingSalon.Data
             ConfigureCouponUsage(modelBuilder);
             ConfigurePayment(modelBuilder);
             ConfigureBookingImage(modelBuilder);
+            ConfigureCombo(modelBuilder);
         }
 
         private void ConfigureUser(ModelBuilder builder)
@@ -428,6 +432,12 @@ namespace BookingSalon.Data
                     .HasForeignKey(bd => bd.Booking_Id)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(bd => bd.Combo)
+                   .WithMany(s => s.BookingDetails)
+                   .HasForeignKey(bd => bd.Combo_Id)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+
                 entity.HasOne(bd => bd.Service)
                     .WithMany(s => s.BookingDetails)
                     .HasForeignKey(bd => bd.Service_Id)
@@ -682,6 +692,46 @@ namespace BookingSalon.Data
                       .WithMany(b => b.BookingImages)   
                       .HasForeignKey(x => x.Booking_Id)  
                       .OnDelete(DeleteBehavior.Cascade); 
+            });
+        }
+
+        private void ConfigureCombo(ModelBuilder builder)
+        {
+            // Cấu hình bảng ComboModel
+            builder.Entity<ComboModel>(entity =>
+            {
+                entity.HasKey(c => c.ComboId);
+
+                entity.Property(c => c.ComboName)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                entity.Property(c => c.BasePrice)
+                    .HasColumnType("decimal(12,2)");
+
+                entity.Property(c => c.PromotionPrice)
+                    .HasColumnType("decimal(12,2)");
+
+                entity.Property(c => c.TotalDuration)
+                    .IsRequired();
+            });
+
+            // Cấu hình bảng trung gian ComboServiceModel
+            builder.Entity<ComboServiceModel>(entity =>
+            {
+                entity.HasKey(cs => cs.ComboServiceId);
+
+                // Mối quan hệ với Combo
+                entity.HasOne(cs => cs.Combo)
+                    .WithMany(c => c.ComboServices)
+                    .HasForeignKey(cs => cs.ComboId)
+                    .OnDelete(DeleteBehavior.Cascade); // Xóa Combo thì xóa các dịch vụ trong đó
+
+                // Mối quan hệ với Service
+                entity.HasOne(cs => cs.Service)
+                    .WithMany() // Nếu ServiceModel chưa có ICollection<ComboServiceModel>
+                    .HasForeignKey(cs => cs.ServiceId)
+                    .OnDelete(DeleteBehavior.Restrict); // Không cho xóa Service nếu đang nằm trong Combo
             });
         }
     }

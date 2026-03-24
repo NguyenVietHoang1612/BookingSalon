@@ -302,8 +302,7 @@ namespace BookingSalon.Areas.Admin.Controllers
             else
             {
                 return RedirectToAction("StylistIndex");
-            }
-                
+            } 
         }
 
         [HttpGet]

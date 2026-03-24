@@ -4,6 +4,7 @@ using BookingSalon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSalon.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20260324045355_UpdateCombo")]
+    partial class UpdateCombo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +39,6 @@ namespace BookingSalon.Migrations
                     b.Property<int>("Booking_Id")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Combo_Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -53,7 +53,7 @@ namespace BookingSalon.Migrations
                     b.Property<string>("ServiceNameSnapshot")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Service_Id")
+                    b.Property<int>("Service_Id")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Update_At")
@@ -64,8 +64,6 @@ namespace BookingSalon.Migrations
                     b.HasKey("Booking_Detail_Id");
 
                     b.HasIndex("Booking_Id");
-
-                    b.HasIndex("Combo_Id");
 
                     b.HasIndex("Service_Id");
 
@@ -1204,19 +1202,13 @@ namespace BookingSalon.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BookingSalon.Models.Entities.ComboModel", "Combo")
-                        .WithMany("BookingDetails")
-                        .HasForeignKey("Combo_Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("BookingSalon.Models.Entities.ServiceModel", "Service")
                         .WithMany("BookingDetails")
                         .HasForeignKey("Service_Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Booking");
-
-                    b.Navigation("Combo");
 
                     b.Navigation("Service");
                 });
@@ -1582,8 +1574,6 @@ namespace BookingSalon.Migrations
 
             modelBuilder.Entity("BookingSalon.Models.Entities.ComboModel", b =>
                 {
-                    b.Navigation("BookingDetails");
-
                     b.Navigation("ComboServices");
                 });
 

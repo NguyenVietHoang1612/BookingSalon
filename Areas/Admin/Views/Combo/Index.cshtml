@@ -1,0 +1,92 @@
+﻿@using BookingSalon.Models.Entities
+@model IEnumerable<ComboModel>
+
+@{
+    ViewData["title"] = "Danh sách Combo";
+}
+
+<div class="container-fluid py-2 px-md-5">
+    <div class="card main-card p-2 p-lg-4">
+        <div class="row align-items-center mb-5">
+            <div class="col-xl-6 col-lg-5">
+                <h2 class="title-main mb-lg-0 mb-3 fw-bold">Quản lý Combo dịch vụ</h2>
+            </div>
+            <div class="col-xl-6 col-lg-7">
+                <div class="row g-2 justify-content-lg-end">
+                    <div class="col-sm-8 col-12">
+                        <form asp-action="Index" method="get">
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" value="@ViewBag.SearchTerm" name="term"
+                                       class="form-control border-0 ps-4"
+                                       placeholder="Tìm tên combo..."
+                                       style="box-shadow: none;">
+                                <button type="submit" class="btn btn-white bg-white border-0 pe-3 text-secondary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-4 col-12">
+                        <a class="btn btn-primary w-100 rounded-3 shadow-sm fw-bold d-flex align-items-center justify-content-center"
+                           asp-action="Create" style="padding: 0.6rem 1.5rem;">
+                            <i class="bi bi-plus-lg me-2"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px">Id</th>
+                        <th>Tên Combo</th>
+                        <th>Dịch vụ bao gồm</th>
+                        <th>Thời lượng</th>
+                        <th>Giá gốc</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@item.ComboId</td>
+                                <td class="text-muted fw-bold">@item.ComboName</td>
+                                <td class="text-muted">
+                                    @if (item.ComboServices != null)
+                                    {
+                                        foreach (var cs in item.ComboServices)
+                                        {
+                                            <span class="badge bg-light text-dark border me-1">@cs.Service?.Service_Name</span>
+                                        }
+                                    }
+                                </td>
+                                <td class="text-muted">@item.TotalDuration phút</td>
+                                <td class="text-muted">@item.BasePrice.ToString("#,##0")đ</td>
+                                <td class="text-center">
+                                    <a asp-action="Update" asp-route-id="@item.ComboId" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete('@Url.Action("Delete", "Combo", new { id = item.ComboId })', 'Combo @item.ComboName')">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Không tìm thấy combo nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

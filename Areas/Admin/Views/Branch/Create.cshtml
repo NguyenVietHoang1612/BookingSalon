@@ -1,98 +1,95 @@
-﻿@using BookingSalon.Models.Entities
-@model BranchModel
+﻿@using BookingSalon.Areas.Admin.Models.ViewModel
+@model ComboViewModel
 
 @{
-    ViewData["title"] = "Thêm chi nhánh";
+    ViewData["title"] = "Thêm Combo";
 }
 
 <div class="container-fluid py-5 px-md-5">
     <div class="card main-card p-4 p-lg-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-primary">Quản lý chi nhánh</h2>
+            <h2 class="fw-bold text-primary">Quản lý Combo</h2>
         </div>
 
         <div class="form-section">
-            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-person-plus me-2"></i>Thêm chi nhánh mới</h5>
+            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-plus-circle me-2"></i>Thêm combo mới</h5>
 
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <form asp-action="Create" method="post">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
-                <div class="row g-4 mb-5">
-                    <div class="col-12 col-md-4 col-lg-3 text-center border-end">
-                        <label class="form-label fw-semibold d-block">Ảnh chi nhánh</label>
-                        <img id="previewAvatar" class=" img-thumbnail shadow-sm mb-3" style="width:150px;height:150px;object-fit:cover;"/>
-                        <input asp-for="Branch_Image_Upload" type="file" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this)" />
-                        <span asp-validation-for="Branch_Image_Upload" class="text-danger small mt-1 d-block"></span>
+
+                <div class="row g-4">
+                    <div class="col-12 col-lg-4 border-end">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên combo</label>
+                            <input asp-for="ComboModel.ComboName" class="form-control" placeholder="Nhập tên combo" />
+                            <span asp-validation-for="ComboModel.ComboName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tổng thời lượng (phút)</label>
+                            <input asp-for="ComboModel.TotalDuration" type="number" id="totalDuration" class="form-control bg-light" readonly />
+                            <small class="text-muted italic">* Tự động tính theo dịch vụ</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Giá gốc (đ)</label>
+                            <input asp-for="ComboModel.BasePrice" type="number" id="basePrice" class="form-control bg-light" readonly />
+                            <small class="text-muted italic">* Tổng giá các dịch vụ đã chọn</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-danger">Giá khuyến mãi (đ)</label>
+                            <input asp-for="ComboModel.PromotionPrice" type="number" class="form-control border-danger" placeholder="Nhập giá bán thực tế" />
+                            <span asp-validation-for="ComboModel.PromotionPrice" class="text-danger small"></span>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-8">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Tên chi nhánh</label>
-                                <input asp-for="Branch_Name" class="form-control" placeholder="Nhập tên chi nhánh" />
-                                <span asp-validation-for="Branch_Name" class="text-danger small mt-1 d-block"></span>
-                            </div>
 
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
-                                <select id="ddlProvince" class="form-control" asp-items="ViewBag.Provinces">
-                                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
-                                </select>
+                    <div class="col-12 col-lg-8">
+                        <label class="form-label fw-semibold mb-3">Danh sách dịch vụ đơn lẻ <span class="text-primary">(Chọn để tạo combo)</span></label>
+                        <div class="row g-2" style="max-height: 450px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px;">
+                            @if (Model.Services != null)
+                            {
+                                foreach (var svc in Model.Services)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="p-2 border rounded shadow-sm d-flex align-items-center">
+                                            <div class="form-check w-100">
+                                                <input class="form-check-input svc-checkbox" type="checkbox"
+                                                       name="selectedServices" value="@svc.ServiceId"
+                                                       id="svc-@svc.ServiceId"
+                                                       data-price="@svc.Base_Price"
+                                                       data-duration="@svc.DurationInMinutes">
+                                                <label class="form-check-label ms-2 d-block" for="svc-@svc.ServiceId">
+                                                    <div class="fw-bold">@svc.Service_Name</div>
+                                                    <div class="small text-muted">
+                                                        <span><i class="bi bi-clock me-1"></i>@svc.DurationInMinutes phút</span> |
+                                                        <span class="text-primary">@svc.Base_Price.ToString("N0")đ</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="me-3">Tổng thời gian: <strong id="displayDuration">0</strong> phút</span>
                             </div>
-
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Quận / Huyện</label>
-                                <select id="ddlDistrict" class="form-control">
-                                    <option value="">-- Chọn Quận / Huyện --</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Phường / Xã</label>
-                                <select asp-for="WardId" id="ddlWard" class="form-control">
-                                    <option value="">-- Chọn Phường / Xã --</option>
-                                </select>
-                                <span asp-validation-for="WardId" class="text-danger small mt-1 d-block"></span>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-6">
-                                <label class="form-label fw-semibold">Số nhà, tên đường</label>
-                                <input asp-for="Address" class="form-control" placeholder="Ví dụ: 123 Đường ABC" />
-                                <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Số điện thoại chi nhánh</label>
-                                <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Trạng thái hoạt động</label>
-                                <select asp-for="Status" class="form-control">
-                                    <option value="true">Chi nhánh hoạt động</option>
-                                    <option value="false">Chi nhánh không hoạt động</option>
-                                </select>
-                                <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <label class="form-label fw-semibold">Có phải trụ sở chính không?</label>
-                                <select asp-for="Is_Main_Branch" class="form-control">
-                                    <option value="true">Có</option>
-                                    <option value="false">Không</option>
-                                </select>
-                                <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
-                            </div>
-
-                            <div class="d-flex gap-2 mt-5">
-                                <button type="submit" class="btn btn-primary fw-bold px-4">
-                                    <i class="bi bi-save me-2"></i> Thêm mới chi nhánh
-                                </button>
-                                <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
-                                    <i class="bi bi-x-lg me-2"></i> Hủy bỏ
-                                </a>
+                            <div>
+                                <span class="fw-bold text-dark">Tạm tính giá gốc: <span id="tempTotal" class="text-primary">0</span>đ</span>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-5">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                        <i class="bi bi-save me-2"></i> Tạo combo
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                    </a>
                 </div>
             </form>
         </div>
@@ -101,52 +98,26 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="/js/ChoicesSelectList.js"></script>
-
     <script>
-        var provinceChoices, districtChoices, wardChoices;
+        $(document).ready(function() {
+            $('.svc-checkbox').on('change', function() {
+                let totalPrice = 0;
+                let totalTime = 0;
 
-        $(document).ready(function () {
-            provinceChoices = initSelectSearch('ddlProvince', 'Chọn Tỉnh / Thành phố...');
-            districtChoices = initSelectSearch('ddlDistrict', 'Chọn Quận / Huyện...');
-            wardChoices = initSelectSearch('ddlWard', 'Chọn Phường / Xã...');
+                $('.svc-checkbox:checked').each(function() {
+                    let price = parseFloat($(this).data('price')) || 0;
+                    let duration = parseInt($(this).data('duration')) || 0;
 
-            $('#ddlProvince').on('change', function () {
-                var pId = $(this).val();
-                
-                districtChoices.clearStore();
-                districtChoices.setChoices([{ value: '', label: '-- Chọn Quận/Huyện --', selected: true }]);
-                wardChoices.clearStore();
-                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
+                    totalPrice += price;
+                    totalTime += duration;
+                });
 
-                if (pId) {
-                    $.getJSON('/Admin/Branch/GetDistricts', { provinceId: pId }, function (data) {
-                        var choicesData = data.map(item => ({
-                            value: item.id.toString(),
-                            label: item.name,
-                            selected: false
-                        }));
-                        districtChoices.setChoices(choicesData, 'value', 'label', false);
-                    });
-                }
-            });
+                $('#basePrice').val(totalPrice);
+                $('#totalDuration').val(totalTime);
 
-            $('#ddlDistrict').on('change', function () {
-                var dId = $(this).val();
-                
-                wardChoices.clearStore();
-                wardChoices.setChoices([{ value: '', label: '-- Chọn Phường/Xã --', selected: true }]);
-
-                if (dId) {
-                    $.getJSON('/Admin/Branch/GetWards', { districtId: dId }, function (data) {
-                        var choicesData = data.map(item => ({
-                            value: item.id.toString(),
-                            label: item.name,
-                            selected: false
-                        }));
-                        wardChoices.setChoices(choicesData, 'value', 'label', false);
-                    });
-                }
+                // Cập nhật text hiển thị cho người dùng
+                $('#tempTotal').text(totalPrice.toLocaleString('vi-VN'));
+                $('#displayDuration').text(totalTime);
             });
         });
     </script>

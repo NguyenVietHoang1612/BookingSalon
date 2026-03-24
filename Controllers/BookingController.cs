@@ -21,10 +21,11 @@ namespace BookingSalon.Controllers
         private readonly ICustomerRankService _customerRankService;
         private readonly UserManager<UsersModel> _userManager;
         private readonly IReviewService _reviewService;
+        private readonly IComboService _comboService;
 
         public BookingController(IBookingService bookingService, IStaffProfileService staffProfileService, IFixedTimeSlotService fixedTimeSlotService,
             IServicesSalonService servicesSalonService, IBranchService branchService, ITypeOfServiceService typeOfServiceService, 
-            UserManager<UsersModel> userManager, ICustomerRankService customerRankService, IReviewService reviewService)
+            UserManager<UsersModel> userManager, ICustomerRankService customerRankService, IReviewService reviewService, IComboService comboService)
         {
             _bookingService = bookingService;
             _staffProfileService = staffProfileService;
@@ -35,6 +36,7 @@ namespace BookingSalon.Controllers
             _userManager = userManager;
             _customerRankService = customerRankService;
             _reviewService = reviewService;
+            _comboService = comboService;
         }
 
         public async Task<IActionResult> Booking()
@@ -45,6 +47,7 @@ namespace BookingSalon.Controllers
             var typeOfService = await _typeOfServiceService.GetAllTypeServiceAsync();
             var stylists = await _staffProfileService.GetAllStylistActiveAsync();
             var skinners = await _staffProfileService.GetAllSkinnerActiveAsync();
+            var combos = await _comboService.GetAllComboAsync();
 
             var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var customerRank = await _customerRankService.GetByCustomerIdAsync(user);
@@ -57,7 +60,8 @@ namespace BookingSalon.Controllers
                 TypeOfServices = typeOfService,
                 RankPercent = customerRank?.Rank.DiscountPercent ?? 0,
                 Stylists = stylists,
-                Skinners = skinners
+                Skinners = skinners,
+                Combos = combos,
             };
 
             return View(viewModel);
@@ -69,7 +73,6 @@ namespace BookingSalon.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            // Gán ID khách hàng từ User hiện tại
             bookingVM.NewBooking.Customer_Id = userId;
 
             if (!ModelState.IsValid)

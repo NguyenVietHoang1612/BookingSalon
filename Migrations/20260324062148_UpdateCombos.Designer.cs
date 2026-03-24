@@ -4,6 +4,7 @@ using BookingSalon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSalon.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20260324062148_UpdateCombos")]
+    partial class UpdateCombos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace BookingSalon.Migrations
                     b.Property<string>("ServiceNameSnapshot")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Service_Id")
+                    b.Property<int>("Service_Id")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Update_At")
@@ -1212,7 +1215,8 @@ namespace BookingSalon.Migrations
                     b.HasOne("BookingSalon.Models.Entities.ServiceModel", "Service")
                         .WithMany("BookingDetails")
                         .HasForeignKey("Service_Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Booking");
 

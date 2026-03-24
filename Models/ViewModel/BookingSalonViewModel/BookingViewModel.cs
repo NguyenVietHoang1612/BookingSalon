@@ -15,6 +15,7 @@ namespace BookingSalon.Models.ViewModel.BookingSalonViewModel
         public IEnumerable<StaffProfileModel>? Stylists { get; set; }
         public IEnumerable<StaffProfileModel>? Skinners { get; set; }
         public IEnumerable<UsersModel>? Customers { get; set; }
+        public IEnumerable<ComboModel>? Combos { get; set; }
         public decimal RankPercent { get; set; }
         public string? CouponCode { get; set; }
     }

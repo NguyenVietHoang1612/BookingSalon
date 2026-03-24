@@ -9,7 +9,9 @@ namespace BookingSalon.Models.Entities
         [Required(ErrorMessage = "Booking không được để trống")]
         public int Booking_Id { get; set; }
 
-        public int Service_Id { get; set; }
+        public int? Service_Id { get; set; }
+
+        public int? Combo_Id { get; set; }
 
         [Required]
         public decimal Price { get; set; } 
@@ -25,5 +27,7 @@ namespace BookingSalon.Models.Entities
 
         public BookingModel? Booking { get; set; }
         public ServiceModel? Service { get; set; }
+
+        public ComboModel? Combo { get; set; }
     }
 }

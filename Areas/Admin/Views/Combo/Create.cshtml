@@ -1,0 +1,95 @@
+﻿@using BookingSalon.Areas.Admin.Models.ViewModel
+@model ComboViewModel
+
+@{
+    ViewData["title"] = "Thêm Combo mới";
+}
+
+<div class="container-fluid py-5 px-md-5">
+    <div class="card main-card p-4 p-lg-5">
+        <h2 class="fw-bold text-primary mb-4">Quản lý Combo dịch vụ</h2>
+
+        <div class="form-section">
+            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-plus-circle me-2"></i>Tạo Combo mới</h5>
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4 border-end">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên Combo</label>
+                            <input asp-for="ComboModel.ComboName" class="form-control" placeholder="Ví dụ: Combo Cắt Gội Massage" />
+                            <span asp-validation-for="ComboModel.ComboName" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Thời lượng (phút)</label>
+                            <input asp-for="ComboModel.TotalDuration" type="number" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Giá gốc (đ)</label>
+                            <input asp-for="ComboModel.BasePrice" type="number" class="form-control" id="txtBasePrice" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Giá khuyến mãi (đ)</label>
+                            <input asp-for="ComboModel.PromotionPrice" type="number" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <label class="form-label fw-semibold mb-3">Chọn các dịch vụ trong combo này:</label>
+                        <div class="row g-2 overflow-auto" style="max-height: 400px;">
+                            @if (Model.Services != null)
+                            {
+                                foreach (var service in Model.Services)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="p-2 border rounded d-flex align-items-center shadow-sm">
+                                            <div class="form-check">
+                                                <input class="form-check-input service-check" type="checkbox"
+                                                       name="selectedServices" value="@service.ServiceId"
+                                                       id="svc-@service.ServiceId" data-price="@service.Base_Price">
+                                                <label class="form-check-label ms-2" for="svc-@service.ServiceId">
+                                                    @service.Service_Name <br />
+                                                    <small class="text-muted">@service.Base_Price.ToString("N0")đ</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded shadow-sm text-end">
+                            <span class="me-3">Tổng giá trị dịch vụ: <strong id="totalOriginal">0</strong>đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-5">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                        <i class="bi bi-save me-2"></i> Lưu Combo
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="bi bi-x-lg me-2"></i> Hủy bỏ
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('.service-check').on('change', function () {
+                let total = 0;
+                $('.service-check:checked').each(function () {
+                    total += parseFloat($(this).data('price'));
+                });
+                $('#totalOriginal').text(total.toLocaleString('vi-VN'));
+                $('#txtBasePrice').val(total);
+            });
+        });
+    </script>
+}

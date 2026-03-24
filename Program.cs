@@ -68,7 +68,7 @@ builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
-
+builder.Services.AddScoped<IComboService, ComboService>();
 QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
